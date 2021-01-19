@@ -1,0 +1,133 @@
+﻿(*OHOS-2810: Verify in "Edit" screen that a "Yard Move" status is able to be edited to "On Duty", "Off Duty", "Sleeper Berth", "Driving", "Personal Conveyance"
+Yard Move with different location or remarks (Automatic recorded location cannot be edited, only manually entered or unknown position can be edited)
+Remarks should have a length > than 4 chars to be taken as valid. 
+If Remarks are empty and only the Location is edited, NEXT button will not appear enabled
+- Mobile has the latest build. 
+- DriverID and Pwd for at least one driver. 
+- Yard Move is checked as "Allowed" in HOS Portal. 
+- Driver is logged in the mobile. 
+- Logs are updated. 
+- Driver has at least one "Yard Move" record on the current cycle that is not the current duty status, (Recommended that "Yard Move" is the previous status from current status). 
+- Driver is in "HOS App" screen.*)
+
+log "***Script name OHOS2810***"
+put "TMOTA001" into DriverId
+Global DeviceType
+
+(*log driver in*)
+ConnectUnit
+BeforeTest
+LoginDriver JOSH0055, JOSH0055, "OF", True
+ELDTestCase.SendMessageToUpdateLogs
+
+// Change to YM status
+Status_ChangeTestCase.ChangeDriverStatus "ON","YM" ,"AUTOMATION"
+wait 1 minute
+wait 1 minutes
+wait 10
+wait 10 seconds
+Status_ChangeTestCase.ChangeDriverStatus "ON","N" ,"AUTOMATION"
+
+// go to edit screen
+GoTo.DayForward Certify, 8
+CertifyTestCase.findTableRecord "Yard Move", "Status", "Bottom", "Asc"
+CertifyTestCase.clickOnTableStatus "Yard Move"
+Click Translator("CertifyTab/EditButton/Enabled")
+
+// Check the status on the dropdown of the Top Half
+put Certify_EditTestCase.GetStatusDropdownValues("Top") into options
+replace every occurrence of "IP" in options with "D"
+
+assert options contains Translator(Other:"OFF") with error "Top Half Status has OFF "
+assert options contains Translator(Other:"ON") with error "Top Half Status has ON"
+assert options contains Translator(Other:"D") with error "Top Half Status has D"
+assert options contains Translator(Other:"SB") with error "Top Half Status has SB"
+
+
+//Check Off Duty - Exceptions
+Certify_EditTestCase.selectNewStatus "OFF"
+
+//This will retrieve the values of the Exceptions Dropdown
+put Certify_EditTestCase.GetExceptionDropdownValues("Top") into options
+assert options contains Translator(Other:"PC") with error "Top Half OFF Duty Exceptions has PC"
+assert options contains Translator(Other:"OW") with error "Top Half OFF Duty Exceptions has OW"
+
+
+//Check On Duty
+Certify_EditTestCase.selectNewStatus "ON"
+
+//This will retrieve the values of the Exceptions Dropdown
+put Certify_EditTestCase.GetExceptionDropdownValues("Top") into options
+assert options contains Translator(Other:"YM") with error "Top Half On Duty Exceptions has YM"
+
+//Check SB
+Certify_EditTestCase.selectNewStatus "SB"
+
+//This will retrieve the values of the Exceptions Dropdown
+put Certify_EditTestCase.GetExceptionDropdownValues("Top") into options
+assert options contains Translator(Other:"OW") with error "Top Half On Duty Exceptions has YM"
+
+//Check Driving
+Certify_EditTestCase.selectNewStatus "D"
+
+//This will retrieve the values of the Exceptions Dropdown
+put Certify_EditTestCase.GetExceptionDropdownValues("Top") into options
+assert options is empty with error "Top Half Driving Exceptions is empty"
+
+//Click on SPLIT button
+Click Translator("CertifyTab/SplitButton")
+
+//Check the status on the dropdown of the Bottom Half
+put Certify_EditTestCase.GetStatusDropdownValues("Bottom") into options
+assert options contains Translator(Other:"OFF") with error "Bottom Half Status has OFF "
+assert options contains Translator(Other:"ON") with error "Bottom Half Status has ON"
+assert options contains Translator(Other:"D") with error "Bottom Half Status has D"
+assert options contains Translator(Other:"SB") with error "Bottom Half Status has SB"
+
+
+//Check Off Duty - Exceptions
+Certify_EditTestCase.selectNewStatus "OFF", "Bottom"
+
+//This will retrieve the values of the Exceptions Dropdown
+put Certify_EditTestCase.GetExceptionDropdownValues("Bottom") into options
+assert options contains Translator(Other:"PC") with error "Bottom OFF Duty Exceptions has PC"
+assert options contains Translator(Other:"OW") with error "Bottom OFF Duty Exceptions has OW"
+
+
+//Check On Duty - Exceptions
+Certify_EditTestCase.selectNewStatus "ON", "Bottom"
+
+//This will retrieve the values of the Exceptions Dropdown
+put Certify_EditTestCase.GetExceptionDropdownValues("Bottom") into options
+assert options contains Translator(Other:"YM") with error "Bottom On Duty Exceptions has YM"
+
+//Check SB - Exceptions
+Certify_EditTestCase.selectNewStatus "SB", "Bottom"
+
+//This will retrieve the values of the Exceptions Dropdown
+put Certify_EditTestCase.GetExceptionDropdownValues("Bottom") into options
+assert options contains Translator(Other:"OW") with error "Bottom SB Exceptions has OW"
+
+//Check Driving - Exceptions
+Certify_EditTestCase.selectNewStatus "D", "Bottom"
+
+//This will retrieve the values of the Exceptions Dropdown
+put Certify_EditTestCase.GetExceptionDropdownValues("Bottom") into options
+assert options is empty with error "Bottom Half Driving Exceptions is empty"
+
+//Click on SPLIT button
+Click Translator("CertifyTab/SplitButton")
+
+(*The following validates that if ON with YM is selected, the NEXT button appears disabled. It is an invalid edit*)
+//Select ON Duty with YM
+Certify_EditTestCase.selectNewStatus "ON", "Top", "YM"
+assert ImageFound(imageName:"CertifyTab/NextButtonDisabled", waitFor:3) with error "Next button appears disabled with status ON-YM"
+
+(*The following validates that if ON with YM is selected and REMARKS*)
+Certify_EditTestCase.writeRemarkSplit1 "Automation A", "Automation B"
+assert ImageFound(imageName:"CertifyTab/NextButton", waitFor:3) with error "Next button appears enabled with status ON-YM and REMARKS"
+
+//Remarks (lenght > 4 chars) need to be entered in orther to change Location (If it is editable)
+//This already validates that the field can be edited if empty or contains Unknown Position
+(*Certify_EditTestCase.enterNewLocation "MEXICO CITY" 
+assert ImageFound(imageName:"CertifyTab/NextButton", waitFor:3) with error "Next button appears enabled with status ON-YM, REMARKS and EDITED LOCATION"*)
