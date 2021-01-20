@@ -42,7 +42,7 @@ def goToLoginPage():
     toadd = '''total_x, total_y = img_proc.click_image_by_max_key_points('login_active')'''
     file2.writelines(toadd)
 
-def loginDriver(username):
+def loginDriver(username, password, p3, p4):
     goToLoginPage()
     login_info = '''#Click Login Icon
 #Click ADD button
@@ -181,6 +181,86 @@ img_proc.check_md_alert()
     file2.writelines(goToTab)
 
 
+def logOutAllDrivers():
+    toadd = ''' 
+
+def logoutDriver(driver, status):
+    if driver != '':
+        print("Driver parameter not empty")
+        img_proc.click_image_by_max_key_points('Login/LogoutDriver') 
+    else:
+        img_proc.click_image_by_max_key_points('logout')  #PONER IMAGEN LOGOUT
+        found = img_proc.expect_image('logout_alert', 'ExpectedScreens', 5) #PONER IMAGEN LOGOUT Alert
+        if found:
+            print("Alert")
+            img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/OkButton/OkButton') #CHECAR IMAGEN OK
+            img_proc.expect_image('vnc-login-add-driver', 'ExpectedScreens', 5)
+
+        img_proc.click_image_by_max_key_points('logout')  #PONER IMAGEN LOGOUT
+        if status == 'ON':
+            img_proc.click_image_by_max_key_points('Login/OnDutyStatus') 
+        elif status == 'OF':
+            img_proc.click_image_by_max_key_points('Login/OffDutyStatus') 
+        elif status == 'SL':
+            img_proc.click_image_by_max_key_points('Login/SleeperStatus') 
+        
+        #Other devices "Home/MCP200Home", "HOme/MCP50Home"
+        img_proc.click_image_by_max_key_points('logout')  #PONER IMAGEN LOGOUT
+        
+found = img_proc.expect_image('vnc_login_no_drivers', 'ExpectedScreens', 5)
+if found:
+    print("No logged drivers, continue")
+else:
+    found = img_proc.expect_image('vnc-login-add-driver', 'ExpectedScreens', 5)
+    if found:
+        print("Already in login page")
+    else:
+        total_x, total_y = img_proc.click_image_by_max_key_points('Back')
+
+        if total_x == -1:
+            total_x, total_y = img_proc.click_image_by_max_key_points('keyword_icon')
+
+        while not img_proc.expect_image('main', 'Im', 3):     
+            total_x, total_y = img_proc.click_image_by_max_key_points('Back')
+            time.sleep(.5) 
+        total_x, total_y = img_proc.click_image_by_max_key_points('login_active')
+
+target_folder = os.getcwd() + "/Images/"
+image = "ExpectedScreens" + "/vnc_login_no_drivers.png"
+image_compare = Image.open(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+image_source = Image.open(target_folder + image)
+
+while not img_proc.compare_image(image_compare, image_source):
+    logoutDriver('','OF')
+    print("All drivers logged out")
+    '''
+    file2.writelines(toadd)
+
+def logoutDriver(driver, status):
+    toadd = '''
+if driver != '':
+    print("Driver parameter not empty")
+    img_proc.click_image_by_max_key_points('Login/LogoutDriver') 
+else:
+    img_proc.click_image_by_max_key_points('logout')  #PONER IMAGEN LOGOUT
+    found = img_proc.expect_image('logout_alert', 'ExpectedScreens', 5) #PONER IMAGEN LOGOUT Alert
+    if found:
+        print("Alert")
+        img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/OkButton/OkButton') #CHECAR IMAGEN OK
+        img_proc.expect_image('vnc-login-add-driver', 'ExpectedScreens', 5)
+
+    img_proc.click_image_by_max_key_points('logout')  #PONER IMAGEN LOGOUT
+    if status == 'ON':
+        img_proc.click_image_by_max_key_points('Login/OnDutyStatus') 
+    elif status == 'OF':
+        img_proc.click_image_by_max_key_points('Login/OffDutyStatus') 
+    elif status == 'SL':
+        img_proc.click_image_by_max_key_points('Login/SleeperStatus') 
+    
+    #Other devices "Home/MCP200Home", "HOme/MCP50Home"
+    img_proc.click_image_by_max_key_points('logout')  #PONER IMAGEN LOGOUT'''
+    file2.writelines(toadd)
+
 #(AlertsTestCase)
 def sendMessagesToOpenConnections():
     '''on SendMessagesToOpenConnections
@@ -301,13 +381,15 @@ def tokenization():
             elif(str(doc[0]) == 'ConnectUnit' or str(doc[0])=='Global'):
                 toadd = str("\n#"+str(doc[0:len(doc)-1])+"")
                 file2.writelines(toadd)
+            elif(str(doc[0]) == 'BeforeTest'):
+                logOutAllDrivers()
             elif(doc[0].pos_ == 'VERB'):
                 file2.writelines('\n#Funcion de eggplant ' + str(doc[0]) + '\n')
                 if str(doc[0]) == 'log':
                     toadd = str("print('"+str(doc[0:len(doc)-1])+"') \n")
                     file2.writelines(toadd)
                 elif str(doc[0]) == 'put' and doc[2].pos_ == 'PROPN':
-                    loginDriver(str(doc[2]))
+                    loginDriver(str(doc[2]), str(doc[2]), '', '' )
                 elif str(doc[0]) == 'wait':
                     if str(doc[2]) == 'minute' or str(doc[2]) == 'minutes':
                         toadd = '\ntime.sleep(' + str(int(str(doc[1])) * 60) + ')'
@@ -352,7 +434,21 @@ def tokenization():
                 # "ON","N" ,"AUTOMATION"
                 changeDriverStatus(params[0], params[1], params[2], params[3], params[4])
             elif str(doc[0]) == 'LoginDriver':
-                loginDriver(str(doc[1]))
+                params = []
+                stringToPass = ''
+                for i in range(3, len(doc)):
+                    stringToPass += str(doc[i].text)
+                print(stringToPass)
+
+                new = stringToPass.replace('"', '')
+                new = new.replace(',', ' ')
+                params = new.split()
+
+                print(params)
+                while len(params) < 4:
+                    params.append(' ')
+                # "ON","N" ,"AUTOMATION"
+                loginDriver(params[0], params[1], params[2], params[3])
             elif str(doc[0]) == 'BackToHome':
                 backToHome()
             elif str(doc[0]) == 'GoToLoginPage':
