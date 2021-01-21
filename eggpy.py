@@ -21,6 +21,7 @@ import os
 import time
 from datetime import datetime, timedelta
 import math
+from PIL import Image
 #import pyGPSFeed_IMR"""
     file2.writelines(imports) 
     print(imports)
@@ -183,26 +184,28 @@ img_proc.check_md_alert()
 
 def logOutAllDrivers():
     toadd = ''' 
-
+#Logout All Drivers Function
 def logoutDriver(driver, status):
     if driver != '':
         print("Driver parameter not empty")
         img_proc.click_image_by_max_key_points('IVG_Common/Login/LogoutDriver/LogoutDriver') 
     else:
         img_proc.click_image_by_max_key_points('IVG_Common/Login/LogoutDriver/LogoutDriver')  #PONER IMAGEN LOGOUT-OK
-        found = img_proc.expect_image('logout_alert', 'ExpectedScreens', 5) #PONER IMAGEN LOGOUT Alert
+        found = img_proc.expect_image('logout_alert_diagnostic', 'ExpectedScreens', 5) #PONER IMAGEN LOGOUT Alert
         if found:
             print("Alert")
-            img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/OkButton/OkButton') #CHECAR IMAGEN OK
-            img_proc.expect_image('vnc-login-add-driver', 'ExpectedScreens', 5)
-
-        img_proc.click_image_by_max_key_points('IVG_Common/Login/LogoutDriver/LogoutDriver')
+            img_proc.click_image_by_max_key_points('IVG_Common/Login/OkLoginStatus/OkLoginStatus') #CHECAR IMAGEN OK
+            time.sleep(10)
+            img_proc.click_image_by_max_key_points('IVG_Common/Home/Return/Return')
+            found = img_proc.expect_image('vnc-login-add-driver', 'ExpectedScreens', 5)
+            img_proc.click_image_by_max_key_points('IVG_Common/Login/LogoutDriver/LogoutDriver')
+        
         if status == 'ON':
-            img_proc.click_image_by_max_key_points('IVG_Common/Login/OnDutyStatus') 
+            img_proc.click_image_by_max_key_points('IVG_Common/Login/OnDutyStatus/OnDutyStatus') 
         elif status == 'OF':
-            img_proc.click_image_by_max_key_points('IVG_Common/Login/OffDutyStatus') 
+            img_proc.click_image_by_max_key_points('IVG_Common/Login/OffDutyStatus/OffDutyStatus') 
         elif status == 'SL':
-            img_proc.click_image_by_max_key_points('IVG_Common/Login/SleeperStatus') 
+            img_proc.click_image_by_max_key_points('IVG_Common/Login/SleeperStatus/SleeperStatus') 
         
         #Other devices "Home/MCP200Home", "HOme/MCP50Home"
         img_proc.click_image_by_max_key_points('IVG_Common/Login/LogoutDriver/LogoutDriver')
@@ -215,22 +218,25 @@ else:
     if found:
         print("Already in login page")
     else:
-        total_x, total_y = img_proc.click_image_by_max_key_points('IVG_Common/Home/Return/Return')
 
-        if total_x == -1:
-            total_x, total_y = img_proc.click_image_by_max_key_points('IVG_Common/Home/KeyboardOpen/KeyboardOpen')
+        found = img_proc.expect_image('vnc-main-screen', 'ExpectedScreens', 3)
 
-        while not img_proc.expect_image('main', 'Im', 3):     
+        if not found:
             total_x, total_y = img_proc.click_image_by_max_key_points('IVG_Common/Home/Return/Return')
-            time.sleep(.5) 
+
+            if total_x == -1:
+                total_x, total_y = img_proc.click_image_by_max_key_points('IVG_Common/Home/KeyboardOpen/KeyboardOpen')
+            
+            while not img_proc.expect_image('vnc-main-screen', 'ExpectedScreens', 3):     
+                total_x, total_y = img_proc.click_image_by_max_key_points('IVG_Common/Home/Return/Return')
+                time.sleep(.5) 
         total_x, total_y = img_proc.click_image_by_max_key_points('IVG_Common/Home/DriverLogin/DriverLogin')
 
-target_folder = os.getcwd() + "/Images/"
-image = "ExpectedScreens" + "/vnc_login_no_drivers.png"
-image_compare = Image.open(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-image_source = Image.open(target_folder + image)
-
-while not img_proc.compare_image(image_compare, image_source):
+while True:
+    time.sleep(5)
+    found = img_proc.expect_image('vnc_login_no_drivers', 'ExpectedScreens', 5)
+    if found:
+        break
     logoutDriver('','OF')
     print("All drivers logged out")
     '''
@@ -377,7 +383,9 @@ def tokenization():
             sf += 1
             if sf == 1:
                 file2.writelines("'''\n\n")
-                file2.writelines("img_proc = ImageProcessor('192.168.100.13', 'None', .15)\n")
+                #file2.writelines("img_proc = ImageProcessor('192.168.100.13', 'None', .15)\n")
+                file2.writelines("img_proc = ImageProcessor('192.168.1.118', 'None', .15)\n")
+                #img_proc = ImageProcessor('192.168.1.18', 'None', .15)
             elif(str(doc[0]) == 'ConnectUnit' or str(doc[0])=='Global'):
                 toadd = str("\n#"+str(doc[0:len(doc)-1])+"")
                 file2.writelines(toadd)
