@@ -28,13 +28,13 @@ import math
 
 def backToHome():
     toadd = '''
-total_x, total_y = img_proc.click_image_by_max_key_points('Back')
+total_x, total_y = img_proc.click_image_by_max_key_points('IVG_Common/Home/Return/Return')
 
 if total_x == -1:
-    total_x, total_y = img_proc.click_image_by_max_key_points('keyword_icon')
+    total_x, total_y = img_proc.click_image_by_max_key_points('IVG_Common/Home/KeyboardOpen/KeyboardOpen')
 
 while not img_proc.expect_image('main', 'Im', 3):     
-    total_x, total_y = img_proc.click_image_by_max_key_points('Back')
+    total_x, total_y = img_proc.click_image_by_max_key_points('IVG_Common/Home/Return/Return')
     time.sleep(.5) '''
     file2.writelines(toadd)
 
@@ -62,7 +62,7 @@ img_proc.click_image_by_max_key_points_offset('login_password_box', 250, 0)
 img_proc.expect_image('vnc-driver-input-2', 'ExpectedScreens', 3)
 
 #Hide Keyboard
-img_proc.click_image_by_max_key_points('keyword_icon')
+img_proc.click_image_by_max_key_points('IVG_Common/Home/KeyboardOpen/KeyboardOpen')
 img_proc.expect_image('vnc-driver-credentials', 'ExpectedScreens', 3)
 
 # Click OK to Login
@@ -187,25 +187,25 @@ def logOutAllDrivers():
 def logoutDriver(driver, status):
     if driver != '':
         print("Driver parameter not empty")
-        img_proc.click_image_by_max_key_points('Login/LogoutDriver') 
+        img_proc.click_image_by_max_key_points('IVG_Common/Login/LogoutDriver/LogoutDriver') 
     else:
-        img_proc.click_image_by_max_key_points('logout')  #PONER IMAGEN LOGOUT
+        img_proc.click_image_by_max_key_points('IVG_Common/Login/LogoutDriver/LogoutDriver')  #PONER IMAGEN LOGOUT-OK
         found = img_proc.expect_image('logout_alert', 'ExpectedScreens', 5) #PONER IMAGEN LOGOUT Alert
         if found:
             print("Alert")
             img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/OkButton/OkButton') #CHECAR IMAGEN OK
             img_proc.expect_image('vnc-login-add-driver', 'ExpectedScreens', 5)
 
-        img_proc.click_image_by_max_key_points('logout')  #PONER IMAGEN LOGOUT
+        img_proc.click_image_by_max_key_points('IVG_Common/Login/LogoutDriver/LogoutDriver')
         if status == 'ON':
-            img_proc.click_image_by_max_key_points('Login/OnDutyStatus') 
+            img_proc.click_image_by_max_key_points('IVG_Common/Login/OnDutyStatus') 
         elif status == 'OF':
-            img_proc.click_image_by_max_key_points('Login/OffDutyStatus') 
+            img_proc.click_image_by_max_key_points('IVG_Common/Login/OffDutyStatus') 
         elif status == 'SL':
-            img_proc.click_image_by_max_key_points('Login/SleeperStatus') 
+            img_proc.click_image_by_max_key_points('IVG_Common/Login/SleeperStatus') 
         
         #Other devices "Home/MCP200Home", "HOme/MCP50Home"
-        img_proc.click_image_by_max_key_points('logout')  #PONER IMAGEN LOGOUT
+        img_proc.click_image_by_max_key_points('IVG_Common/Login/LogoutDriver/LogoutDriver')
         
 found = img_proc.expect_image('vnc_login_no_drivers', 'ExpectedScreens', 5)
 if found:
@@ -215,15 +215,15 @@ else:
     if found:
         print("Already in login page")
     else:
-        total_x, total_y = img_proc.click_image_by_max_key_points('Back')
+        total_x, total_y = img_proc.click_image_by_max_key_points('IVG_Common/Home/Return/Return')
 
         if total_x == -1:
-            total_x, total_y = img_proc.click_image_by_max_key_points('keyword_icon')
+            total_x, total_y = img_proc.click_image_by_max_key_points('IVG_Common/Home/KeyboardOpen/KeyboardOpen')
 
         while not img_proc.expect_image('main', 'Im', 3):     
-            total_x, total_y = img_proc.click_image_by_max_key_points('Back')
+            total_x, total_y = img_proc.click_image_by_max_key_points('IVG_Common/Home/Return/Return')
             time.sleep(.5) 
-        total_x, total_y = img_proc.click_image_by_max_key_points('login_active')
+        total_x, total_y = img_proc.click_image_by_max_key_points('IVG_Common/Home/DriverLogin/DriverLogin')
 
 target_folder = os.getcwd() + "/Images/"
 image = "ExpectedScreens" + "/vnc_login_no_drivers.png"
@@ -240,25 +240,25 @@ def logoutDriver(driver, status):
     toadd = '''
 if driver != '':
     print("Driver parameter not empty")
-    img_proc.click_image_by_max_key_points('Login/LogoutDriver') 
+    img_proc.click_image_by_max_key_points('IVG_Common/Login/LogoutDriver/LogoutDriver') 
 else:
-    img_proc.click_image_by_max_key_points('logout')  #PONER IMAGEN LOGOUT
+    img_proc.click_image_by_max_key_points('IVG_Common/Login/LogoutDriver/LogoutDriver')
     found = img_proc.expect_image('logout_alert', 'ExpectedScreens', 5) #PONER IMAGEN LOGOUT Alert
     if found:
         print("Alert")
-        img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/OkButton/OkButton') #CHECAR IMAGEN OK
+        img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/OkButton/OkButton')
         img_proc.expect_image('vnc-login-add-driver', 'ExpectedScreens', 5)
 
-    img_proc.click_image_by_max_key_points('logout')  #PONER IMAGEN LOGOUT
+    img_proc.click_image_by_max_key_points('IVG_Common/Login/LogoutDriver/LogoutDriver')
     if status == 'ON':
-        img_proc.click_image_by_max_key_points('Login/OnDutyStatus') 
+        img_proc.click_image_by_max_key_points('IVG_Common/Login/OnDutyStatus/OnDutyStatus') 
     elif status == 'OF':
-        img_proc.click_image_by_max_key_points('Login/OffDutyStatus') 
+        img_proc.click_image_by_max_key_points('IVG_Common/Login/OffDutyStatus/OffDutyStatus') 
     elif status == 'SL':
-        img_proc.click_image_by_max_key_points('Login/SleeperStatus') 
+        img_proc.click_image_by_max_key_points('IVG_Common/Login/SleeperStatus/SleeperStatus') 
     
     #Other devices "Home/MCP200Home", "HOme/MCP50Home"
-    img_proc.click_image_by_max_key_points('logout')  #PONER IMAGEN LOGOUT'''
+    img_proc.click_image_by_max_key_points('IVG_Common/Login/LogoutDriver/LogoutDriver')'''
     file2.writelines(toadd)
 
 #(AlertsTestCase)
