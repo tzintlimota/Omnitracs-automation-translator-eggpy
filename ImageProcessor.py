@@ -220,7 +220,7 @@ class ImageProcessor:
     def get_image_coordinates_by_max_key_points(self, image_name):
 
         self.get_vnc_full_screen("last_screen", "ExpectedScreens")
-        img2 = cv2.imread(os.getcwd() + '\\Images\\Buttons\\' + image_name + '.png')
+        img2 = cv2.imread(os.getcwd() + '/Images/Buttons/' + image_name + '.png')
         #img2 = cv2.imread(os.getcwd() +'/' + image_name + '.png')
         #print(img2)
         img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
