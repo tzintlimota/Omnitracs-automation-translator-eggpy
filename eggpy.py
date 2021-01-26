@@ -73,13 +73,15 @@ def tokenization():
                 file2.writelines(toadd)
             elif(str(doc[0]) == 'BeforeTest'):
                 toadd = "\nequi_proc.logOutAllDrivers()"
-                print(toadd)
                 file2.writelines(toadd)
                 #logOutAllDrivers()
             elif(doc[0].pos_ == 'VERB'):
                 file2.writelines('\n#Funcion de eggplant ' + str(doc[0]) + '\n')
                 if str(doc[0]) == 'log':
                     toadd = str("print('"+str(doc[0:len(doc)-1])+"') \n")
+                    file2.writelines(toadd)
+                elif str(doc[0]) == 'SendMessageToUpdateLogs':
+                    toadd = "\nequi_proc.sendMessageToUpdateLogs()"
                     file2.writelines(toadd)
                 elif str(doc[0]) == 'put' and doc[2].pos_ == 'PROPN':
                     toadd = "\nequi_proc.loginDriver('"+ str(doc[2]) +"', '"+ str(doc[2]) +"', '', '')"
@@ -147,6 +149,24 @@ def tokenization():
                 file2.writelines(toadd)
             elif str(doc[0]) == 'BackToHome':
                 toadd = "\nequi_proc.backToHome()"
+                file2.writelines(toadd)
+            elif str(doc[0]) == 'ClearAlerts':
+                toadd = "\nequi_proc.clearAlerts()"
+                file2.writelines(toadd)
+            elif str(doc[0]) == 'SendMessage':
+                #Enviar mensaje
+                message = ''
+                for token in doc:
+                    print(token.text, token.pos_, token.dep_)
+                    if str(token.text) != '"' and str(token.text) != str(doc[0]):
+                        message +=  str(token.text) + " "
+                toadd = "\nequi_proc.sendMessage('" + message + "')"
+                file2.writelines(toadd)
+            elif str(doc[0]) == 'GoToMessagingPage':
+                toadd = "\nequi_proc.goToMessagingPage()"
+                file2.writelines(toadd)
+            elif str(doc[0]) == 'DeleteAllOutboxMessages':
+                toadd = "\nequi_proc.deleteAllOutboxMessages()"
                 file2.writelines(toadd)
             elif str(doc[0]) == 'GoToLoginPage':
                 toadd = "\nequi_proc.goToLoginPage()"

@@ -11,9 +11,14 @@ class EquiProc:
 
     def __init__(self):
         self.img_proc = ImageProcessor('192.168.1.118', 'None', .15)
+    
+    def goToMainScreen(self):
+        while not self.img_proc.expect_image('vnc-main-screen', 'ExpectedScreens', 3):     
+            total_x, total_y = self.img_proc.click_image_by_max_key_points('IVG_Common/Home/Return/Return')
+            time.sleep(.5) 
 
     def backToHome(self):
-        total_x, total_y = self.img_proc.click_image_by_max_key_points('IVG_Common/Home/Return/Return')
+        total_x, total_y = self.img_proc.img_proc.get_image_coordinates_by_max_key_points('IVG_Common/Home/Return/Return')
 
         if total_x == -1:
             total_x, total_y = self.img_proc.click_image_by_max_key_points('IVG_Common/Home/KeyboardOpen/KeyboardOpen')
@@ -152,9 +157,7 @@ class EquiProc:
                     if total_x == -1:
                         total_x, total_y = self.img_proc.click_image_by_max_key_points('IVG_Common/Home/KeyboardOpen/KeyboardOpen')
                     
-                    while not self.img_proc.expect_image('vnc-main-screen', 'ExpectedScreens', 3):     
-                        total_x, total_y = self.img_proc.click_image_by_max_key_points('IVG_Common/Home/Return/Return')
-                        time.sleep(.5) 
+                    self.goToMainScreen()
                 total_x, total_y = self.img_proc.click_image_by_max_key_points('IVG_Common/Home/DriverLogin/DriverLogin')
 
         while True:
@@ -165,8 +168,71 @@ class EquiProc:
             self.logoutDriver('','OF')
             print("All drivers logged out")
 
+    def clearAlerts(self):
+        total_x, total_y, color = self.img_proc.button_is_active("ivg_header_alert")
+        print(color)
+        if color != 'gray inactive':
+            self.img_proc.click_image_by_max_key_points("ivg_header_alert")
+            self.img_proc.expect_image("vnc_alert_hos_update", 'ExpectedScreens', 4)
+            self.img_proc.click_image_by_max_key_points("IVG_Common/Alerts/DeleteAllButton/DeleteAllButton")
+            print("Alerts Cleared")
+            self.goToMainScreen()
+        else:
+            print("No alerts to clear")
+
+    def goToMessagingPage(self):
+        self.goToMainScreen()
+        self.img_proc.click_image_by_max_key_points("msg-icon")
+        time.sleep(2)
     
+    def deleteAllOutboxMessages(self):
+        self.goToMessagingPage()
+        self.img_proc.click_image_by_max_key_points("msg-outbox-tab")
+        self.img_proc.expect_image("msg-outbox-screen", "ExpectedScreens", 3)
+        total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("IVG_Common/Alerts/DeleteAllButton/DeleteAllButton")
+        if total_x != -1:
+            self.img_proc.click_image_by_max_key_points("IVG_Common/Alerts/DeleteAllButton/DeleteAllButton")
+            self.img_proc.click_image_by_max_key_points("msg-confirm-yes")
+            print("All Messages were deleted")
+    
+    def sendMessage(self, message):
+        self.goToMessagingPage()
+        #self.img_proc.expect_image("msg-outbox-screen", "ExpectedScreens", 3)
+        self.img_proc.click_image_by_max_key_points("ComposeTabInactive")
+
+        total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points('IVG_Common/Home/Return/Return')
+
+        if total_x == -1:
+            total_x, total_y = self.img_proc.click_image_by_max_key_points('IVG_Common/Home/KeyboardOpen/KeyboardOpen')
+        found = self.img_proc.expect_image("vnc_compose_freeform_blank", "ExpectedScreens", 3)
+        if not found:
+            self.img_proc.click_image_by_max_key_points("ScrollDownButton")
+            self.img_proc.click_image_by_max_key_points("FreeformButton")
+        self.img_proc.send_keys(str(message))
+        self.img_proc.click_image_by_max_key_points('IVG_Common/Home/KeyboardOpen/KeyboardOpen')
+        self.img_proc.click_image_by_max_key_points('SendButton')
+        time.sleep(2)
+        self.img_proc.click_image_by_max_key_points("msg-confirm-yes")
+        time.sleep(2)
+        self.img_proc.click_image_by_max_key_points("msg-outbox-tab")
+        total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("IVG_Common/Messaging/MessageSended/MessageSended")
+        print(total_x)
+        if total_x > -1:
+            print("Message sended")
+        
+    #Wait for log updates
+    
+    def sendMessageToUpdateLogs(self):
+        self.clearAlerts()
+        self.goToMessagingPage()
+        self.deleteAllOutboxMessages()
+        self.sendMessage("Test message")
+        #repeat wait for log updates
+
+
     #(AlertsTestCase)
+
+
     def sendMessagesToOpenConnections(self):
         '''on SendMessagesToOpenConnections
         ClearAlerts
