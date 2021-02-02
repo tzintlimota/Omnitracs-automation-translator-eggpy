@@ -59,7 +59,7 @@ class ImageProcessor:
 
         target_folder = os.getcwd() + "/Images/" + images_folder + "/"
         image = target_folder + name + ".png"
-        print(image)
+        #print(image)
         self.client.captureRegion(image, int(x), int(y), int(width), int(height))
 
     def compare_image(self, img_source, img_compare):
@@ -82,7 +82,7 @@ class ImageProcessor:
 
         '''Error Threshold to pass Compare with difference < 10% '''
         error_range = (len(result) * len(result[0])) * float(self.precision)
-        print(int(error_range))
+        #print(int(error_range))
 
         if int(diffcount) > int(error_range):
             return False
@@ -220,7 +220,8 @@ class ImageProcessor:
     def get_image_coordinates_by_max_key_points(self, image_name):
 
         self.get_vnc_full_screen("last_screen", "ExpectedScreens")
-        img2 = cv2.imread(os.getcwd() + '\\Images\\Buttons\\' + image_name + '.png')
+        img2 = cv2.imread(os.getcwd() + '/Images/Buttons/' + image_name + '.png')
+        
         #img2 = cv2.imread(os.getcwd() +'/' + image_name + '.png')
         #print(img2)
         img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
@@ -228,7 +229,7 @@ class ImageProcessor:
         img1 = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
         #img1 = cv2.imread(os.getcwd() + '/last_screen.png')
         img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
-        print(os.getcwd() + '\\Images\\ExpectedScreens\\')
+        #print(os.getcwd() + '\\Images\\ExpectedScreens\\')
         kp1, descs1 = self.sift.detectAndCompute(img1, None)
         kp2, descs2 = self.sift.detectAndCompute(img2, None)
 
@@ -280,7 +281,7 @@ class ImageProcessor:
         avg_avg_distances = np.average(avg_distances)
         cleaned_good_matches = []
 
-        print(avg_avg_distances)
+        #print(avg_avg_distances)
         #Checar esto con mucho cuidado
         
         max_allowed = avg_avg_distances + avg_avg_distances * .10
@@ -304,7 +305,7 @@ class ImageProcessor:
             # Append to each list
             list_kp1.append((x1, y1))
         
-        print(list_kp1)
+        #print(list_kp1)
 
         total_x = 0
         total_y = 0
@@ -436,14 +437,14 @@ class ImageProcessor:
     
     def button_is_active(self, image_name):
         self.get_vnc_full_screen("last_screen", "ExpectedScreens")
-        #img2 = cv2.imread(os.getcwd() + '\\Images\\Buttons\\' + image_name + '.png')
-        img2 = cv2.imread(os.getcwd() +'/' + image_name + '.png')
+        img2 = cv2.imread(os.getcwd() + '/Images/Buttons/' + image_name + '.png')
+        #img2 = cv2.imread(os.getcwd() +'/' + image_name + '.png')
         #print(img2)
-        img2 = cv2.cvtColor(img2, cv2.COLOR_RGB2BGR)
+        img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)
 
         img1 = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
         #img1 = cv2.imread(os.getcwd() + '/last_screen.png')
-        img1 = cv2.cvtColor(img1, cv2.COLOR_RGB2BGR)
+        img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
 
         kp1, descs1 = self.sift.detectAndCompute(img1, None)
         kp2, descs2 = self.sift.detectAndCompute(img2, None)
