@@ -12,6 +12,21 @@ class EquiProc:
     def __init__(self):
         self.img_proc = ImageProcessor('192.168.1.118', 'None', .15)
 
+    #Code to discard/accept Certify Day prompt
+    def closeCertifyDayPrompt(self):
+        print("Discarding/Accepting Certify Day Prompt...")
+        total_x, total_y = self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/NotReadyButton/NotReadyButton")
+        if total_x == -1:
+            print("'Agree' button is clicked because 'Not Ready' is not longer available")
+            self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/AgreeButton/AgreeButton")
+
+        #Click on Agree button in case Certify Prompt "Duty Status Spans in more than 1 day"
+        if self.img_proc.expect_image("vnc-certifyday-statusspans-pop-up", "ExpectedScreens", 1):
+            print("Handling Certify Prompt 'Duty Status Spans in more than 1 day' ")
+            self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/AgreeButton/AgreeButton")
+
+
+
     #Here add the code to close every alert as a function
     def closeLoadInfoAlert(self):
         print("Closing LOAD INFO")
@@ -331,10 +346,10 @@ class EquiProc:
         pass
 
     #CarrierEditTestCase
-    def goTo():
+    def goTo(self):
         pass
 
-    def reviewCarrierEdits():
+    def reviewCarrierEdits(self):
         pass
 
     def checkRecordStatus(ExpectedValue, RecordToCheck, EditedIndex):
@@ -343,7 +358,7 @@ class EquiProc:
     def confirmRejectCarrierEdit( BooleanReject):
         pass
 
-    def reviewCarrierEdits2():
+    def reviewCarrierEdits2(self):
         pass
 
     def enterReasonForReject(ReasonForRejecting):
