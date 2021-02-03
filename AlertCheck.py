@@ -14,12 +14,15 @@ equi_proc = EquiProc()
 
 while True:
     time.sleep(1)
-    if img_proc.expect_image("demo_main_screen", "ExpectedScreens",1):
-        print("Main Page Found")
-    #Put all alerts here
-    elif img_proc.expect_image("vnc-load-info-required-popup", "ExpectedScreens",1):
+    if img_proc.expect_image("vnc-load-info-required-popup", "ExpectedScreens",1):
         print("Close load info required popup")
         equi_proc.closeLoadInfoAlert()
+    elif img_proc.expect_image("vnc-certify-day-popup", "ExpectedScreens", 1):
+        print("Handling Certify Day prompt ...")
+        equi_proc.closeCertifyDayPrompt()
+    elif img_proc.expect_image("vnc-certify-outside-cycle-alert", "ExpectedScreens", 1):
+        print("Handling Certify Days Outside of Cycle prompt ...")
+        equi_proc.closeCertifyDayPrompt()
     else:
         total_x, total_y = img_proc.get_image_coordinates_by_max_key_points('alert-sign')
         print( total_x, total_y)
