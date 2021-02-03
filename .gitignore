@@ -127,3 +127,7 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+
+#Last Screen Capture
+Images/ExpectedScreens/last_screen.png
+Images/last_screen.png
