@@ -143,78 +143,83 @@ class ImageProcessor:
         
         img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
 
-        kp1, descs1 = self.sift.detectAndCompute(img1, None)
-        kp2, descs2 = self.sift.detectAndCompute(img2, None)
+        try:
+            kp1, descs1 = self.sift.detectAndCompute(img1, None)
+            kp2, descs2 = self.sift.detectAndCompute(img2, None)
 
-        # feature matching
-        bf = cv2.BFMatcher(cv2.NORM_L1, crossCheck=True)
+            # feature matching
+            bf = cv2.BFMatcher(cv2.NORM_L1, crossCheck=True)
 
-        matches = bf.match(descs1, descs2)
-        matches = sorted(matches, key=lambda x: x.distance)
+            matches = bf.match(descs1, descs2)
+            matches = sorted(matches, key=lambda x: x.distance)
 
-        list_kp1 = []
-        list_kp2 = []
+            list_kp1 = []
+            list_kp2 = []
 
-        for mat in matches[:10]:
-            # Get the matching keypoints for each of the images
-            img1_idx = mat.queryIdx
-            img2_idx = mat.trainIdx
-            # x - columns
-            # y - rows
-            # Get the coordinates
-            (x1, y1) = kp1[img1_idx].pt
-            (x2, y2) = kp2[img2_idx].pt
+            for mat in matches[:10]:
+                # Get the matching keypoints for each of the images
+                img1_idx = mat.queryIdx
+                img2_idx = mat.trainIdx
+                # x - columns
+                # y - rows
+                # Get the coordinates
+                (x1, y1) = kp1[img1_idx].pt
+                (x2, y2) = kp2[img2_idx].pt
 
-            # Append to each list
-            list_kp1.append((x1, y1))
-            list_kp2.append((x2, y2))
+                # Append to each list
+                list_kp1.append((x1, y1))
+                list_kp2.append((x2, y2))
 
-        # To identify matches that are probably not correct
-        total_x = 0
-        total_y = 0
-        for i in range(len(list_kp1)):
-            total_x += list_kp1[i][0]
-            total_y += list_kp1[i][1]
+            # To identify matches that are probably not correct
+            total_x = 0
+            total_y = 0
+            for i in range(len(list_kp1)):
+                total_x += list_kp1[i][0]
+                total_y += list_kp1[i][1]
 
-        total_x = total_x / len(list_kp1)
-        total_y = total_y / len(list_kp1)
+            total_x = total_x / len(list_kp1)
+            total_y = total_y / len(list_kp1)
 
-        good_matches = []
-        for i in range(len(list_kp1)):
-            # print(list_kp1[i][0])
-            # print(list_kp1[i][1])
+            good_matches = []
+            for i in range(len(list_kp1)):
+                # print(list_kp1[i][0])
+                # print(list_kp1[i][1])
 
-            if not (list_kp1[i][0] < (total_x - 200) or list_kp1[i][0] > (total_x + 200) or list_kp1[i][1] <
-                    (total_y - 200) or list_kp1[i][1] > (total_y + 200)):
-                good_matches.append(matches[i])
+                if not (list_kp1[i][0] < (total_x - 200) or list_kp1[i][0] > (total_x + 200) or list_kp1[i][1] <
+                        (total_y - 200) or list_kp1[i][1] > (total_y + 200)):
+                    good_matches.append(matches[i])
 
-        list_kp1 = []
+            list_kp1 = []
 
-        # To get the average of matches
-        for mat in good_matches:
-            # Get the matching keypoints for each of the images
-            img1_idx = mat.queryIdx
-            img2_idx = mat.trainIdx
-            # x - columns
-            # y - rows
-            # Get the coordinates
-            (x1, y1) = kp1[img1_idx].pt
+            # To get the average of matches
+            for mat in good_matches:
+                # Get the matching keypoints for each of the images
+                img1_idx = mat.queryIdx
+                img2_idx = mat.trainIdx
+                # x - columns
+                # y - rows
+                # Get the coordinates
+                (x1, y1) = kp1[img1_idx].pt
 
-            # Append to each list
-            list_kp1.append((x1, y1))
+                # Append to each list
+                list_kp1.append((x1, y1))
 
-        total_x = 0
-        total_y = 0
-        for i in range(len(list_kp1)):
-            total_x += list_kp1[i][0]
-            total_y += list_kp1[i][1]
+            total_x = 0
+            total_y = 0
+            for i in range(len(list_kp1)):
+                total_x += list_kp1[i][0]
+                total_y += list_kp1[i][1]
 
-        total_x = total_x / len(list_kp1)
-        total_y = total_y / len(list_kp1)
+            total_x = total_x / len(list_kp1)
+            total_y = total_y / len(list_kp1)
 
-        img3 = cv2.drawMatches(img1, kp1, img2, kp2, good_matches, img2, flags=2)
-        plt.imshow(img3)
-        plt.show()
+            img3 = cv2.drawMatches(img1, kp1, img2, kp2, good_matches, img2, flags=2)
+            plt.imshow(img3)
+            plt.show()
+        except:
+            total_x = -1
+            total_y = -1 
+            print("No matches were found")
         return total_x, total_y
 
     def get_image_coordinates_by_max_key_points(self, image_name):
@@ -230,101 +235,108 @@ class ImageProcessor:
         #img1 = cv2.imread(os.getcwd() + '/last_screen.png')
         img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
         #print(os.getcwd() + '\\Images\\ExpectedScreens\\')
-        kp1, descs1 = self.sift.detectAndCompute(img1, None)
-        kp2, descs2 = self.sift.detectAndCompute(img2, None)
 
-        # feature matching
-        bf = cv2.BFMatcher(cv2.NORM_L1, crossCheck=True)
+        try:
+            kp1, descs1 = self.sift.detectAndCompute(img1, None)
+            kp2, descs2 = self.sift.detectAndCompute(img2, None)
 
-        matches = bf.match(descs1, descs2)
-        matches = sorted(matches, key=lambda x: x.distance)
+            # feature matching
+            bf = cv2.BFMatcher(cv2.NORM_L1, crossCheck=True)
 
-        list_kp1 = []
-        list_kp2 = []
+            matches = bf.match(descs1, descs2)
+            matches = sorted(matches, key=lambda x: x.distance)
 
-        for mat in matches[:8]:
-            # Get the matching keypoints for each of the images
-            img1_idx = mat.queryIdx
-            img2_idx = mat.trainIdx
-            # x - columns
-            # y - rows
-            # Get the coordinates
-            (x1, y1) = kp1[img1_idx].pt
-            (x2, y2) = kp2[img2_idx].pt
+            list_kp1 = []
+            list_kp2 = []
 
-            # Append to each list
-            list_kp1.append((x1, y1))
-            list_kp2.append((x2, y2))
+            for mat in matches[:8]:
+                # Get the matching keypoints for each of the images
+                img1_idx = mat.queryIdx
+                img2_idx = mat.trainIdx
+                # x - columns
+                # y - rows
+                # Get the coordinates
+                (x1, y1) = kp1[img1_idx].pt
+                (x2, y2) = kp2[img2_idx].pt
 
-        # To identify matches that are probably not correct
-        avg_distances = []
+                # Append to each list
+                list_kp1.append((x1, y1))
+                list_kp2.append((x2, y2))
 
-        for i in range(len(list_kp1)):
+            # To identify matches that are probably not correct
+            avg_distances = []
 
-            point_x = list_kp1[i][0]
-            point_y = list_kp1[i][1]
-            acum_dist_avg = 0
-            for j in range(len(list_kp1)):
-                acum_dist_avg += math.sqrt((list_kp1[j][0] - point_x) ** 2 + (list_kp1[j][1] - point_y) ** 2)
+            for i in range(len(list_kp1)):
 
-            acum_dist_avg = acum_dist_avg / len(list_kp1)
-            avg_distances.append(acum_dist_avg)
+                point_x = list_kp1[i][0]
+                point_y = list_kp1[i][1]
+                acum_dist_avg = 0
+                for j in range(len(list_kp1)):
+                    acum_dist_avg += math.sqrt((list_kp1[j][0] - point_x) ** 2 + (list_kp1[j][1] - point_y) ** 2)
 
-        good_matches = []
-        avg_distances_max = np.max(avg_distances)
-        for i in range(len(avg_distances)):
-            if not avg_distances[i] == avg_distances_max:
-                good_matches.append(matches[i])
+                acum_dist_avg = acum_dist_avg / len(list_kp1)
+                avg_distances.append(acum_dist_avg)
 
-        avg_distances = list(filter((avg_distances_max).__ne__, avg_distances))
+            good_matches = []
+            avg_distances_max = np.max(avg_distances)
+            for i in range(len(avg_distances)):
+                if not avg_distances[i] == avg_distances_max:
+                    good_matches.append(matches[i])
 
-        avg_avg_distances = np.average(avg_distances)
-        cleaned_good_matches = []
+            avg_distances = list(filter((avg_distances_max).__ne__, avg_distances))
 
-        #print(avg_avg_distances)
-        #Checar esto con mucho cuidado
-        
-        max_allowed = avg_avg_distances + avg_avg_distances * .10
-        #max_allowed = avg_avg_distances * .90
-            # max_allowed = avg_avg_distances
-        for i in range(len(avg_distances)):
-            if avg_distances[i] <= math.floor(max_allowed):
-                cleaned_good_matches.append(good_matches[i])
+            avg_avg_distances = np.average(avg_distances)
+            cleaned_good_matches = []
 
-        list_kp1 = []
-        # To get the average of matches
-        for mat in cleaned_good_matches:
-            # Get the matching keypoints for each of the images
-            img1_idx = mat.queryIdx
-            img2_idx = mat.trainIdx
-            # x - columns
-            # y - rows
-            # Get the coordinates
-            (x1, y1) = kp1[img1_idx].pt
+            #print(avg_avg_distances)
+            #Checar esto con mucho cuidado
+            
+            max_allowed = avg_avg_distances + avg_avg_distances * .10
+            #max_allowed = avg_avg_distances * .90
+                # max_allowed = avg_avg_distances
+            for i in range(len(avg_distances)):
+                if avg_distances[i] <= math.floor(max_allowed):
+                    cleaned_good_matches.append(good_matches[i])
 
-            # Append to each list
-            list_kp1.append((x1, y1))
-        
-        #print(list_kp1)
+            list_kp1 = []
+            # To get the average of matches
+            for mat in cleaned_good_matches:
+                # Get the matching keypoints for each of the images
+                img1_idx = mat.queryIdx
+                img2_idx = mat.trainIdx
+                # x - columns
+                # y - rows
+                # Get the coordinates
+                (x1, y1) = kp1[img1_idx].pt
 
-        total_x = 0
-        total_y = 0
+                # Append to each list
+                list_kp1.append((x1, y1))
+            
+            #print(list_kp1)
 
-        for i in range(len(list_kp1)):
-            total_x += list_kp1[i][0]
-            total_y += list_kp1[i][1]
+            total_x = 0
+            total_y = 0
 
-        self.img3 = cv2.drawMatches(img1, kp1, img2, kp2, cleaned_good_matches, img2, flags=2)
-        #plt.imshow(self.img3)
-        #plt.show()
-        if avg_avg_distances < 250:
-        
-            total_x = total_x / len(list_kp1)
-            total_y = total_y / len(list_kp1)
-        else:
-            print("Image not identified correctly, try resizing or using another image")
+            for i in range(len(list_kp1)):
+                total_x += list_kp1[i][0]
+                total_y += list_kp1[i][1]
+
+            self.img3 = cv2.drawMatches(img1, kp1, img2, kp2, cleaned_good_matches, img2, flags=2)
+            #plt.imshow(self.img3)
+            #plt.show()
+            if avg_avg_distances < 250:
+            
+                total_x = total_x / len(list_kp1)
+                total_y = total_y / len(list_kp1)
+            else:
+                print("Image not identified correctly, try resizing or using another image")
+                total_x = -1
+                total_y = -1
+        except:
             total_x = -1
-            total_y = -1
+            total_y = -1 
+            print("No matches were found")
+
         return total_x, total_y
 
     def click_image(self, image_name):
