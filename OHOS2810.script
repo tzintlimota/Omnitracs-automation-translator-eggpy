@@ -12,6 +12,9 @@ If Remarks are empty and only the Location is edited, NEXT button will not appea
 
 log "***Script name OHOS2810***"
 
-BeforeTest
 
 GoTo Status
+GoTo Summary
+
+GoTo.DayForward DayLog, 3
+GoTo.DayBack Graph, reset, 3
