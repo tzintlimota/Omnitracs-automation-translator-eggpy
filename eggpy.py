@@ -171,6 +171,22 @@ def tokenization():
             elif str(doc[0]) == 'GoToLoginPage':
                 toadd = "\nequi_proc.goToLoginPage()"
                 file2.writelines(toadd)
+            elif str(doc[0]) == 'GoTo':
+                params = []
+                stringToPass = ''
+                for i in range(1, len(doc)):
+                    stringToPass += str(doc[i].text)
+                print(stringToPass)
+
+                new = stringToPass.replace('"', '')
+                new = new.replace(',', ' ')
+                params = new.split()
+
+                print(params)
+                while len(params) < 1:
+                    params.append(' ')
+                toadd = "\nequi_proc.goTo('"+ params[0] +"')"
+                file2.writelines(toadd)
             else:
                 '''try:
                     str(doc[0])

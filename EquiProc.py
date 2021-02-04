@@ -24,7 +24,8 @@ class EquiProc:
         if self.img_proc.expect_image("vnc-certifyday-statusspans-pop-up", "ExpectedScreens", 1):
             print("Handling Certify Prompt 'Duty Status Spans in more than 1 day' ")
             self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/AgreeButton/AgreeButton")
-
+        self.goToMainScreen()
+        self.goToHOS()
 
 
     #Here add the code to close every alert as a function
@@ -59,6 +60,7 @@ class EquiProc:
             time.sleep(.5) 
 
     def goToLoginPage(self):
+        self.goToMainScreen()
         total_x, total_y = self.img_proc.click_image_by_max_key_points('IVG_Common/Home/DriverLogin/DriverLogin')
         
 
@@ -88,7 +90,7 @@ class EquiProc:
         self.img_proc.expect_image('vnc-driver-credentials', 'ExpectedScreens', 3)
 
         #Set status
-        self.img_proc.click_image_by_max_key_points('IVG_Common/Login/OkLoginStatus/OkLoginStatus')
+        #self.img_proc.click_image_by_max_key_points('IVG_Common/Login/OkLoginStatus/OkLoginStatus')
 
         self.backToHome()
 
@@ -173,6 +175,7 @@ class EquiProc:
 
     def logOutAllDrivers(self):
         #Logout All Drivers Function
+        self.goToLoginPage()
         found = self.img_proc.expect_image('vnc_login_no_drivers', 'ExpectedScreens', 5)
         if found:
             print("No logged drivers, continue")
@@ -283,14 +286,58 @@ class EquiProc:
 
         print(sString)
         
-        self.goToMainScreen()
+        #self.goToMainScreen()
         #go to hours of service
-        #saber en que pagina estoy
-        #cerrar las alertas que pueden salir para cada pagina
+    def goTo(self, page):
+        print(page)
+        #self.goToELD()
+        if page == 'Summary':
+            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/SummaryTab/SummaryTabInactive/SummaryTabInactive")
+            if total_x > 120 and total_x < 170:
+                self.img_proc.click_image_by_max_key_points("ELD_Core/SummaryTab/SummaryTabInactive/SummaryTabInactive")
+        elif page == 'Status':
+            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/StatusTab/StatusTabInactive/StatusTabInactive")
+            print(total_x, total_y)
+            if total_x > 0 and total_x < 100:
+                self.img_proc.click_image_by_max_key_points("ELD_Core/StatusTab/StatusTabInactive/StatusTabInactive")
+        elif page == 'Clocks':
+            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/ClocksTab/ClocksTabInactive/ClocksTabInactive")
+            print(total_x, total_y)
+            if total_x > 250 and total_x < 290:
+                self.img_proc.click_image_by_max_key_points("ELD_Core/ClocksTab/ClocksTabInactive/ClocksTabInactive")
+        elif page == 'Graph':
+            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/GraphTab/GraphTabInactive/GraphTabInactive")
+            print(total_x, total_y)
+            if total_x > 300 and total_x < 330:
+                self.img_proc.click_image_by_max_key_points("ELD_Core/GraphTab/GraphTabInactive/GraphTabInactive")
+        elif page == 'DayLog':
+            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/DayLogTab/DayLogTabInactive/DayLogTabInactive")
+            print(total_x, total_y)
+            if total_x > 400 and total_x < 430:
+                self.img_proc.click_image_by_max_key_points("ELD_Core/DayLogTab/DayLogTabInactive/DayLogTabInactive")
+        elif page == 'Days':
+            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/8DaysTab/7DaysTabInactive/7DaysTabInactive")
+            print(total_x, total_y)
+            if total_x > 500 and total_x < 550:
+                self.img_proc.click_image_by_max_key_points("ELD_Core/8DaysTab/7DaysTabInactive/7DaysTabInactive")
+            elif total_x > 400 and total_x < 430:
+                self.img_proc.click_image_by_max_key_points_offset("ELD_Core/DayLogTab/DayLogTabInactive/DayLogTabInactive", 130, 0)
+        elif page == 'Certify':
+            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/CertifyTab/CertifyTabInactive/CertifyTabInactive")
+            print(total_x, total_y)
+            if total_x > 590 and total_x < 620:
+                self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/CertifyTabInactive/CertifyTabInactive")
+        elif page == 'Load':
+            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/LoadTab/LoadTabInactive/LoadTabInactive")
+            print(total_x, total_y)
+            if total_x > 690 and total_x < 730:
+                self.img_proc.click_image_by_max_key_points("ELD_Core/LoadTab/LoadTabInactive/LoadTabInactive")
+        elif page == 'Carriers':
+            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/CarriersTab/CarriersTabInactive/CarriersTabInactive")
+            print(total_x, total_y)
+            if total_x > 740 and total_x < 780:
+                self.img_proc.click_image_by_max_key_points("ELD_Core/CarriersTab/CarriersTabInactive/CarriersTabInactive")
 
-    def goTo(self):
-        #do sth
-        self.goToELD()
     
     def sendMessageToUpdateLogs(self):
         self.clearAlerts()
@@ -343,10 +390,6 @@ class EquiProc:
         pass
 
     def changeCarrier(Carrier, Send):
-        pass
-
-    #CarrierEditTestCase
-    def goTo(self):
         pass
 
     def reviewCarrierEdits(self):
