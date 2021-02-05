@@ -17,4 +17,4 @@ GoTo Status
 GoTo Summary
 
 GoTo.DayForward DayLog, 3
-GoTo.DayBack Graph, reset, 3
+GoTo.DayBack Graph, 'true', 3

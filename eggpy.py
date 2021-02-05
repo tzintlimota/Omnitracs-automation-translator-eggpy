@@ -147,7 +147,11 @@ def tokenization():
                 while len(params) < 3:
                     params.append(' ')
                 # "ON","N" ,"AUTOMATION"
-                toadd = "\nequi_proc.dayBack('"+ params[0] +"', '"+ params[1] +"', "+ params[2] +")"
+                if params[1] == 'true' or params[1] == 'True' or params[1] == "'true'":
+                    params[1] = 'True'
+                else:
+                    params[1] = 'False'
+                toadd = "\nequi_proc.dayBack('"+ params[0] +"', bool("+ params[1] +"), "+ params[2] +")"
                 file2.writelines(toadd)
 
             elif (str(doc[0]) == 'Status_ChangeTestCase' and str(doc[2]) == 'ChangeDriverStatus'):

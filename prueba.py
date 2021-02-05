@@ -29,8 +29,7 @@ img_proc = ImageProcessor('192.168.1.118', 'None', .15)
 #Funcion de eggplant log
 print('log "***Script name OHOS2810***"') 
 
-
-equi_proc.dayForward('Graph', 1)
-equi_proc.dayForward('DayLog', 1)
-
-#equi_proc.dayBack('Graph', False, 3)
+#equi_proc.goTo('Status')
+#equi_proc.goTo('Summary')
+#equi_proc.dayForward('DayLog', 3)
+equi_proc.dayBack('Graph', bool(True), 3)
