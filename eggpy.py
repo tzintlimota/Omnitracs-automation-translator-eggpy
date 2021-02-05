@@ -112,6 +112,44 @@ def tokenization():
             #Parameters se iran metiendo con lo de abajo y probablemente usar eval
             #for token in doc:
             #    print(token.text, token.pos_, token.dep_)
+
+            elif (str(doc[0]) == 'GoTo' and str(doc[2]) == 'DayForward'):
+                # (newStatus, condition, remark1, remark2, complete)
+                params = []
+                stringToPass = ''
+                for i in range(3, len(doc)):
+                    stringToPass += str(doc[i].text)
+                print(stringToPass)
+
+                new = stringToPass.replace('"', '')
+                new = new.replace(',', ' ')
+                params = new.split()
+
+                print(params)
+                while len(params) < 2:
+                    params.append(' ')
+                # "ON","N" ,"AUTOMATION"
+                toadd = "\nequi_proc.dayForward('"+ params[0] +"', "+ params[1] +")"
+                file2.writelines(toadd)
+            elif (str(doc[0]) == 'GoTo' and str(doc[2]) == 'DayBack'):
+                # (newStatus, condition, remark1, remark2, complete)
+                params = []
+                stringToPass = ''
+                for i in range(3, len(doc)):
+                    stringToPass += str(doc[i].text)
+                print(stringToPass)
+
+                new = stringToPass.replace('"', '')
+                new = new.replace(',', ' ')
+                params = new.split()
+
+                print(params)
+                while len(params) < 3:
+                    params.append(' ')
+                # "ON","N" ,"AUTOMATION"
+                toadd = "\nequi_proc.dayBack('"+ params[0] +"', '"+ params[1] +"', "+ params[2] +")"
+                file2.writelines(toadd)
+
             elif (str(doc[0]) == 'Status_ChangeTestCase' and str(doc[2]) == 'ChangeDriverStatus'):
                 # (newStatus, condition, remark1, remark2, complete)
                 params = []

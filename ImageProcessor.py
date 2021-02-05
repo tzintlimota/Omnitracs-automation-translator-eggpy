@@ -417,12 +417,14 @@ class ImageProcessor:
     def color_check(self, x,y ,im):
         img = im
         crop_img = img[int(y-5):int(y+5), int(x-5):int(x+5)]
+        crop_img2 = img[int(y-20):int(y+20), int(x-20):int(x+20)]
         #Space color conversion
         #crop_img = cv2.cvtColor(crop_img, cv2.COLOR_RGB2BGR)
         avg_color_per_row = np.average(crop_img, axis=0)
         avg_color = np.average(avg_color_per_row, axis=0)
         print(avg_color)
-        plt.imshow(crop_img)
+        #Crop_img2 is just for user convenience, no processing is being made with that image
+        plt.imshow(crop_img2)
         plt.show()  
         if(avg_color[0] == 255 and avg_color[1] == 255 and avg_color[2] == 255):
             color = 'white'
@@ -447,7 +449,7 @@ class ImageProcessor:
         
         return color
     
-    def button_is_active(self, image_name):
+    def button_is_active(self, image_name, tx, ty):
         self.get_vnc_full_screen("last_screen", "ExpectedScreens")
         img2 = cv2.imread(os.getcwd() + '/Images/Buttons/' + image_name + '.png')
         #img2 = cv2.imread(os.getcwd() +'/' + image_name + '.png')
@@ -543,6 +545,9 @@ class ImageProcessor:
         plt.imshow(self.img3)
         plt.show()
 
+        total_x = total_x + tx
+        total_y = total_y + ty
         color = self.color_check(total_x, total_y, img1)
 
         return total_x, total_y, color
+

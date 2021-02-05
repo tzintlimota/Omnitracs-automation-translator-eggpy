@@ -24,7 +24,7 @@ class EquiProc:
         if self.img_proc.expect_image("vnc-certifyday-statusspans-pop-up", "ExpectedScreens", 1):
             print("Handling Certify Prompt 'Duty Status Spans in more than 1 day' ")
             self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/AgreeButton/AgreeButton")
-        self.goToHOS()
+        #self.goToHOS()
 
 
     #Here add the code to close every alert as a function
@@ -202,7 +202,7 @@ class EquiProc:
             print("All drivers logged out")
 
     def clearAlerts(self):
-        total_x, total_y, color = self.img_proc.button_is_active("ivg_header_alert")
+        total_x, total_y, color = self.img_proc.button_is_active("ivg_header_alert", 0, 0)
         print(color)
         if color != 'gray inactive':
             self.img_proc.click_image_by_max_key_points("ivg_header_alert")
@@ -356,6 +356,38 @@ class EquiProc:
     end SendMessagesToOpenConnections
     '''
         pass
+    
+    def dayBack(self, page, reset, clicks):
+        self.goTo(page)
+
+        if page == 'Graph':
+            x, y = 90, 175
+            x1, y1 = -150, 175
+        else:
+            x, y  = 95,175
+            x1, y1 = -80, 175
+       
+        if reset:
+            for i in range(1):
+                time.sleep(0.5)
+                self.img_proc.click_image_by_max_key_points_offset("ivg_header_alert", x, y)
+
+            print("Cannot go any forward")
+        
+        for i in range(clicks):
+            self.img_proc.click_image_by_max_key_points_offset("ivg_header_alert", x1, y1)
+
+    def dayForward(self, page, clicks):
+        self.goTo(page)
+        if page == 'Graph':
+            x, y = 90, 175
+        else:
+            x, y  = 95,175
+        
+        for i in range(clicks):
+            self.img_proc.click_image_by_max_key_points_offset("ivg_header_alert", x, y)
+
+            #self.img_proc.click_image_by_max_key_points("ELD_Core/NavigationButtons/Enabled/DayForward/DayForward")
 
     #(AlertsTestCase)
     def waitForRuleChangeAlert(self):
