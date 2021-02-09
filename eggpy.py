@@ -129,7 +129,7 @@ def tokenization():
                 while len(params) < 2:
                     params.append(' ')
                 # "ON","N" ,"AUTOMATION"
-                toadd = "\nequi_proc.dayForward('"+ params[0] +"', "+ params[1] +")"
+                toadd = "\neld_core.dayForward('" + params[0] + "', " + params[1] + ")"
                 file2.writelines(toadd)
             elif (str(doc[0]) == 'GoTo' and str(doc[2]) == 'DayBack'):
                 # (newStatus, condition, remark1, remark2, complete)
@@ -243,4 +243,4 @@ def tokenization():
 
 tokenization()
 
-file2.close() 
+file2.close()
