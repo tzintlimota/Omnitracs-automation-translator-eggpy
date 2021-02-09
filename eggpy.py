@@ -22,11 +22,13 @@ import time
 from datetime import datetime, timedelta
 import math
 from PIL import Image
-from EquiProc import EquiProc
+from IVG_ELD_CORE import IVG_ELD_CORE
+from IVG_Common import IVG_Common
 #import pyGPSFeed_IMR
 
 
-equi_proc = EquiProc()
+eld_core = IVG_ELD_CORE()
+ivg_common = IVG_Common()
 """
     file2.writelines(imports) 
     print(imports)
@@ -71,8 +73,8 @@ def tokenization():
             elif(str(doc[0]) == 'ConnectUnit' or str(doc[0])=='Global'):
                 toadd = str("\n#"+str(doc[0:len(doc)-1])+"")
                 file2.writelines(toadd)
-            elif(str(doc[0]) == 'BeforeTest'):
-                toadd = "\nequi_proc.logOutAllDrivers()"
+            elif (str(doc[0]) == 'BeforeTest'):
+                toadd = "\nivg_common.logOutAllDrivers()"
                 file2.writelines(toadd)
                 #logOutAllDrivers()
             elif(doc[0].pos_ == 'VERB'):
@@ -81,10 +83,10 @@ def tokenization():
                     toadd = str("print('"+str(doc[0:len(doc)-1])+"') \n")
                     file2.writelines(toadd)
                 elif str(doc[0]) == 'SendMessageToUpdateLogs':
-                    toadd = "\nequi_proc.sendMessageToUpdateLogs()"
+                    toadd = "\nivg_common.sendMessageToUpdateLogs()"
                     file2.writelines(toadd)
                 elif str(doc[0]) == 'put' and doc[2].pos_ == 'PROPN':
-                    toadd = "\nequi_proc.loginDriver('"+ str(doc[2]) +"', '"+ str(doc[2]) +"', '', '')"
+                    toadd = "\nivg_common.loginDriver('" + str(doc[2]) + "', '" + str(doc[2]) + "', '', '')"
                     file2.writelines(toadd)
                 elif str(doc[0]) == 'wait':
                     if str(doc[2]) == 'minute' or str(doc[2]) == 'minutes':
@@ -129,7 +131,7 @@ def tokenization():
                 while len(params) < 2:
                     params.append(' ')
                 # "ON","N" ,"AUTOMATION"
-                toadd = "\nequi_proc.dayForward('"+ params[0] +"', "+ params[1] +")"
+                toadd = "\neld_core.dayForward('" + params[0] + "', " + params[1] + ")"
                 file2.writelines(toadd)
             elif (str(doc[0]) == 'GoTo' and str(doc[2]) == 'DayBack'):
                 # (newStatus, condition, remark1, remark2, complete)
@@ -151,7 +153,7 @@ def tokenization():
                     params[1] = 'True'
                 else:
                     params[1] = 'False'
-                toadd = "\nequi_proc.dayBack('"+ params[0] +"', bool("+ params[1] +"), "+ params[2] +")"
+                toadd = "\neld_core.dayBack('" + params[0] + "', bool(" + params[1] + "), " + params[2] + ")"
                 file2.writelines(toadd)
 
             elif (str(doc[0]) == 'Status_ChangeTestCase' and str(doc[2]) == 'ChangeDriverStatus'):
@@ -170,7 +172,7 @@ def tokenization():
                 while len(params) < 5:
                     params.append(' ')
                 # "ON","N" ,"AUTOMATION"
-                toadd = "\nequi_proc.changeDriverStatus('"+ params[0] +"', '"+ params[1] +"', '"+ params[2] +"', '"+ params[3] +"', '"+ params[4] +"')"
+                toadd = "\neld_core.changeDriverStatus('" + params[0] + "', '" + params[1] + "', '" + params[2] + "', '" + params[3] + "', '" + params[4] + "')"
                 file2.writelines(toadd)
             elif str(doc[0]) == 'LoginDriver':
                 params = []
@@ -187,13 +189,14 @@ def tokenization():
                 while len(params) < 4:
                     params.append(' ')
                 # "ON","N" ,"AUTOMATION"
-                toadd = "\nequi_proc.loginDriver('"+ params[0] +"', '"+ params[0] +"', '"+ params[2] +"', '"+ params[3] +"')"
+                toadd = "\neld_core.loginDriver('" + params[0] + "', '" + params[0] + "', '" + params[2] + "', '" + \
+                        params[3] + "')"
                 file2.writelines(toadd)
             elif str(doc[0]) == 'BackToHome':
-                toadd = "\nequi_proc.backToHome()"
+                toadd = "\nivg_common.backToHome()"
                 file2.writelines(toadd)
             elif str(doc[0]) == 'ClearAlerts':
-                toadd = "\nequi_proc.clearAlerts()"
+                toadd = "\nivg_common.clearAlerts()"
                 file2.writelines(toadd)
             elif str(doc[0]) == 'SendMessage':
                 #Enviar mensaje
@@ -201,17 +204,17 @@ def tokenization():
                 for token in doc:
                     print(token.text, token.pos_, token.dep_)
                     if str(token.text) != '"' and str(token.text) != str(doc[0]):
-                        message +=  str(token.text) + " "
-                toadd = "\nequi_proc.sendMessage('" + message + "')"
+                        message += str(token.text) + " "
+                toadd = "\nivg_common.sendMessage('" + message + "')"
                 file2.writelines(toadd)
             elif str(doc[0]) == 'GoToMessagingPage':
-                toadd = "\nequi_proc.goToMessagingPage()"
+                toadd = "\nivg_common.goToMessagingPage()"
                 file2.writelines(toadd)
             elif str(doc[0]) == 'DeleteAllOutboxMessages':
-                toadd = "\nequi_proc.deleteAllOutboxMessages()"
+                toadd = "\nivg_common.deleteAllOutboxMessages()"
                 file2.writelines(toadd)
             elif str(doc[0]) == 'GoToLoginPage':
-                toadd = "\nequi_proc.goToLoginPage()"
+                toadd = "\nivg_common.goToLoginPage()"
                 file2.writelines(toadd)
             elif str(doc[0]) == 'GoTo':
                 params = []
@@ -227,7 +230,7 @@ def tokenization():
                 print(params)
                 while len(params) < 1:
                     params.append(' ')
-                toadd = "\nequi_proc.goTo('"+ params[0] +"')"
+                toadd = "\neld_core.goTo('" + params[0] + "')"
                 file2.writelines(toadd)
             else:
                 '''try:
@@ -243,4 +246,4 @@ def tokenization():
 
 tokenization()
 
-file2.close() 
+file2.close()
