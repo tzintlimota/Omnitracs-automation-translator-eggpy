@@ -156,7 +156,7 @@ class ImageProcessor:
             list_kp1 = []
             list_kp2 = []
 
-            for mat in matches[:10]:
+            for mat in matches[:6]:
                 # Get the matching keypoints for each of the images
                 img1_idx = mat.queryIdx
                 img2_idx = mat.trainIdx
@@ -249,7 +249,7 @@ class ImageProcessor:
             list_kp1 = []
             list_kp2 = []
 
-            for mat in matches[:8]:
+            for mat in matches[:6]:
                 # Get the matching keypoints for each of the images
                 img1_idx = mat.queryIdx
                 img2_idx = mat.trainIdx
@@ -551,3 +551,20 @@ class ImageProcessor:
 
         return total_x, total_y, color
 
+    def imageResizer(self):
+        src = cv2.imread(os.getcwd() + '/Images/Buttons/ELD_Core/LoadTab/EndDay/EndDay.png', cv2.IMREAD_UNCHANGED)
+
+        #percent by which the image is resized
+        scale_percent = 300
+
+        #calculate the 50 percent of original dimensions
+        width = int(src.shape[1] * scale_percent / 100)
+        height = int(src.shape[0] * scale_percent / 100)
+
+        # dsize
+        dsize = (width, height)
+
+        # resize image
+        output = cv2.resize(src, dsize)
+
+        cv2.imwrite(os.getcwd() + '/Images/Buttons/ELD_Core/LoadTab/EndDay/EndDay.png',output)

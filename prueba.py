@@ -32,4 +32,11 @@ print('log "***Script name OHOS2810***"')
 #equi_proc.goTo('Status')
 #equi_proc.goTo('Summary')
 #equi_proc.dayForward('DayLog', 3)
-equi_proc.dayBack('Graph', bool(True), 3)
+
+loadDate = equi_proc.getLoadDate("End")
+print("LOAD DATE IS: "+ loadDate)
+
+loadDate = equi_proc.getLoadDate("Start")
+print("LOAD DATE IS: "+ loadDate)
+
+#img_proc.imageResizer()

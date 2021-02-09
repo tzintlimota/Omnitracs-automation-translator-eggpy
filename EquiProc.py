@@ -1,10 +1,14 @@
 from ImageProcessor import ImageProcessor
 #import pytesseract
 import os
+import cv2
 import time
 from datetime import datetime, timedelta
 import math
 from PIL import Image
+import matplotlib.pyplot as plt
+import numpy as np
+import pytesseract
 #import pyGPSFeed_IMR
 
 class EquiProc:
@@ -287,6 +291,31 @@ class EquiProc:
         
         #self.goToMainScreen()
         #go to hours of service
+    def goToHistory(self):
+        self.goTo("Load")
+        self.img_proc.click_image_by_max_key_points("ELD_Core/LoadTab/HistoryButton/HistoryButton")
+        found = self.img_proc.expect_image("vnc-load-history-screen", "ExpectedScreens", 4)
+        if found:
+            print("Load History Screen")
+        else:
+            print("Load History not found")
+
+    def getLoadDate(self, TimePoint):
+        self.goTo("Load")
+        if TimePoint == "Start":
+            x, y = self.img_proc.click_image_by_max_key_points_offset("ELD_Core/StatusTab/Start_A/Start_A", 60, -5)
+        elif TimePoint == "End":
+            x, y = self.img_proc.click_image_by_max_key_points_offset("ELD_Core/StatusTab/Start_A/Start_A", 450, -5)
+            x += 355
+        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        crop_img2 = img[int(y-20):int(y+20), int(x+70-30):int(x+60+100)]
+
+        plt.imshow(crop_img2)
+        plt.show()       
+        print(pytesseract.image_to_string(crop_img2))
+        loadDate = pytesseract.image_to_string(crop_img2)
+        return loadDate
+
     def goTo(self, page):
         print(page)
         #self.goToELD()
@@ -349,12 +378,6 @@ class EquiProc:
     #(AlertsTestCase)
 
     def sendMessagesToOpenConnections(self):
-        '''on SendMessagesToOpenConnections
-        ClearAlerts
-        Log "Sending message to open connections..."
-        SendMessage "TEST MESSAGE"	
-    end SendMessagesToOpenConnections
-    '''
         pass
     
     def dayBack(self, page, reset, clicks):
@@ -391,33 +414,6 @@ class EquiProc:
 
     #(AlertsTestCase)
     def waitForRuleChangeAlert(self):
-        '''
-    on WaitForRuleChangeAlert
-        put False into found
-        Log "Waiting for HOS Rule Change..."	
-        WaitForAlert 60	
-        If ImageFound(1, Translator("Notifications/Alerts/HOSRuleChange"))		
-        ClearAlerts		
-        Log "Rule Changed"	
-        put True into found		
-        Else	
-            ClearAlerts		
-            put False into found
-        End If
-        repeat until found is True
-            SendMessagesToOpenConnections	
-            Log "Waiting for HOS Rule Change..."	
-            WaitForAlert 60
-            If ImageFound(1, Translator("Notifications/Alerts/HOSRuleChange"))		
-                ClearAlerts		
-                Log "Rule Changed"		
-                put True into found			
-            Else		
-                ClearAlerts			
-                put False into found
-            End If
-        end repeat
-    end WaitForRuleChangeAlert'''
         pass
 
     def changeCarrier(Carrier, Send):
@@ -456,4 +452,3 @@ class EquiProc:
         pass
 
     #CertifyTestCase
-
