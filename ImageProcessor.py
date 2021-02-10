@@ -324,6 +324,18 @@ class ImageProcessor:
             self.img3 = cv2.drawMatches(img1, kp1, img2, kp2, cleaned_good_matches, img2, flags=2)
             #plt.imshow(self.img3)
             #plt.show()
+            avg_distances = []
+
+            for i in range(len(list_kp1)):
+                point_x = list_kp1[i][0]
+                point_y = list_kp1[i][1]
+                acum_dist_avg = 0
+                for j in range(len(list_kp1)):
+                    acum_dist_avg += math.sqrt((list_kp1[j][0] - point_x) ** 2 + (list_kp1[j][1] - point_y) ** 2)
+                acum_dist_avg = acum_dist_avg / len(list_kp1)
+                avg_distances.append(acum_dist_avg)
+            avg_avg_distances = np.average(avg_distances)
+
             if avg_avg_distances < 250:
             
                 total_x = total_x / len(list_kp1)

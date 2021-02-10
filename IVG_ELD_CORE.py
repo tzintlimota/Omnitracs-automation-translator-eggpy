@@ -1,5 +1,6 @@
 from ImageProcessor import ImageProcessor
 #import pytesseract
+from IVG_Common import IVG_Common
 import os
 import cv2
 import time
@@ -9,12 +10,15 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import numpy as np
 import pytesseract
+from dateutil.parser import parse
+
 #import pyGPSFeed_IMR
 
 class IVG_ELD_CORE:
 
     def __init__(self):
-        self.img_proc = ImageProcessor('192.168.100.13', 'None', .15)
+        self.img_proc = ImageProcessor('192.168.1.118', 'None', .15)
+        self.ivg_common = IVG_Common()
 
     #Code to discard/accept Certify Day prompt
     def closeCertifyDayPrompt(self):
@@ -99,7 +103,7 @@ class IVG_ELD_CORE:
             self.img_proc.check_md_alert()
 
     def goToHOS(self):
-        self.goToMainScreen()
+        self.ivg_common.goToMainScreen()
         self.img_proc.click_image_by_max_key_points("HOS_ELD")
 
     def goToELD(self):
@@ -134,6 +138,7 @@ class IVG_ELD_CORE:
             print("Load History Screen")
         else:
             print("Load History not found")
+        
 
     def getLoadDate(self, TimePoint):
         self.goTo("Load")
@@ -232,6 +237,51 @@ class IVG_ELD_CORE:
             self.img_proc.click_image_by_max_key_points_offset("ivg_header_alert", x, y)
 
             #self.img_proc.click_image_by_max_key_points("ELD_Core/NavigationButtons/Enabled/DayForward/DayForward")
+    
+    def createLoad(self, loadId, Trailer1, Trailer2, Trailer3, BL, StartDate, EndDate, Finish):
+        '''self.goTo("Load")
+        self.img_proc.click_image_by_max_key_points("ELD_Core/LoadTab/NewLoadButton/NewLoadButton")
+        self.img_proc.expect_image("vnc-load-create-new", "ExpectedScreens", 3)
+        self.img_proc.expect_image("vnc-load-create-new-keyboardopen", "ExpectedScreens", 3)
+        self.img_proc.click_image_by_max_key_points_offset("ELD_Core/LoadTab/LoadId/LoadIdRequired", 0, 25)
+        self.img_proc.send_keys(loadId)
+        #Trailer1
+        self.img_proc.click_image_by_max_key_points_offset("ELD_Core/LoadTab/LoadId/LoadIdRequired", 600, 25)
+        self.img_proc.send_keys(Trailer1)
+        #Trailer2
+        self.img_proc.click_image_by_max_key_points_offset("ELD_Core/LoadTab/LoadId/LoadIdRequired", 600, 100)
+        self.img_proc.send_keys(Trailer2)
+        #Trailer3
+        self.img_proc.click_image_by_max_key_points_offset("ELD_Core/LoadTab/LoadId/LoadIdRequired", 600, 175)
+        self.img_proc.send_keys(Trailer3)
+        #BL
+        self.img_proc.click_image_by_max_key_points_offset("ELD_Core/LoadTab/LoadId/LoadIdRequired", 0, 250)
+        self.img_proc.send_keys(BL)
+        #START
+        startDate = parse(StartDate)
+        endDate = parse(EndDate)
+        
+        self.img_proc.click_image_by_max_key_points_offset("ELD_Core/LoadTab/LoadId/LoadIdRequired", -90, 100)
+        self.img_proc.send_keys(str(startDate.month))
+        self.img_proc.click_image_by_max_key_points_offset("ELD_Core/LoadTab/LoadId/LoadIdRequired", -60, 100)
+        self.img_proc.send_keys(str(startDate.day))
+        self.img_proc.click_image_by_max_key_points_offset("ELD_Core/LoadTab/LoadId/LoadIdRequired", -30, 100)
+        self.img_proc.send_keys(str(startDate.year))
+        #END
+        self.img_proc.click_image_by_max_key_points_offset("ELD_Core/LoadTab/LoadId/LoadIdRequired", -90, 180)
+        self.img_proc.send_keys(str(endDate.month))
+        self.img_proc.click_image_by_max_key_points_offset("ELD_Core/LoadTab/LoadId/LoadIdRequired", -60, 180)
+        self.img_proc.send_keys(str(endDate.day))
+        self.img_proc.click_image_by_max_key_points_offset("ELD_Core/LoadTab/LoadId/LoadIdRequired", -30, 180)
+        self.img_proc.send_keys(str(endDate.year))
+
+        found = self.img_proc.expect_image("vnc-load-create-new-keyboardopen", "ExpectedScreens", 3)
+        if found:
+            self.img_proc.click_image_by_max_key_points('IVG_Common/Home/KeyboardOpen/KeyboardOpen')
+        '''
+        self.img_proc.click_image_by_max_key_points_offset('ELD_Core/StatusTab/OkButton/OkButton', 0, 0)
+        
+
 
     def changeCarrier(Carrier, Send):
         pass

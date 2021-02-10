@@ -5,11 +5,15 @@ import time
 from datetime import datetime, timedelta
 import math
 from PIL import Image
-from EquiProc import EquiProc
+from IVG_ELD_CORE import IVG_ELD_CORE
+from IVG_Common import IVG_Common
 #import pyGPSFeed_IMR
 
 
-equi_proc = EquiProc()
+eld_core = IVG_ELD_CORE()
+ivg_common = IVG_Common()
+
+
 
 
 ''''''
@@ -26,17 +30,6 @@ img_proc = ImageProcessor('192.168.1.118', 'None', .15)
 
 
 
-#Funcion de eggplant log
-print('log "***Script name OHOS2810***"') 
-
-#equi_proc.goTo('Status')
-#equi_proc.goTo('Summary')
-#equi_proc.dayForward('DayLog', 3)
-
-loadDate = equi_proc.getLoadDate("End")
-print("LOAD DATE IS: "+ loadDate)
-
-loadDate = equi_proc.getLoadDate("Start")
-print("LOAD DATE IS: "+ loadDate)
+eld_core.createLoad('Test', '1', '2', '3', 'Yes', '12/08/2022', '01/06/2023', '')
 
 #img_proc.imageResizer()

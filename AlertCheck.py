@@ -18,9 +18,9 @@ while True:
     time.sleep(1)
     if img_proc.expect_image("vnc-load-info-required-popup", "ExpectedScreens",1):
         print("Close load info required popup")
-        total_x, total_y = img_proc.click_image_by_max_key_points("IVG_Common/Login/OkLoginStatus/OkLoginStatus")
-        if total_y == -1:
-            eld_core.closeLoadInfoAlert()
+        #total_x, total_y = img_proc.click_image_by_max_key_points("IVG_Common/Login/OkLoginStatus/OkLoginStatus")
+        #if total_y == -1:
+        eld_core.closeLoadInfoAlert()
     elif img_proc.expect_image("vnc-certify-day-popup", "ExpectedScreens", 1):
         print("Handling Certify Day prompt ...")
         eld_core.closeCertifyDayPrompt()
