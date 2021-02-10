@@ -30,6 +30,6 @@ img_proc = ImageProcessor('192.168.1.118', 'None', .15)
 
 
 
-eld_core.createLoad('Test', '1', '2', '3', 'Yes', '12/08/2022', '01/06/2023', '')
+eld_core.createLoad('Test', '1', '2', '3', 'Yes', '03/08/2021', '06/08/2021', True)
 
 #img_proc.imageResizer()

@@ -111,7 +111,6 @@ def tokenization():
             elif(doc_string[0] == '/' ):
                 file2.writelines('\n# ' + line + '\n')
             #This is the way to call functions with no verb in front
-            #Parameters se iran metiendo con lo de abajo y probablemente usar eval
             #for token in doc:
             #    print(token.text, token.pos_, token.dep_)
 
@@ -155,6 +154,32 @@ def tokenization():
                     params[1] = 'False'
                 toadd = "\neld_core.dayBack('" + params[0] + "', bool(" + params[1] + "), " + params[2] + ")"
                 file2.writelines(toadd)
+            
+            '''
+            #Change to CREATE LOAD 8 params
+            elif (str(doc[0]) == 'GoTo' and str(doc[2]) == 'DayBack'):
+                # (newStatus, condition, remark1, remark2, complete)
+                params = []
+                stringToPass = ''
+                for i in range(3, len(doc)):
+                    stringToPass += str(doc[i].text)
+                print(stringToPass)
+
+                new = stringToPass.replace('"', '')
+                new = new.replace(',', ' ')
+                params = new.split()
+
+                print(params)
+                while len(params) < 3:
+                    params.append(' ')
+                # "ON","N" ,"AUTOMATION"
+                if params[1] == 'true' or params[1] == 'True' or params[1] == "'true'":
+                    params[1] = 'True'
+                else:
+                    params[1] = 'False'
+                toadd = "\neld_core.dayBack('" + params[0] + "', bool(" + params[1] + "), " + params[2] + ")"
+                file2.writelines(toadd)
+            '''
 
             elif (str(doc[0]) == 'Status_ChangeTestCase' and str(doc[2]) == 'ChangeDriverStatus'):
                 # (newStatus, condition, remark1, remark2, complete)
@@ -233,10 +258,6 @@ def tokenization():
                 toadd = "\neld_core.goTo('" + params[0] + "')"
                 file2.writelines(toadd)
             else:
-                '''try:
-                    str(doc[0])
-                except:
-                print("An exception occurred") '''
                 #file2.writelines('\n AUN NO CONOZCO ESTA FUNCION ' + line[0: len(line)-1] + '\n')
                 file2.writelines('\n')
                 for token in doc:

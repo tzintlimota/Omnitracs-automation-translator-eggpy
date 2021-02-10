@@ -239,7 +239,7 @@ class IVG_ELD_CORE:
             #self.img_proc.click_image_by_max_key_points("ELD_Core/NavigationButtons/Enabled/DayForward/DayForward")
     
     def createLoad(self, loadId, Trailer1, Trailer2, Trailer3, BL, StartDate, EndDate, Finish):
-        '''self.goTo("Load")
+        self.goTo("Load")
         self.img_proc.click_image_by_max_key_points("ELD_Core/LoadTab/NewLoadButton/NewLoadButton")
         self.img_proc.expect_image("vnc-load-create-new", "ExpectedScreens", 3)
         self.img_proc.expect_image("vnc-load-create-new-keyboardopen", "ExpectedScreens", 3)
@@ -274,15 +274,16 @@ class IVG_ELD_CORE:
         self.img_proc.send_keys(str(endDate.day))
         self.img_proc.click_image_by_max_key_points_offset("ELD_Core/LoadTab/LoadId/LoadIdRequired", -30, 180)
         self.img_proc.send_keys(str(endDate.year))
-
+    
         found = self.img_proc.expect_image("vnc-load-create-new-keyboardopen", "ExpectedScreens", 3)
         if found:
             self.img_proc.click_image_by_max_key_points('IVG_Common/Home/KeyboardOpen/KeyboardOpen')
-        '''
-        self.img_proc.click_image_by_max_key_points_offset('ELD_Core/StatusTab/OkButton/OkButton', 0, 0)
         
-
-
+        if Finish:
+            self.img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/OkButton/OkButton')
+        else:
+            self.img_proc.click_image_by_max_key_points('cancel_btn_active')
+        
     def changeCarrier(Carrier, Send):
         pass
 
