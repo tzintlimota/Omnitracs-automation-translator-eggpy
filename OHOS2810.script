@@ -16,5 +16,6 @@ log "***Script name OHOS2810***"
 GoTo Status
 GoTo Summary
 
-GoTo.DayForward DayLog, 3
-GoTo.DayBack Graph, 'true', 3
+getLoadDate 02/21/2020
+GoToHistory
+CreateLoad.CreateLoad loadId, Trailer1, Trailer2, Trailer3, BL, StartDate, EndDate, true

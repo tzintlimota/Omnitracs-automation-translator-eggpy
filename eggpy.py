@@ -94,11 +94,28 @@ def tokenization():
                     else:
                         toadd = '\ntime.sleep(' + str(doc[1]) + ')'
                     file2.writelines(toadd)
+                elif str(doc[0]) == 'getLoadDate':
+                    params = []
+                    stringToPass = ''
+                    for i in range(1, len(doc)):
+                        stringToPass += str(doc[i].text)
+                    print(stringToPass)
+
+                    new = stringToPass.replace('"', '')
+                    new = new.replace(',', ' ')
+                    params = new.split()
+
+                    print(params)
+                    while len(params) < 1:
+                        params.append(' ')
+                    toadd = "\neld_core.getLoadDate('" + params[0] + "')"
+                    file2.writelines(toadd)
                 else:
                     #file2.writelines('\n AUN NO CONOZCO ESTA FUNCION VERBO' + line[0: len(line)-1] + '\n')
                     file2.writelines('\n')
                     for token in doc:
                         print(token.text, token.pos_, token.dep_)
+                
             elif(doc[0].pos_ == 'SPACE'):
                 pass
             #Comments
@@ -154,11 +171,12 @@ def tokenization():
                     params[1] = 'False'
                 toadd = "\neld_core.dayBack('" + params[0] + "', bool(" + params[1] + "), " + params[2] + ")"
                 file2.writelines(toadd)
-            
-            '''
-            #Change to CREATE LOAD 8 params
-            elif (str(doc[0]) == 'GoTo' and str(doc[2]) == 'DayBack'):
-                # (newStatus, condition, remark1, remark2, complete)
+            elif str(doc[0]) == 'GoToHistory':
+                toadd = "\neld_core.goToHistory()"
+                file2.writelines(toadd)
+            #Preguntar TZINTLI
+            elif (str(doc[0]) == 'CreateLoad' and str(doc[2]) == 'CreateLoad'):
+                # self, loadId, Trailer1, Trailer2, Trailer3, BL, StartDate, EndDate, Finish
                 params = []
                 stringToPass = ''
                 for i in range(3, len(doc)):
@@ -170,17 +188,15 @@ def tokenization():
                 params = new.split()
 
                 print(params)
-                while len(params) < 3:
+                while len(params) < 9:
                     params.append(' ')
                 # "ON","N" ,"AUTOMATION"
-                if params[1] == 'true' or params[1] == 'True' or params[1] == "'true'":
-                    params[1] = 'True'
+                if params[7] == 'true' or params[7] == 'True' or params[7] == "'true'":
+                    params[7] = 'True'
                 else:
-                    params[1] = 'False'
-                toadd = "\neld_core.dayBack('" + params[0] + "', bool(" + params[1] + "), " + params[2] + ")"
+                    params[7] = 'False'
+                toadd = "\neld_core.createLoad('" + params[0] + "', '" + params[1] + "','" + params[2] + "','" + params[3] + "','" + params[4] + "','" + params[5] + "','" + params[6] + "', bool(" + params[7] + "))"
                 file2.writelines(toadd)
-            '''
-
             elif (str(doc[0]) == 'Status_ChangeTestCase' and str(doc[2]) == 'ChangeDriverStatus'):
                 # (newStatus, condition, remark1, remark2, complete)
                 params = []
