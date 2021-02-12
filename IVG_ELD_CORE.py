@@ -4,7 +4,7 @@ from IVG_Common import IVG_Common
 import os
 import cv2
 import time
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, date
 import math
 from PIL import Image
 import matplotlib.pyplot as plt
@@ -208,17 +208,42 @@ class IVG_ELD_CORE:
 
     def dayBack(self, page, reset, clicks):
         self.goTo(page)
-
+        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+        firstAddX, secondAddX, firstAddY, secondAddY = 0,0,0,0
         if page == 'Graph':
             x, y = 90, 175
             x1, y1 = -150, 175
+            firstAddX, secondAddX, firstAddY, secondAddY = 745, 745, 20, 70
         else:
             x, y  = 95,175
             x1, y1 = -80, 175
-       
+            firstAddX, secondAddX, firstAddY, secondAddY = 770, 770, 20, 70
         if reset:
-            for i in range(1):
+            #ACTUALIZAR ESTO A QUE LA FECHA COINCIDA CON LA FECHA DE HOY
+            today = date.today()
+            currentDay = parse(str(today))
+            print("Today's date:", today)
+            print(currentDay.day, currentDay.month)
+            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+            crop_img2 = img[int(y+firstAddY):int(y+secondAddY), int(x+firstAddX-17):int(x+secondAddX+105)]
+
+            print(pytesseract.image_to_string(crop_img2))
+            dateDevice = pytesseract.image_to_string(crop_img2)
+            dateDevice = parse(str(dateDevice))
+            #print("Todays date DEVICE is " + dateDevice.day)
+            print(dateDevice.day, dateDevice.month)
+
+            while dateDevice.day != currentDay.day:
                 time.sleep(0.5)
+                self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+                img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+                crop_img2 = img[int(y+firstAddY):int(y+secondAddY), int(x+firstAddX-17):int(x+secondAddX+105)]
+
+                print(pytesseract.image_to_string(crop_img2))
+                dateDevice = pytesseract.image_to_string(crop_img2)
+                dateDevice = parse(str(dateDevice))
+                #print("Todays date DEVICE is " + dateDevice.day)
+                print(dateDevice.day, dateDevice.month)
                 self.img_proc.click_image_by_max_key_points_offset("ivg_header_alert", x, y)
 
             print("Cannot go any forward")
@@ -318,5 +343,7 @@ class IVG_ELD_CORE:
     #ESTOS DICEN ON
     def compareDates(firstRecord, secondRecord, type):
         pass
+
+
 
     #CertifyTestCase
