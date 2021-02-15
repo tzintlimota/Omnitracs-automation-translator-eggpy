@@ -273,11 +273,10 @@ class IVG_ELD_CORE:
         certifiedDays = str(pytesseract.image_to_string(crop_img2))
 
 
-        while certifiedDays[0] !=  "8" and (certifiedDays[0] != "1" and certifiedDays[1] != "5"):
+        while certifiedDays[0] !=  "8" and (certifiedDays[0] != "1" or certifiedDays[1] != "5"):
             self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/CertifyButton/CertifyButton")
             self.img_proc.click_image_by_max_key_points("AgreeButton")
-            time.sleep(6)
-            self.img_proc.click_image_by_max_key_points("AgreeButton")
+            self.img_proc.expect_image("vnc_certify_tab_main", "ExpectedScreens", 10)
             img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
             crop_img2 = img[int(y+firstAddY):int(y+secondAddY), int(x+firstAddX-17):int(x+secondAddX+100)]
             print(pytesseract.image_to_string(crop_img2))
