@@ -27,6 +27,8 @@ while True:
     elif img_proc.expect_image("vnc-certify-outside-cycle-alert", "ExpectedScreens", 1):
         print("Handling Certify Days Outside of Cycle prompt ...")
         eld_core.closeCertifyDayPrompt()
+    elif img_proc.expect_image("vnc-certifyday-statusspans-pop-up", "ExpectedScreens", 1):
+        img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/AgreeButton/AgreeButton")
     else:
         total_x, total_y = img_proc.get_image_coordinates_by_max_key_points('alert-sign')
         print( total_x, total_y)
