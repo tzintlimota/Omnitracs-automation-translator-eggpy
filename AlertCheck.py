@@ -9,24 +9,34 @@ from PIL import Image
 from IVG_ELD_CORE import IVG_ELD_CORE
 from IVG_Common import IVG_Common
 
+
 img_proc = ImageProcessor('192.168.1.118', 'None', .15)
 eld_core = IVG_ELD_CORE()
 ivg_common = IVG_Common()
 
 
 while True:
-    time.sleep(1)
+    f = open("IVG_var.txt", "r")
+    
     if img_proc.expect_image("vnc-load-info-required-popup", "ExpectedScreens",1):
         print("Close load info required popup")
         #total_x, total_y = img_proc.click_image_by_max_key_points("IVG_Common/Login/OkLoginStatus/OkLoginStatus")
         #if total_y == -1:
         eld_core.closeLoadInfoAlert()
     elif img_proc.expect_image("vnc-certify-day-popup", "ExpectedScreens", 1):
-        print("Handling Certify Day prompt ...")
-        eld_core.closeCertifyDayPrompt()
+        f = open("IVG_var.txt", "r")
+        if f.read() == "Certify":
+            print("Case Certify Alert Check Suspended")
+        else:
+            print("Handling Certify Day prompt ...")
+            eld_core.closeCertifyDayPrompt()
     elif img_proc.expect_image("vnc-certify-outside-cycle-alert", "ExpectedScreens", 1):
-        print("Handling Certify Days Outside of Cycle prompt ...")
-        eld_core.closeCertifyDayPrompt()
+        f = open("IVG_var.txt", "r")
+        if f.read() == "Certify":
+            print("Case Certify Alert Check Suspended")
+        else:
+            print("Handling Certify Days Outside of Cycle prompt ...")
+            eld_core.closeCertifyDayPrompt()   
     elif img_proc.expect_image("vnc-certifyday-statusspans-pop-up", "ExpectedScreens", 1):
         img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/AgreeButton/AgreeButton")
     else:
@@ -42,4 +52,4 @@ while True:
                 ivg_common.closeUnknownPositionAlert()
             else:
                 print("No alerts have been found")
-        
+        '''

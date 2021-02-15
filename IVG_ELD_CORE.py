@@ -12,6 +12,7 @@ import numpy as np
 import pytesseract
 from dateutil.parser import parse
 
+
 #import pyGPSFeed_IMR
 
 class IVG_ELD_CORE:
@@ -263,6 +264,10 @@ class IVG_ELD_CORE:
             #self.img_proc.click_image_by_max_key_points("ELD_Core/NavigationButtons/Enabled/DayForward/DayForward")
     
     def certifyAllLogs(self):
+        f = open("IVG_var.txt", "w")
+        f.write("Certify")
+        f.close()
+        
         self.dayBack("Certify", True, 0)
         x, y  = 95,175
         firstAddX, secondAddX, firstAddY, secondAddY = 500, 500, 20, 70
@@ -284,6 +289,10 @@ class IVG_ELD_CORE:
             self.dayBack("Certify", False, 1)
 
         print("Nothing to certify")
+        time.sleep(5)
+        f = open("IVG_var.txt", "w")
+        f.write("None")
+        f.close()
 
     
     def createLoad(self, loadId, Trailer1, Trailer2, Trailer3, BL, StartDate, EndDate, Finish):
