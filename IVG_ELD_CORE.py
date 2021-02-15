@@ -263,6 +263,31 @@ class IVG_ELD_CORE:
 
             #self.img_proc.click_image_by_max_key_points("ELD_Core/NavigationButtons/Enabled/DayForward/DayForward")
     
+    def certifyAllLogs(self):
+        self.dayBack("Certify", True, 0)
+        x, y  = 95,175
+        firstAddX, secondAddX, firstAddY, secondAddY = 500, 500, 20, 70
+   
+        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        crop_img2 = img[int(y+firstAddY):int(y+secondAddY), int(x+firstAddX-17):int(x+secondAddX+100)]
+        print(pytesseract.image_to_string(crop_img2))
+        certifiedDays = str(pytesseract.image_to_string(crop_img2))
+
+
+        while certifiedDays[0] !=  "8" and (certifiedDays[0] != "1" and certifiedDays[1] != "5"):
+            self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/CertifyButton/CertifyButton")
+            self.img_proc.click_image_by_max_key_points("AgreeButton")
+            time.sleep(6)
+            self.img_proc.click_image_by_max_key_points("AgreeButton")
+            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+            crop_img2 = img[int(y+firstAddY):int(y+secondAddY), int(x+firstAddX-17):int(x+secondAddX+100)]
+            print(pytesseract.image_to_string(crop_img2))
+            certifiedDays = str(pytesseract.image_to_string(crop_img2))
+            self.dayBack("Certify", False, 1)
+
+        print("Nothing to certify")
+
+    
     def createLoad(self, loadId, Trailer1, Trailer2, Trailer3, BL, StartDate, EndDate, Finish):
         self.goTo("Load")
         self.img_proc.click_image_by_max_key_points("ELD_Core/LoadTab/NewLoadButton/NewLoadButton")

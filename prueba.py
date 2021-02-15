@@ -24,4 +24,4 @@ img_proc = ImageProcessor('192.168.1.118', 'None', .15)
 #Funcion de eggplant log
 print('log "***Script name OHOS2810***"') 
 
-eld_core.dayBack("Graph", True, 2)
+eld_core.certifyAllLogs()
