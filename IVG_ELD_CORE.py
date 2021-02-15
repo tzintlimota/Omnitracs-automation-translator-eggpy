@@ -31,7 +31,6 @@ class IVG_ELD_CORE:
         #Click on Agree button in case Certify Prompt "Duty Status Spans in more than 1 day"
         if self.img_proc.expect_image("vnc-certifyday-statusspans-pop-up", "ExpectedScreens", 1):
             print("Handling Certify Prompt 'Duty Status Spans in more than 1 day' ")
-            self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/AgreeButton/AgreeButton")
         #self.goToHOS()
 
 
