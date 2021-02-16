@@ -14,6 +14,10 @@ img_proc = ImageProcessor('192.168.1.118', 'None', .15)
 eld_core = IVG_ELD_CORE()
 ivg_common = IVG_Common()
 
+f = open("IVG_var.txt", "w")
+f.write("None")
+f.close()
+
 
 while True:
     f = open("IVG_var.txt", "r")
@@ -52,4 +56,3 @@ while True:
                 ivg_common.closeUnknownPositionAlert()
             else:
                 print("No alerts have been found")
-        '''
