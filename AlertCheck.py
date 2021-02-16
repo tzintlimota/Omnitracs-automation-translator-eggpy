@@ -16,6 +16,8 @@ ivg_common = IVG_Common()
 
 f = open("IVG_var.txt", "w")
 f.write("None")
+f.close()
+
 
 while True:
     f = open("IVG_var.txt", "r")
@@ -54,4 +56,3 @@ while True:
                 ivg_common.closeUnknownPositionAlert()
             else:
                 print("No alerts have been found")
-        '''
