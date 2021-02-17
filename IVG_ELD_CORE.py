@@ -11,6 +11,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pytesseract
 from dateutil.parser import parse
+import connection_credentials as cfg
 
 
 #import pyGPSFeed_IMR
@@ -18,7 +19,7 @@ from dateutil.parser import parse
 class IVG_ELD_CORE:
 
     def __init__(self):
-        self.img_proc = ImageProcessor('192.168.1.118', 'None', .15)
+        self.img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])
         self.ivg_common = IVG_Common()
 
     #Code to discard/accept Certify Day prompt
@@ -342,6 +343,27 @@ class IVG_ELD_CORE:
             self.img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/OkButton/OkButton')
         else:
             self.img_proc.click_image_by_max_key_points('cancel_btn_active')
+
+    def goToERODS(self):
+        print("***Script name: IVG_ELD_CORE.goToERODS***")
+        '''This will navigate to the ERODS File Transfer screen'''
+
+        found = self.img_proc.expect_image("vnc-erods-file-transfer-screen", "ExpectedScreens", 2)
+        if found:
+            print("'ERODS File Transfer' screen is being displayed")
+        else:
+            self.goTo("DayLog")
+
+            self.img_proc.click_image_by_max_key_points('ELD_Core/DayLogTab/DriverButton/DriverButton')
+            time.sleep(1)
+            self.img_proc.click_image_by_max_key_points('ELD_Core/DayLogTab/Button/ERODS/ERODS')
+            self.img_proc.expect_image("vnc-erods-file-transfer-prompt", "ExpectedScreens", 2)
+            print(" Prompt 'ERODS File Transfer' is being displayed")
+            self.img_proc.click_image_by_max_key_points('ok_status_login_btn')
+            self.img_proc.expect_image('vnc-erods-file-transfer-screen', "ExpectedScreens", 2)
+            print("'ERODS File Transfer' screen is being displayed")
+
+
         
     def changeCarrier(Carrier, Send):
         pass

@@ -24,6 +24,7 @@ import math
 from PIL import Image
 from IVG_ELD_CORE import IVG_ELD_CORE
 from IVG_Common import IVG_Common
+import connection_credentials as cfg
 #import pyGPSFeed_IMR
 
 
@@ -67,9 +68,7 @@ def tokenization():
             sf += 1
             if sf == 1:
                 file2.writelines("'''\n\n")
-                #file2.writelines("img_proc = ImageProcessor('192.168.100.13', 'None', .15)\n")
-                file2.writelines("img_proc = ImageProcessor('192.168.1.118', 'None', .15)\n")
-                #img_proc = ImageProcessor('192.168.1.18', 'None', .15)
+                file2.writelines('img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])\n')
             elif(str(doc[0]) == 'ConnectUnit' or str(doc[0])=='Global'):
                 toadd = str("\n#"+str(doc[0:len(doc)-1])+"")
                 file2.writelines(toadd)
