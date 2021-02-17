@@ -132,7 +132,7 @@ class IVG_Common:
         print(color)
         if color != 'gray inactive':
             self.img_proc.click_image_by_max_key_points("ivg_header_alert")
-            self.img_proc.expect_image("vnc_alert_hos_update", 'ExpectedScreens', 4)
+            self.img_proc.expect_image("vnc_alert_hos_update", 'ExpectedScreens', 8)
             self.img_proc.click_image_by_max_key_points("IVG_Common/Alerts/DeleteAllButton/DeleteAllButton")
             print("Alerts Cleared")
             self.goToMainScreen()

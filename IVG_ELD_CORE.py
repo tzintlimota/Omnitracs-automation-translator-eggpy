@@ -213,11 +213,13 @@ class IVG_ELD_CORE:
         firstAddX, secondAddX, firstAddY, secondAddY = 0,0,0,0
         if page == 'Graph':
             x, y = 90, 175
-            x1, y1 = -150, 175
+            x1, y1 = 300, 150
+            x2, y2 = 535, 150
             firstAddX, secondAddX, firstAddY, secondAddY = 745, 745, 20, 70
         else:
             x, y  = 95,175
-            x1, y1 = -80, 175
+            x1, y1 = 375, 150
+            x2, y2 = 550, 150
             firstAddX, secondAddX, firstAddY, secondAddY = 770, 770, 20, 70
         if reset:
             #ACTUALIZAR ESTO A QUE LA FECHA COINCIDA CON LA FECHA DE HOY
@@ -245,22 +247,22 @@ class IVG_ELD_CORE:
                 dateDevice = parse(str(dateDevice))
                 #print("Todays date DEVICE is " + dateDevice.day)
                 print(dateDevice.day, dateDevice.month)
-                self.img_proc.click_image_by_max_key_points_offset("ivg_header_alert", x, y)
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", x2, y2)
 
             print("Cannot go any forward")
         
         for i in range(clicks):
-            self.img_proc.click_image_by_max_key_points_offset("ivg_header_alert", x1, y1)
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", x1, y1)
 
     def dayForward(self, page, clicks):
         self.goTo(page)
         if page == 'Graph':
-            x, y = 90, 175
+            x, y = 535, 150
         else:
-            x, y  = 95,175
+            x, y  = 550, 150
         
         for i in range(clicks):
-            self.img_proc.click_image_by_max_key_points_offset("ivg_header_alert", x, y)
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", x, y)
 
             #self.img_proc.click_image_by_max_key_points("ELD_Core/NavigationButtons/Enabled/DayForward/DayForward")
     
