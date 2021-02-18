@@ -256,6 +256,9 @@ def tokenization():
             elif str(doc[0]) == 'GoToLoginPage':
                 toadd = "\nivg_common.goToLoginPage()"
                 file2.writelines(toadd)
+            elif str(doc[0]) == 'CertifyAllLogs':
+                toadd = "\neld_core.certifyAllLogs()"
+                file2.writelines(toadd)
             elif str(doc[0]) == 'GoTo':
                 params = []
                 stringToPass = ''
@@ -271,6 +274,23 @@ def tokenization():
                 while len(params) < 1:
                     params.append(' ')
                 toadd = "\neld_core.goTo('" + params[0] + "')"
+                file2.writelines(toadd)
+                #eld_core.certifyLogOfDay(1)
+            elif str(doc[0]) == 'CertifyLogsOfDay':
+                params = []
+                stringToPass = ''
+                for i in range(1, len(doc)):
+                    stringToPass += str(doc[i].text)
+                print(stringToPass)
+
+                new = stringToPass.replace('"', '')
+                new = new.replace(',', ' ')
+                params = new.split()
+
+                print(params)
+                while len(params) < 1:
+                    params.append(' ')
+                toadd = "\neld_core.certifyLogsOfDay(" + params[0] + ")"
                 file2.writelines(toadd)
             else:
                 #file2.writelines('\n AUN NO CONOZCO ESTA FUNCION ' + line[0: len(line)-1] + '\n')

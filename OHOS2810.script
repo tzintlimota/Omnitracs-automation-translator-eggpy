@@ -19,3 +19,6 @@ GoTo Summary
 getLoadDate 02/21/2020
 GoToHistory
 CreateLoad.CreateLoad loadId, Trailer1, Trailer2, Trailer3, BL, StartDate, EndDate, true
+
+CertifyAllLogs
+CertifyLogsOfDay 3

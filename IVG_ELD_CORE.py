@@ -299,7 +299,7 @@ class IVG_ELD_CORE:
         f.write("None")
         f.close()
     
-    def certifyLogOfDay(self,page):
+    def certifyLogsOfDay(self,page):
         f = open("IVG_var.txt", "w")
         f.write("Certify")
         f.close()
