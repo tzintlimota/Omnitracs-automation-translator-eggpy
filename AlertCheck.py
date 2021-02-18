@@ -10,9 +10,8 @@ from IVG_ELD_CORE import IVG_ELD_CORE
 from IVG_Common import IVG_Common
 import connection_credentials as cfg
 
-
 img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])
-
+#img_proc = ImageProcessor('192.168.1.118', 'None', .15)
 eld_core = IVG_ELD_CORE()
 ivg_common = IVG_Common()
 

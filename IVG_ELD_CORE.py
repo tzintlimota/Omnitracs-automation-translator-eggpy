@@ -19,6 +19,7 @@ import connection_credentials as cfg
 class IVG_ELD_CORE:
 
     def __init__(self):
+        #self.img_proc = ImageProcessor('192.168.1.118', 'None', .15)
         self.img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])
         self.ivg_common = IVG_Common()
 
@@ -267,6 +268,7 @@ class IVG_ELD_CORE:
             #self.img_proc.click_image_by_max_key_points("ELD_Core/NavigationButtons/Enabled/DayForward/DayForward")
     
     def certifyAllLogs(self):
+        self.goTo("Certify")
         f = open("IVG_var.txt", "w")
         f.write("Certify")
         f.close()
@@ -290,6 +292,25 @@ class IVG_ELD_CORE:
             print(pytesseract.image_to_string(crop_img2))
             certifiedDays = str(pytesseract.image_to_string(crop_img2))
             self.dayBack("Certify", False, 1)
+
+        print("Nothing to certify")
+        time.sleep(5)
+        f = open("IVG_var.txt", "w")
+        f.write("None")
+        f.close()
+    
+    def certifyLogOfDay(self,page):
+        f = open("IVG_var.txt", "w")
+        f.write("Certify")
+        f.close()
+        
+        self.dayBack("Certify", True, page)
+        x, y  = 95,175
+        firstAddX, secondAddX, firstAddY, secondAddY = 500, 500, 20, 70
+   
+        self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/CertifyButton/CertifyButton")
+        self.img_proc.click_image_by_max_key_points("AgreeButton")
+        self.img_proc.expect_image("vnc_certify_tab_main", "ExpectedScreens", 10)
 
         print("Nothing to certify")
         time.sleep(5)

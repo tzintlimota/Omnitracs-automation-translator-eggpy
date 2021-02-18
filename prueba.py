@@ -15,13 +15,12 @@ ivg_common = IVG_Common()
 
 
 ''''''
-
-img_proc = ImageProcessor('192.168.1.118', 'None', .15)
-
+#img_proc = ImageProcessor('192.168.1.118', 'None', .15)
+img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])
 
 
 
 #Funcion de eggplant log
 print('log "***Script name OHOS2810***"') 
 
-eld_core.dayForward("Graph",1)
+eld_core.certifyLogOfDay(1)

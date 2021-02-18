@@ -16,6 +16,7 @@ class IVG_Common:
 
     def __init__(self):
         self.img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])
+        #self.img_proc = ImageProcessor('192.168.1.118', 'None', .15)
 
     def closeUnknownPositionAlert(self):
         self.img_proc.click_image_by_max_key_points("IVG_Common/Login/OkLoginStatus/OkLoginStatus")

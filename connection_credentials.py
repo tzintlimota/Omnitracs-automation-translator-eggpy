@@ -1,5 +1,5 @@
 vnc = {
-    "ivg_ip": "192.168.100.13",
-    "password": None,
+    "ivg_ip": "192.168.118.1",
+    "password": "None",
     "precision": .15
 }
