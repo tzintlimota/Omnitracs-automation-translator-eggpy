@@ -19,8 +19,8 @@ import connection_credentials as cfg
 class IVG_ELD_CORE:
 
     def __init__(self):
-        #self.img_proc = ImageProcessor('192.168.1.118', 'None', .15)
-        self.img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])
+        self.img_proc = ImageProcessor('192.168.1.118', 'None', .15)
+        #self.img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])
         self.ivg_common = IVG_Common()
 
     #Code to discard/accept Certify Day prompt
@@ -383,6 +383,73 @@ class IVG_ELD_CORE:
             self.img_proc.click_image_by_max_key_points('ok_status_login_btn')
             self.img_proc.expect_image('vnc-erods-file-transfer-screen', "ExpectedScreens", 2)
             print("'ERODS File Transfer' screen is being displayed")
+    
+    def findTableRecord(self,RecordToFind,ColumnToSearch,StartPoint, FindOrder):
+        self.goTo("Certify")
+        findOrder = ""
+        if StartPoint =="Bottom":
+            for i in range(1):
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+        elif StartPoint =="Top":
+            for i in range(1):
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
+        else:
+            print("In the middle of the table")
+
+        if FindOrder == "Asc":
+            findOrder = "Asc"
+        elif FindOrder == "Desc":
+            findOrder = "Desc"
+        else:
+            findOrder = "Asc"
+
+        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        crop_img2 = img[int(285):int(310), int(115):int(245)]
+        #calculate the 50 percent of original dimensions
+        width = int(crop_img2.shape[1] * 600 / 100)
+        height = int(crop_img2.shape[0] * 600 / 100)
+        # dsize
+        dsize = (width, height)
+        # resize image
+        crop_img2 = cv2.resize(crop_img2, dsize)
+        plt.imshow(crop_img2)
+        plt.show()
+        string = pytesseract.image_to_string(crop_img2)
+        recordToCompare = string.lower()   
+        print(recordToCompare)
+        print(RecordToFind.lower())
+        if str(recordToCompare.strip()) == str(RecordToFind.lower().strip()):
+            print("Found " + str(RecordToFind))
+        else:
+            print("Searching")
+            found = False
+            for i in range(10):
+                if found:
+                    print("Record Found")
+                    break
+                else:
+                    if findOrder == "Asc":
+                        self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
+                    else:
+                        self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+                    img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+                    crop_img2 = img[int(285):int(310), int(115):int(245)]
+                    #calculate the 50 percent of original dimensions
+                    width = int(crop_img2.shape[1] * 600 / 100)
+                    height = int(crop_img2.shape[0] * 600 / 100)
+                    # dsize
+                    dsize = (width, height)
+                    # resize image
+                    crop_img2 = cv2.resize(crop_img2, dsize)
+                    plt.imshow(crop_img2)
+                    plt.show()
+                    string = pytesseract.image_to_string(crop_img2)
+                    recordToCompare = string.lower()   
+                    print(recordToCompare)
+                    if str(recordToCompare.strip()) == str(RecordToFind.lower().strip()):
+                        found = True
+                        print("Found " + str(RecordToFind))
+        
 
 
         
