@@ -385,6 +385,7 @@ class IVG_ELD_CORE:
             print("'ERODS File Transfer' screen is being displayed")
     
     def findTableRecord(self,RecordToFind,ColumnToSearch,StartPoint, FindOrder):
+        #CertifyTestCase.findTableRecord
         self.goTo("Certify")
         findOrder = ""
         if StartPoint =="Bottom":
@@ -402,9 +403,22 @@ class IVG_ELD_CORE:
             findOrder = "Desc"
         else:
             findOrder = "Asc"
+        
+        if ColumnToSearch == 'Start':
+            y, y1,x, x1 = 285, 310, 30, 110
+        elif ColumnToSearch == 'Status':
+            y, y1,x, x1 = 285, 310, 115, 245
+        elif ColumnToSearch == 'Duration':
+            y, y1,x, x1 = 285, 310, 320, 445
+        elif ColumnToSearch == 'Location':
+            y, y1,x, x1 = 285, 310, 445, 600
+        elif ColumnToSearch == 'Origin':
+            y, y1,x, x1 = 285, 310, 850, 970
+        else:
+            y, y1,x, x1 = 285, 310, 90, 115
 
         img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-        crop_img2 = img[int(285):int(310), int(115):int(245)]
+        crop_img2 = img[int(y):int(y1), int(x):int(x1)]
         #calculate the 50 percent of original dimensions
         width = int(crop_img2.shape[1] * 600 / 100)
         height = int(crop_img2.shape[0] * 600 / 100)
@@ -418,6 +432,7 @@ class IVG_ELD_CORE:
         recordToCompare = string.lower()   
         print(recordToCompare)
         print(RecordToFind.lower())
+
         if str(recordToCompare.strip()) == str(RecordToFind.lower().strip()):
             print("Found " + str(RecordToFind))
         else:
@@ -428,12 +443,9 @@ class IVG_ELD_CORE:
                     print("Record Found")
                     break
                 else:
-                    if findOrder == "Asc":
-                        self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
-                    else:
-                        self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+                    self.img_proc.click_image_by_coordinates(150,300)
                     img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-                    crop_img2 = img[int(285):int(310), int(115):int(245)]
+                    crop_img2 = img[int(y):int(y1), int(x):int(x1)]
                     #calculate the 50 percent of original dimensions
                     width = int(crop_img2.shape[1] * 600 / 100)
                     height = int(crop_img2.shape[0] * 600 / 100)
@@ -449,6 +461,16 @@ class IVG_ELD_CORE:
                     if str(recordToCompare.strip()) == str(RecordToFind.lower().strip()):
                         found = True
                         print("Found " + str(RecordToFind))
+                        if findOrder == 'Asc':
+                            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+                        else:
+                            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
+                        self.img_proc.click_image_by_coordinates(150,300)
+                    else:
+                        if findOrder == "Asc":
+                            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
+                        else:
+                            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
         
 
 
