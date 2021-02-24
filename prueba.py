@@ -32,10 +32,9 @@ img_proc = ImageProcessor('192.168.1.118', 'None', .15)
 #Funcion de eggplant log
 print('log "***Script name OHOS2810***"') 
 
-eld_core.findTableRecord("On Duty","Status","Bottom", "Asc")
-eld_core.findTableRecord("On Duty","Start","Bottom", "Asc")
-eld_core.findTableRecord("On Duty","Duration","Bottom", "Asc")
-eld_core.findTableRecord("On Duty","Location","Bottom", "Asc")
-eld_core.findTableRecord("On Duty","Origin","Bottom", "Asc")
+#eld_core.findTableRecord("On Duty","Status","Bottom", "Asc")
+records = eld_core.getTable("Bottom", "Asc", 2)
+
+print(records)
 
 #eld_core.findTableRecord("Sleeper Berth","","Top", "Desc")

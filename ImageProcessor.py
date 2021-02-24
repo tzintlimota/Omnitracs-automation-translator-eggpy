@@ -214,8 +214,8 @@ class ImageProcessor:
             total_y = total_y / len(list_kp1)
 
             img3 = cv2.drawMatches(img1, kp1, img2, kp2, good_matches, img2, flags=2)
-            plt.imshow(img3)
-            plt.show()
+            #plt.imshow(img3)
+            #plt.show()
         except:
             total_x = -1
             total_y = -1 
@@ -382,8 +382,8 @@ class ImageProcessor:
         total_x, total_y = self.get_image_coordinates_by_max_key_points(image_name)
         cv2.line(self.img3, (math.floor(total_x), math.floor(total_y)),
                  (math.floor(total_x + x_offset), math.floor(total_y + y_offset)), (0, 255, 0), 3)
-        plt.imshow(self.img3)
-        plt.show()
+        #plt.imshow(self.img3)
+        #plt.show()
         self.client.mouseMove(math.floor(total_x + float(x_offset)), math.floor(total_y + float(y_offset)))
         self.client.mousePress(1)
         time.sleep(0.5)
@@ -429,15 +429,15 @@ class ImageProcessor:
     def color_check(self, x,y ,im):
         img = im
         crop_img = img[int(y-5):int(y+5), int(x-5):int(x+5)]
-        crop_img2 = img[int(y-20):int(y+20), int(x-20):int(x+20)]
+        crop_img2 = img[int(y-10):int(y+10), int(x-10):int(x+10)]
         #Space color conversion
         #crop_img = cv2.cvtColor(crop_img, cv2.COLOR_RGB2BGR)
         avg_color_per_row = np.average(crop_img, axis=0)
         avg_color = np.average(avg_color_per_row, axis=0)
         print(avg_color)
         #Crop_img2 is just for user convenience, no processing is being made with that image
-        plt.imshow(crop_img2)
-        plt.show()  
+        #plt.imshow(crop_img2)
+        #plt.show()  
         if(avg_color[0] == 255 and avg_color[1] == 255 and avg_color[2] == 255):
             color = 'white'
         elif(avg_color[0] == 0 and avg_color[1] == 0 and avg_color[2] == 0):

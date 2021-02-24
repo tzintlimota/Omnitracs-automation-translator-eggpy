@@ -389,10 +389,10 @@ class IVG_ELD_CORE:
         self.goTo("Certify")
         findOrder = ""
         if StartPoint =="Bottom":
-            for i in range(1):
+            for i in range(10):
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
         elif StartPoint =="Top":
-            for i in range(1):
+            for i in range(10):
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
         else:
             print("In the middle of the table")
@@ -443,6 +443,7 @@ class IVG_ELD_CORE:
                     print("Record Found")
                     break
                 else:
+                    self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
                     self.img_proc.click_image_by_coordinates(150,300)
                     img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
                     crop_img2 = img[int(y):int(y1), int(x):int(x1)]
@@ -461,11 +462,11 @@ class IVG_ELD_CORE:
                     if str(recordToCompare.strip()) == str(RecordToFind.lower().strip()):
                         found = True
                         print("Found " + str(RecordToFind))
-                        if findOrder == 'Asc':
+                        '''if findOrder == 'Asc':
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
                         else:
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
-                        self.img_proc.click_image_by_coordinates(150,300)
+                        self.img_proc.click_image_by_coordinates(150,300)'''
                     else:
                         if findOrder == "Asc":
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
@@ -473,7 +474,140 @@ class IVG_ELD_CORE:
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
         
 
+    def getTable(self, StartPoint, FindOrder, NumRecords):
+        
+        self.goTo("Certify")
+        findOrder = ""
+        
+        if StartPoint =="Bottom":
+            for i in range(10):
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+        elif StartPoint =="Top":
+            for i in range(10):
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
+        else:
+            print("In the middle of the table")
 
+        if FindOrder == "Asc":
+            findOrder = "Asc"
+        elif FindOrder == "Desc":
+            findOrder = "Desc"
+        else:
+            findOrder = "Asc"
+        
+        records = []
+        for i in range(NumRecords):
+            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+            new_rec = []
+            #CERTIFIED
+            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+            crop_img2 = img[int(280):int(305), int(0):int(40)]
+            
+            string = pytesseract.image_to_string(crop_img2)
+            recordToCompare = string.lower() 
+            color = self.img_proc.color_check(20,20 ,crop_img2)
+            print("COLOR")
+            print(color)
+            
+            if color == 'green':
+                new_rec.append("Certified")
+            else:
+                new_rec.append("Empty")
+            
+            #START
+            y, y1,x, x1 = 285, 310, 30, 110
+            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+            crop_img2 = img[int(y):int(y1), int(x):int(x1)]
+            #calculate the 50 percent of original dimensions
+            width = int(crop_img2.shape[1] * 600 / 100)
+            height = int(crop_img2.shape[0] * 600 / 100)
+            # dsize
+            dsize = (width, height)
+            # resize image
+            crop_img2 = cv2.resize(crop_img2, dsize)
+            
+            string = pytesseract.image_to_string(crop_img2)
+            recordToCompare = string.lower()
+            new_rec.append(recordToCompare.strip())   
+       
+            #STATUS
+            y, y1,x, x1 = 285, 310, 115, 245
+            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+            crop_img2 = img[int(y):int(y1), int(x):int(x1)]
+            #calculate the 50 percent of original dimensions
+            width = int(crop_img2.shape[1] * 600 / 100)
+            height = int(crop_img2.shape[0] * 600 / 100)
+            # dsize
+            dsize = (width, height)
+            # resize image
+            crop_img2 = cv2.resize(crop_img2, dsize)
+            
+            string = pytesseract.image_to_string(crop_img2)
+            recordToCompare = string.lower()
+            new_rec.append(recordToCompare.strip())    
+    
+            #DURATION
+            y, y1,x, x1 = 285, 310, 320, 445
+            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+            crop_img2 = img[int(y):int(y1), int(x):int(x1)]
+            #calculate the 50 percent of original dimensions
+            width = int(crop_img2.shape[1] * 600 / 100)
+            height = int(crop_img2.shape[0] * 600 / 100)
+            # dsize
+            dsize = (width, height)
+            # resize image
+            crop_img2 = cv2.resize(crop_img2, dsize)
+            
+            string = pytesseract.image_to_string(crop_img2)
+            recordToCompare = string.lower()
+            new_rec.append(recordToCompare.strip())    
+
+            #LOCATION
+            y, y1,x, x1 = 285, 310, 445, 600
+            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+            crop_img2 = img[int(y):int(y1), int(x):int(x1)]
+            #calculate the 50 percent of original dimensions
+            width = int(crop_img2.shape[1] * 600 / 100)
+            height = int(crop_img2.shape[0] * 600 / 100)
+            # dsize
+            dsize = (width, height)
+            # resize image
+            crop_img2 = cv2.resize(crop_img2, dsize)
+            
+            string = pytesseract.image_to_string(crop_img2)
+            recordToCompare = string.lower()
+            new_rec.append(recordToCompare.strip())    
+            
+            #ORIGIN
+            y, y1,x, x1 = 285, 310, 850, 970
+            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+            crop_img2 = img[int(y):int(y1), int(x):int(x1)]
+            #calculate the 50 percent of original dimensions
+            width = int(crop_img2.shape[1] * 600 / 100)
+            height = int(crop_img2.shape[0] * 600 / 100)
+            # dsize
+            dsize = (width, height)
+            # resize image
+            crop_img2 = cv2.resize(crop_img2, dsize)
+            
+            string = pytesseract.image_to_string(crop_img2)
+            recordToCompare = string.lower() 
+            new_rec.append(recordToCompare.strip()) 
+
+            records.append(new_rec)
+            if findOrder == "Asc":
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
+            else:
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+        return records  
+            
+           
+
+
+        
+
+
+        
         
     def changeCarrier(Carrier, Send):
         pass
