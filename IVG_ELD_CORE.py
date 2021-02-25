@@ -443,8 +443,9 @@ class IVG_ELD_CORE:
                     print("Record Found")
                     break
                 else:
+                    self.img_proc.click_image_by_coordinates(150, 300)
                     self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-                    self.img_proc.click_image_by_coordinates(150,300)
+                    #self.img_proc.click_image_by_coordinates(150,300)
                     img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
                     crop_img2 = img[int(y):int(y1), int(x):int(x1)]
                     #calculate the 50 percent of original dimensions
@@ -497,6 +498,8 @@ class IVG_ELD_CORE:
         
         records = []
         for i in range(NumRecords):
+            time.sleep(1)
+            self.img_proc.click_image_by_coordinates(150, 300)
             self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
             new_rec = []
             #CERTIFIED
@@ -519,14 +522,17 @@ class IVG_ELD_CORE:
             img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
             crop_img2 = img[int(y):int(y1), int(x):int(x1)]
             #calculate the 50 percent of original dimensions
-            width = int(crop_img2.shape[1] * 600 / 100)
-            height = int(crop_img2.shape[0] * 600 / 100)
+            width = int(crop_img2.shape[1] * 800 / 100)
+            height = int(crop_img2.shape[0] * 800 / 100)
             # dsize
             dsize = (width, height)
             # resize image
-            crop_img2 = cv2.resize(crop_img2, dsize)
-            
-            string = pytesseract.image_to_string(crop_img2)
+            #crop_img2 = cv2.resize(crop_img2, dsize)
+            crop_img2 = cv2.resize(crop_img2, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+            '''plt.imshow(crop_img2)
+            plt.show()'''
+
+            string = pytesseract.image_to_string(crop_img2, lang='eng', config="--psm 6")
             recordToCompare = string.lower()
             new_rec.append(recordToCompare.strip())   
        
@@ -535,14 +541,17 @@ class IVG_ELD_CORE:
             img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
             crop_img2 = img[int(y):int(y1), int(x):int(x1)]
             #calculate the 50 percent of original dimensions
-            width = int(crop_img2.shape[1] * 600 / 100)
-            height = int(crop_img2.shape[0] * 600 / 100)
+            width = int(crop_img2.shape[1] * 1200 / 400)
+            height = int(crop_img2.shape[0] * 1200 / 400)
             # dsize
             dsize = (width, height)
             # resize image
-            crop_img2 = cv2.resize(crop_img2, dsize)
-            
-            string = pytesseract.image_to_string(crop_img2)
+            #crop_img2 = cv2.resize(crop_img2, dsize)
+            crop_img2 = cv2.resize(crop_img2, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+
+
+            string = pytesseract.image_to_string(crop_img2, lang='eng', config="--psm 6")
+            #string2 = ''.join(i for i in string if i.isalnum())
             recordToCompare = string.lower()
             new_rec.append(recordToCompare.strip())    
     
@@ -557,8 +566,16 @@ class IVG_ELD_CORE:
             dsize = (width, height)
             # resize image
             crop_img2 = cv2.resize(crop_img2, dsize)
-            
-            string = pytesseract.image_to_string(crop_img2)
+            crop_img2 = cv2.cvtColor(crop_img2, cv2.COLOR_BGR2GRAY)
+            plt.imshow(crop_img2)
+            plt.show()
+            #crop_img2 = cv2.resize(crop_img2, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+            '''plt.imshow(crop_img2)
+            plt.show()'''
+
+            #custom_oem_psm_config = r'--psm 7 --oem 3 -c tessedit_char_whitelist=0123456789\n'
+            #string = pytesseract.image_to_string(crop_img2, config='--psm 10 --eom 3 -c tessedit_char_whitelist=0123456789')
+            string = pytesseract.image_to_string(crop_img2,config='digits')
             recordToCompare = string.lower()
             new_rec.append(recordToCompare.strip())    
 
@@ -567,30 +584,38 @@ class IVG_ELD_CORE:
             img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
             crop_img2 = img[int(y):int(y1), int(x):int(x1)]
             #calculate the 50 percent of original dimensions
-            width = int(crop_img2.shape[1] * 600 / 100)
-            height = int(crop_img2.shape[0] * 600 / 100)
+            width = int(crop_img2.shape[1] * 800 / 100)
+            height = int(crop_img2.shape[0] * 800 / 100)
             # dsize
             dsize = (width, height)
             # resize image
-            crop_img2 = cv2.resize(crop_img2, dsize)
+            #crop_img2 = cv2.resize(crop_img2, dsize)
+            crop_img2 = cv2.resize(crop_img2, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+            '''plt.imshow(crop_img2)
+            plt.show()'''
             
-            string = pytesseract.image_to_string(crop_img2)
+            custom_oem_psm_config = r'--oem 1 --psm 13'
+            string = pytesseract.image_to_string(crop_img2, lang='eng', config=custom_oem_psm_config)
             recordToCompare = string.lower()
             new_rec.append(recordToCompare.strip())    
             
             #ORIGIN
-            y, y1,x, x1 = 285, 310, 850, 970
+            y, y1,x, x1 = 285, 310, 850, 960
             img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
             crop_img2 = img[int(y):int(y1), int(x):int(x1)]
             #calculate the 50 percent of original dimensions
-            width = int(crop_img2.shape[1] * 600 / 100)
-            height = int(crop_img2.shape[0] * 600 / 100)
+            width = int(crop_img2.shape[1] * 800 / 100)
+            height = int(crop_img2.shape[0] * 800 / 100)
             # dsize
             dsize = (width, height)
             # resize image
-            crop_img2 = cv2.resize(crop_img2, dsize)
+            #crop_img2 = cv2.resize(crop_img2, dsize)
+            crop_img2 = cv2.resize(crop_img2, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+            '''plt.imshow(crop_img2)
+            plt.show()'''
             
-            string = pytesseract.image_to_string(crop_img2)
+            #string = pytesseract.image_to_string(crop_img2, lang='eng', config="--psm 6")
+            string = pytesseract.image_to_string(crop_img2, lang='eng', config='--psm 8')
             recordToCompare = string.lower() 
             new_rec.append(recordToCompare.strip()) 
 
