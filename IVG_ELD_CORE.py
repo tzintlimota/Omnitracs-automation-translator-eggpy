@@ -19,7 +19,7 @@ import connection_credentials as cfg
 class IVG_ELD_CORE:
 
     def __init__(self):
-        self.img_proc = ImageProcessor('192.168.1.118', 'None', .15)
+        self.img_proc = ImageProcessor('192.168.100.13', 'None', .15)
         #self.img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])
         self.ivg_common = IVG_Common()
 
@@ -481,10 +481,10 @@ class IVG_ELD_CORE:
         findOrder = ""
         
         if StartPoint =="Bottom":
-            for i in range(10):
+            for i in range(2):
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
         elif StartPoint =="Top":
-            for i in range(10):
+            for i in range(2):
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
         else:
             print("In the middle of the table")
@@ -518,26 +518,14 @@ class IVG_ELD_CORE:
                 new_rec.append("Empty")
             
             #START
-            y, y1,x, x1 = 285, 310, 30, 110
-            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-            crop_img2 = img[int(y):int(y1), int(x):int(x1)]
-            #calculate the 50 percent of original dimensions
-            width = int(crop_img2.shape[1] * 800 / 100)
-            height = int(crop_img2.shape[0] * 800 / 100)
-            # dsize
-            dsize = (width, height)
-            # resize image
-            #crop_img2 = cv2.resize(crop_img2, dsize)
-            crop_img2 = cv2.resize(crop_img2, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
-            '''plt.imshow(crop_img2)
-            plt.show()'''
-
-            string = pytesseract.image_to_string(crop_img2, lang='eng', config="--psm 6")
-            recordToCompare = string.lower()
+            self.img_proc.click_image_by_coordinates(150, 300)
+            recordToCompare = self.retrieve_start()
             new_rec.append(recordToCompare.strip())   
        
             #STATUS
             y, y1,x, x1 = 285, 310, 115, 245
+            self.img_proc.click_image_by_coordinates(150, 300)
+            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
             img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
             crop_img2 = img[int(y):int(y1), int(x):int(x1)]
             #calculate the 50 percent of original dimensions
@@ -554,30 +542,14 @@ class IVG_ELD_CORE:
             #string2 = ''.join(i for i in string if i.isalnum())
             recordToCompare = string.lower()
             new_rec.append(recordToCompare.strip())    
-    
-            #DURATION
-            y, y1,x, x1 = 285, 310, 320, 445
-            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-            crop_img2 = img[int(y):int(y1), int(x):int(x1)]
-            #calculate the 50 percent of original dimensions
-            width = int(crop_img2.shape[1] * 600 / 100)
-            height = int(crop_img2.shape[0] * 600 / 100)
-            # dsize
-            dsize = (width, height)
-            # resize image
-            crop_img2 = cv2.resize(crop_img2, dsize)
-            crop_img2 = cv2.cvtColor(crop_img2, cv2.COLOR_BGR2GRAY)
-            plt.imshow(crop_img2)
-            plt.show()
-            #crop_img2 = cv2.resize(crop_img2, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
-            '''plt.imshow(crop_img2)
-            plt.show()'''
 
-            #custom_oem_psm_config = r'--psm 7 --oem 3 -c tessedit_char_whitelist=0123456789\n'
-            #string = pytesseract.image_to_string(crop_img2, config='--psm 10 --eom 3 -c tessedit_char_whitelist=0123456789')
-            string = pytesseract.image_to_string(crop_img2,config='digits')
-            recordToCompare = string.lower()
-            new_rec.append(recordToCompare.strip())    
+
+
+            #Duration
+            recordToCompare = self.retrieve_duration()
+            new_rec.append(recordToCompare.strip())
+
+
 
             #LOCATION
             y, y1,x, x1 = 285, 310, 445, 600
@@ -601,21 +573,24 @@ class IVG_ELD_CORE:
             
             #ORIGIN
             y, y1,x, x1 = 285, 310, 850, 960
+            self.img_proc.click_image_by_coordinates(150, 300)
+            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+
             img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+            
             crop_img2 = img[int(y):int(y1), int(x):int(x1)]
             #calculate the 50 percent of original dimensions
-            width = int(crop_img2.shape[1] * 800 / 100)
-            height = int(crop_img2.shape[0] * 800 / 100)
+            width = int(crop_img2.shape[1] * 600 / 100)
+            height = int(crop_img2.shape[0] * 600 / 100)
             # dsize
             dsize = (width, height)
             # resize image
-            #crop_img2 = cv2.resize(crop_img2, dsize)
-            crop_img2 = cv2.resize(crop_img2, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
-            '''plt.imshow(crop_img2)
-            plt.show()'''
+            crop_img2 = cv2.resize(crop_img2, dsize)
+            #plt.imshow(crop_img2)
+            #plt.show()
             
-            #string = pytesseract.image_to_string(crop_img2, lang='eng', config="--psm 6")
-            string = pytesseract.image_to_string(crop_img2, lang='eng', config='--psm 8')
+            string = pytesseract.image_to_string(crop_img2, lang='eng', config="--psm 8")
+            #string = pytesseract.image_to_string(crop_img2)
             recordToCompare = string.lower() 
             new_rec.append(recordToCompare.strip()) 
 
@@ -624,8 +599,118 @@ class IVG_ELD_CORE:
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
             else:
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
-        return records  
-            
+        return records
+
+    def retrieve_duration(self):
+        string = ""
+        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+
+        for i in range(3):
+
+            '''This defines with region is being captured (hh:mm:ss)'''
+            if i == 0:
+                x, x1 = 320, 340
+                time_char = "h "
+            elif i == 1:
+                x, x1 = 352, 372
+                time_char = "m "
+            else:
+                x, x1 = 387, 407
+                time_char = "s "
+
+            crop_img2 = img[int(285):int(310), int(x):int(x1)]
+
+            '''calculate the 50 percent of original dimensions'''
+            width = int(crop_img2.shape[1] * 600 / 100)
+            height = int(crop_img2.shape[0] * 600 / 100)
+            # dsize
+            dsize = (width, height)
+            '''resize image'''
+            crop_img2 = cv2.resize(crop_img2, dsize)
+
+            '''Change to gray scale'''
+            crop_img2 = cv2.cvtColor(crop_img2, cv2.COLOR_BGR2GRAY)
+
+            '''Otsu Tresholding automatically find best threshold value'''
+            _, binary_image = cv2.threshold(crop_img2, 0, 255, cv2.THRESH_OTSU)
+
+            '''Invert the colors of the image'''
+            count_white = np.sum(binary_image > 0)
+            count_black = np.sum(binary_image == 0)
+            if count_black > count_white:
+                binary_image = 255 - binary_image
+
+            '''Padding'''
+            crop_img2 = cv2.copyMakeBorder(binary_image, 10, 10, 10, 10, cv2.BORDER_CONSTANT, value=(255, 255, 255))
+            crop_img2 = cv2.GaussianBlur(crop_img2, (3, 3), 0)
+            #plt.imshow(crop_img2)
+            #plt.show()
+
+            string += pytesseract.image_to_string(crop_img2,
+                                                  config='--psm 6 --oem 3 -c tessedit_char_whitelist=0123456789')
+            string = string.strip()
+            string += time_char
+            print(string)
+
+        return string
+
+    def retrieve_start(self):
+        string = ""
+        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+
+        for i in range(3):
+
+            '''This defines with region is being captured (hh:mm:ss)'''
+            if i == 0:
+                x, x1 = 34, 56
+                time_char = ":"
+            elif i == 1:
+                x, x1 = 57, 77
+                time_char = ":"
+            else:
+                x, x1 = 80, 100
+                time_char = ""
+
+            crop_img2 = img[int(285):int(310), int(x):int(x1)]
+            '''calculate the 50 percent of original dimensions'''
+            width = int(crop_img2.shape[1] * 600 / 100)
+            height = int(crop_img2.shape[0] * 600 / 100)
+
+            # dsize
+            dsize = (width, height)
+            '''resize image'''
+            crop_img2 = cv2.resize(crop_img2, dsize)
+
+            '''Change to gray scale'''
+            crop_img2 = cv2.cvtColor(crop_img2, cv2.COLOR_BGR2GRAY)
+
+            '''Otsu Tresholding automatically find best threshold value'''
+            _, binary_image = cv2.threshold(crop_img2, 0, 255, cv2.THRESH_OTSU)
+
+            # invert the image colors
+            count_white = np.sum(binary_image > 0)
+            count_black = np.sum(binary_image == 0)
+            if count_black > count_white:
+                binary_image = 255 - binary_image
+
+            '''Padding'''
+            crop_img2 = cv2.copyMakeBorder(binary_image, 10, 10, 10, 10, cv2.BORDER_CONSTANT, value=(255, 255, 255))
+
+            '''Blur the image'''
+            crop_img2 = cv2.GaussianBlur(crop_img2, (3, 3), 0)
+
+            #plt.imshow(crop_img2)
+            #plt.show()
+
+            string += pytesseract.image_to_string(crop_img2, config='--psm 8 --oem 3 -c tessedit_char_whitelist=0123456789')
+            string = string.strip()
+            string += time_char
+            print(string)
+
+        return string
+
            
 
 
