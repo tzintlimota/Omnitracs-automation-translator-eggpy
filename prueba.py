@@ -32,5 +32,5 @@ img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["preci
 #Funcion de eggplant log
 print('log "***Script name OHOS2810***"') 
 
-eld_core.getTable('Bottom', 'Asc', int(5))
-eld_core.findTableRecord('OnDuty', 'Status','Bottom','Asc')
+prueba =eld_core.getTable('Bottom', 'Asc', int(2))
+print(prueba)
