@@ -292,6 +292,40 @@ def tokenization():
                     params.append(' ')
                 toadd = "\neld_core.certifyLogsOfDay(" + params[0] + ")"
                 file2.writelines(toadd)
+            elif (str(doc[0]) == 'CertifyTestCase.findTableRecord'):
+                params = []
+                stringToPass = ''
+                for i in range(1, len(doc)):
+                    stringToPass += str(doc[i].text)
+                print(stringToPass)
+
+                new = stringToPass.replace('"', '')
+                new = new.replace(',', ' ')
+                params = new.split()
+
+                print(params)
+                while len(params) < 5:
+                    params.append(' ')
+                # "ON","N" ,"AUTOMATION"
+                toadd = "\neld_core.findTableRecord('" + params[0] + "', '" + params[1] + "','" + params[2] + "','" + params[3] + "')"
+                file2.writelines(toadd)
+            elif (str(doc[0]) == 'getTable'):
+                params = []
+                stringToPass = ''
+                for i in range(1, len(doc)):
+                    stringToPass += str(doc[i].text)
+                print(stringToPass)
+
+                new = stringToPass.replace('"', '')
+                new = new.replace(',', ' ')
+                params = new.split()
+
+                print(params)
+                while len(params) < 4:
+                    params.append(' ')
+                # "ON","N" ,"AUTOMATION"
+                toadd = "\neld_core.getTable('" + params[0] + "', '" + params[1] + "', int(" + params[2] + "))"
+                file2.writelines(toadd)
             else:
                 #file2.writelines('\n AUN NO CONOZCO ESTA FUNCION ' + line[0: len(line)-1] + '\n')
                 file2.writelines('\n')
