@@ -12,13 +12,6 @@ If Remarks are empty and only the Location is edited, NEXT button will not appea
 
 log "***Script name OHOS2810***"
 
+getTable Bottom, Asc, 5
 
-GoTo Status
-GoTo Summary
-
-getLoadDate 02/21/2020
-GoToHistory
-CreateLoad.CreateLoad loadId, Trailer1, Trailer2, Trailer3, BL, StartDate, EndDate, true
-
-CertifyAllLogs
-CertifyLogsOfDay 3
+CertifyTestCase.findTableRecord On Duty, Status, Bottom, Asc
