@@ -2,10 +2,13 @@
 This repository contains the code to translate Eggplant HOS Mobile functions to Python with the library pyIMR 
 https://github.com/Omnitracs/automation-image-recognition-tool.
 
+
 **Requirements:**
 - Python version >= 3.8
 - **Python path** should be added to the System Environment Variable **Path** . Example: https://www.educative.io/edpresso/how-to-add-python-to-path-variable-in-windows 
 - PyCharm IDE is recommended although you can choose the one of your preference.
+
+
 
 
 **Install Packages**
@@ -14,6 +17,8 @@ Once the project has been cloned, open a termnial on the project and enter:
         `dependencies.bat`
 
 Once the process is done, there should be no error in the project.
+
+
 
 
 **Structure:**
