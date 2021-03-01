@@ -633,14 +633,6 @@ class IVG_ELD_CORE:
             else:
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
         return records  
-            
-           
-
-
-        
-
-
-        
         
     def changeCarrier(Carrier, Send):
         pass
