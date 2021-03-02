@@ -711,11 +711,12 @@ class IVG_ELD_CORE:
 
         return string
 
-    #Preguntar nombre
-    def createLog(self):
+    def update_logs(self):
         string = ""
         self.ivg_common.clearAlerts()
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+        self.img_proc.click_image_by_max_key_points('IVG_Common/Home/Return/Return')
+        time.sleep(1)
         self.goToHOS()
         self.goTo("Days")
         self.img_proc.click_image_by_max_key_points("LogRequestButton")
@@ -724,7 +725,7 @@ class IVG_ELD_CORE:
             time.sleep(1)
         self.img_proc.click_image_by_max_key_points("ivg_header_alert")
         
-        max_time = datetime.now() + timedelta(seconds=float(180))
+        max_time = datetime.now() + timedelta(seconds=float(300))
         search = None
         while search == None:
             print("Waiting for logs")
