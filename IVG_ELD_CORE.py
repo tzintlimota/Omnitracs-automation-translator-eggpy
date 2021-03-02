@@ -757,6 +757,81 @@ class IVG_ELD_CORE:
             print(search)
         print("LOG UPDATE RECEIVED")
 
+    def select_driver_from_dropDown(self, driver_id):
+        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+
+        #Gets the current DriverID
+        crop_img2 = img[int(95):int(126), int(42):int(327)]
+        current_driver = pytesseract.image_to_string(crop_img2)
+        current_driver = current_driver.strip()
+        print(current_driver)
+
+        if current_driver == driver_id:
+            print("Driver ID is already selected")
+        else:
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                                                               -200, 45)
+
+            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+
+            time.sleep(1)
+
+            # Gets the current DriverID
+            crop_img2 = img[int(124):int(214), int(40):int(327)]
+            plt.imshow(crop_img2)
+            plt.show()
+
+            '''Change to gray scale'''
+            crop_img2 = cv2.cvtColor(crop_img2, cv2.COLOR_BGR2GRAY)
+
+            '''Otsu Tresholding automatically find best threshold value'''
+            _, binary_image = cv2.threshold(crop_img2, 0, 255, cv2.THRESH_OTSU)
+
+            # invert the image colors
+            count_white = np.sum(binary_image > 0)
+            count_black = np.sum(binary_image == 0)
+            if count_black > count_white:
+                binary_image = 255 - binary_image
+
+            '''Padding'''
+            crop_img2 = cv2.copyMakeBorder(binary_image, 10, 10, 10, 10, cv2.BORDER_CONSTANT, value=(255, 255, 255))
+
+            '''Blur the image'''
+            crop_img2 = cv2.GaussianBlur(crop_img2, (3, 3), 0)
+
+            string = pytesseract.image_to_string(crop_img2)
+
+            string = string.strip()
+            slist = string.splitlines()
+            slist = list(filter(str.strip, slist))
+
+            for i in range(len(slist)):
+
+                if driver_id in str(slist[i]) and i == 0:
+                    self.img_proc.click_image_by_max_key_points_offset(
+                        "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                        -250, 65)
+                    print("The DriverID {" + str(slist[i]) + "} has been selected.")
+
+                if driver_id in str(slist[i]) and i == 1:
+                    self.img_proc.click_image_by_max_key_points_offset(
+                        "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                        -250, 88)
+                    print("The DriverID {" + str(slist[i]) + "} has been selected.")
+
+                if driver_id in str(slist[i]) and i == 2:
+                    self.img_proc.click_image_by_max_key_points_offset(
+                        "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                        -250, 115)
+                    print("The DriverID {" + str(slist[i]) + "} has been selected.")
+
+                else:
+                    print("The DriverID {" + str(driver_id) + "} has NOT been found")
+
+
+
     def changeCarrier(self,Carrier, Send):
         pass
 
