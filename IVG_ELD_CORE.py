@@ -723,7 +723,7 @@ class IVG_ELD_CORE:
             print("Waiting")
             time.sleep(1)
         self.img_proc.click_image_by_max_key_points("ivg_header_alert")
-
+        
         max_time = datetime.now() + timedelta(seconds=float(180))
         search = None
         while search == None:
@@ -735,7 +735,7 @@ class IVG_ELD_CORE:
             self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
             img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
 
-            crop_img2 = img[int(120):int(480), int(300):int(500)]
+            crop_img2 = img[int(150):int(480), int(315):int(560)]
 
             '''calculate the 50 percent of original dimensions'''
             width = int(crop_img2.shape[1] * 600 / 100)
@@ -752,7 +752,7 @@ class IVG_ELD_CORE:
             string = string.strip()
             print(string)
             
-            search = re.search(r"Log Update|ELD Exempt", search)
+            search = re.search(r"Log Update|ELD Exempt", string)
             print(search)
         print("LOG UPDATE RECEIVED")
 
