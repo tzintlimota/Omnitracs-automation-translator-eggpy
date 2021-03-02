@@ -12,6 +12,7 @@ import numpy as np
 import pytesseract
 from dateutil.parser import parse
 import connection_credentials as cfg
+import re
 
 
 #import pyGPSFeed_IMR
@@ -19,7 +20,7 @@ import connection_credentials as cfg
 class IVG_ELD_CORE:
 
     def __init__(self):
-        self.img_proc = ImageProcessor('192.168.100.13', 'None', .15)
+        self.img_proc = ImageProcessor('192.168.1.118', 'None', .15)
         #self.img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])
         self.ivg_common = IVG_Common()
 
@@ -607,7 +608,6 @@ class IVG_ELD_CORE:
         img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
 
         for i in range(3):
-
             '''This defines with region is being captured (hh:mm:ss)'''
             if i == 0:
                 x, x1 = 320, 340
@@ -711,15 +711,52 @@ class IVG_ELD_CORE:
 
         return string
 
-           
+    #Preguntar nombre
+    def createLog(self):
+        string = ""
+        self.ivg_common.clearAlerts()
+        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+        self.goToHOS()
+        self.goTo("Days")
+        self.img_proc.click_image_by_max_key_points("LogRequestButton")
+        while self.img_proc.expect_image("log-request-confirmation", "ExpectedScreens", 1):
+            print("Waiting")
+            time.sleep(1)
+        self.img_proc.click_image_by_max_key_points("ivg_header_alert")
 
+        max_time = datetime.now() + timedelta(seconds=float(180))
+        search = None
+        while search == None:
+            print("Waiting for logs")
+            if datetime.now() >= max_time:
+                print("Time limit has been exceeded, no logs found")
+                break
 
-        
+            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
 
+            crop_img2 = img[int(120):int(480), int(300):int(500)]
 
-        
-        
-    def changeCarrier(Carrier, Send):
+            '''calculate the 50 percent of original dimensions'''
+            width = int(crop_img2.shape[1] * 600 / 100)
+            height = int(crop_img2.shape[0] * 600 / 100)
+            # dsize
+            dsize = (width, height)
+            '''resize image'''
+            crop_img2 = cv2.resize(crop_img2, dsize)
+
+            plt.imshow(crop_img2)
+            plt.show()
+
+            string += pytesseract.image_to_string(crop_img2)
+            string = string.strip()
+            print(string)
+            
+            search = re.search(r"Log Update|ELD Exempt", search)
+            print(search)
+        print("LOG UPDATE RECEIVED")
+
+    def changeCarrier(self,Carrier, Send):
         pass
 
     def reviewCarrierEdits(self):
