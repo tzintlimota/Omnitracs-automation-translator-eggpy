@@ -17,9 +17,9 @@ ivg_common = IVG_Common()
 
 ''''''
 
-img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])
+#img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])
 
-
+img_proc = ImageProcessor('192.168.1.118', 'None', .15)
 
 
 
