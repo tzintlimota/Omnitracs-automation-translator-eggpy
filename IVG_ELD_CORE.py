@@ -20,7 +20,7 @@ import re
 class IVG_ELD_CORE:
 
     def __init__(self):
-        self.img_proc = ImageProcessor('192.168.1.118', 'None', .15)
+        self.img_proc = ImageProcessor('192.168.100.13', 'None', .15)
         #self.img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])
         self.ivg_common = IVG_Common()
 
@@ -757,7 +757,14 @@ class IVG_ELD_CORE:
             print(search)
         print("LOG UPDATE RECEIVED")
 
-    def select_driver_from_dropDown(self, driver_id):
+    def select_driver_from_dropdown(self, driver_id):
+        driver_found = False
+        unidentified_profile = False
+
+        self.img_proc.click_image_by_max_key_points_offset(
+            "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+            -0, 130)
+
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
         img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
 
@@ -765,9 +772,12 @@ class IVG_ELD_CORE:
         crop_img2 = img[int(95):int(126), int(42):int(327)]
         current_driver = pytesseract.image_to_string(crop_img2)
         current_driver = current_driver.strip()
+        driver_id = driver_id.replace("O","0")
+        current_driver = current_driver.replace("O", "0")
+        print(driver_id)
         print(current_driver)
 
-        if current_driver == driver_id:
+        if driver_id in current_driver:
             print("Driver ID is already selected")
         else:
             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
@@ -776,59 +786,104 @@ class IVG_ELD_CORE:
             self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
             img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
 
-            time.sleep(1)
+            self.img_proc.click_image_by_max_key_points_offset(
+                "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                -200, 45)
 
-            # Gets the current DriverID
-            crop_img2 = img[int(124):int(214), int(40):int(327)]
-            plt.imshow(crop_img2)
-            plt.show()
+            self.img_proc.click_image_by_max_key_points_offset(
+                "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                -250, 88)
 
-            '''Change to gray scale'''
-            crop_img2 = cv2.cvtColor(crop_img2, cv2.COLOR_BGR2GRAY)
+            time.sleep(2)
+            if self.img_proc.expect_image('vnc-unidentified-profile-screen', 'ExpectedScreens', 2):
+                unidentified_profile = True
+                print("On UNIDENTIFIED profile")
 
-            '''Otsu Tresholding automatically find best threshold value'''
-            _, binary_image = cv2.threshold(crop_img2, 0, 255, cv2.THRESH_OTSU)
+            if driver_id == 'UNIDENTIFIED' and not unidentified_profile:
+                print("Unidentified needs to be selected")
+                self.img_proc.click_image_by_max_key_points_offset(
+                    "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                     -200, 45)
 
-            # invert the image colors
-            count_white = np.sum(binary_image > 0)
-            count_black = np.sum(binary_image == 0)
-            if count_black > count_white:
-                binary_image = 255 - binary_image
+                self.img_proc.click_image_by_max_key_points_offset(
+                    "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                    -250, 115)
+                driver_found = True
+            else:
+                print('There are two drivers LOGGED IN')
+                self.img_proc.click_image_by_max_key_points_offset(
+                    "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                    -200, 45)
 
-            '''Padding'''
-            crop_img2 = cv2.copyMakeBorder(binary_image, 10, 10, 10, 10, cv2.BORDER_CONSTANT, value=(255, 255, 255))
+                time.sleep(1)
 
-            '''Blur the image'''
-            crop_img2 = cv2.GaussianBlur(crop_img2, (3, 3), 0)
+                self.img_proc.click_image_by_max_key_points_offset(
+                    "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                    -250, 115)
 
-            string = pytesseract.image_to_string(crop_img2)
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                -200, 45)
 
-            string = string.strip()
-            slist = string.splitlines()
-            slist = list(filter(str.strip, slist))
+                time.sleep(1)
 
-            for i in range(len(slist)):
+                self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+                img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
 
-                if driver_id in str(slist[i]) and i == 0:
-                    self.img_proc.click_image_by_max_key_points_offset(
-                        "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
-                        -250, 65)
-                    print("The DriverID {" + str(slist[i]) + "} has been selected.")
+                # Gets the current DriverID
+                crop_img2 = img[int(124):int(200), int(40):int(327)]
+                plt.imshow(crop_img2)
+                plt.show()
 
-                if driver_id in str(slist[i]) and i == 1:
-                    self.img_proc.click_image_by_max_key_points_offset(
-                        "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
-                        -250, 88)
-                    print("The DriverID {" + str(slist[i]) + "} has been selected.")
+                '''Change to gray scale'''
+                crop_img2 = cv2.cvtColor(crop_img2, cv2.COLOR_BGR2GRAY)
 
-                if driver_id in str(slist[i]) and i == 2:
-                    self.img_proc.click_image_by_max_key_points_offset(
-                        "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
-                        -250, 115)
-                    print("The DriverID {" + str(slist[i]) + "} has been selected.")
+                '''Otsu Tresholding automatically find best threshold value'''
+                _, binary_image = cv2.threshold(crop_img2, 0, 255, cv2.THRESH_OTSU)
 
-                else:
-                    print("The DriverID {" + str(driver_id) + "} has NOT been found")
+                # invert the image colors
+                count_white = np.sum(binary_image > 0)
+                count_black = np.sum(binary_image == 0)
+                if count_black > count_white:
+                    binary_image = 255 - binary_image
+
+                '''Padding'''
+                crop_img2 = cv2.copyMakeBorder(binary_image, 10, 10, 10, 10, cv2.BORDER_CONSTANT, value=(255, 255, 255))
+
+                '''Blur the image'''
+                crop_img2 = cv2.GaussianBlur(crop_img2, (3, 3), 0)
+
+                string = pytesseract.image_to_string(crop_img2)
+
+                string = string.strip()
+                slist = string.splitlines()
+                slist = list(filter(str.strip, slist))
+
+                for i in range(len(slist)):
+                    print("-----------------------")
+                    print(i)
+                    text = str(slist[i])
+                    text = text.replace("O", "0")
+                    driver_id = driver_id.replace("O", "0")
+                    print(str(text) + " " + str(driver_id))
+                    if driver_id in text and i == 0:
+                        self.img_proc.click_image_by_max_key_points_offset(
+                            "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                            -250, 65)
+                        driver_found = True
+                        break
+
+                    if driver_id in text and i == 1:
+                        self.img_proc.click_image_by_max_key_points_offset(
+                            "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                            -250, 88)
+                        driver_found = True
+                        break
+
+                    if driver_found:
+                        print("The DriverID {" + str(slist[i]) + "} has been selected.")
+                    else:
+                        print("The DriverID {" + str(slist[i]) + "} has NOT been selected.")
+
 
 
 
