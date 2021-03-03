@@ -482,10 +482,10 @@ class IVG_ELD_CORE:
         findOrder = ""
         
         if StartPoint =="Bottom":
-            for i in range(2):
+            for i in range(10):
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
         elif StartPoint =="Top":
-            for i in range(2):
+            for i in range(10):
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
         else:
             print("In the middle of the table")
@@ -544,13 +544,9 @@ class IVG_ELD_CORE:
             recordToCompare = string.lower()
             new_rec.append(recordToCompare.strip())    
 
-
-
             #Duration
             recordToCompare = self.retrieve_duration()
             new_rec.append(recordToCompare.strip())
-
-
 
             #LOCATION
             y, y1,x, x1 = 285, 310, 445, 600
@@ -756,42 +752,96 @@ class IVG_ELD_CORE:
             search = re.search(r"Log Update|ELD Exempt", string)
             print(search)
         print("LOG UPDATE RECEIVED")
+    
+    def retrieveText(self, y, y1, x, x1):
+        self.img_proc.click_image_by_coordinates(150, 300)
+        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        crop_img2 = img[int(y):int(y1), int(x):int(x1)]
+        
+        width = int(crop_img2.shape[1] * 200 / 100)
+        height = int(crop_img2.shape[0] * 200 / 100)
+        # dsize
+        dsize = (width, height)
+        # resize image
+        crop_img2 = cv2.resize(crop_img2, dsize)
+        #crop_img2 = cv2.resize(crop_img2, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+        plt.imshow(crop_img2)
+        plt.show()
+        string = pytesseract.image_to_string(crop_img2)
+        print(string)
+        recordToCompare = string.lower()
+        return recordToCompare
 
-    def changeCarrier(self,Carrier, Send):
-        pass
+    def day_log_records_driver(self,StartPoint, FindOrder, NumRecords):
+        self.goTo("DayLog")
 
-    def reviewCarrierEdits(self):
-        pass
+        self.img_proc.click_image_by_max_key_points('ELD_Core/DayLogTab/InspectorButton/InspectorButton')
+        
+        findOrder = ""
+        
+        if StartPoint =="Bottom":
+            for i in range(1):
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+        elif StartPoint =="Top":
+            for i in range(1):
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
+        else:
+            print("In the middle of the table")
 
-    def checkRecordStatus(ExpectedValue, RecordToCheck, EditedIndex):
-        pass
+        if FindOrder == "Asc":
+            findOrder = "Asc"
+        elif FindOrder == "Desc":
+            findOrder = "Desc"
+        else:
+            findOrder = "Asc"
+        
+        records = []
+        for i in range(NumRecords):
+            time.sleep(1)
 
-    def confirmRejectCarrierEdit( BooleanReject):
-        pass
+            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+            new_rec = []
+            #TIME
+            y, y1,x, x1 = 305, 340, 0, 95
+            recordToCompare = self.retrieveText(y,y1,x,x1)
+            new_rec.append(recordToCompare.strip()) 
+            #EVENT 
+            y, y1,x, x1 = 305, 340, 103, 245
+            recordToCompare = self.retrieveText(y,y1,x,x1)
+            new_rec.append(recordToCompare.strip()) 
+            #LOCATION 
+            y, y1,x, x1 = 305, 340, 255, 370
+            recordToCompare = self.retrieveText(y,y1,x,x1)
+            new_rec.append(recordToCompare.strip()) 
+            #ACCUM MILES
+            y, y1,x, x1 = 305, 340, 417, 530
+            recordToCompare = self.retrieveText(y,y1,x,x1)
+            new_rec.append(recordToCompare.strip()) 
+            #Eng. Hrs
+            y, y1,x, x1 = 305, 340, 570, 650
+            recordToCompare = self.retrieveText(y,y1,x,x1)
+            new_rec.append(recordToCompare.strip()) 
+            #Record Status
+            y, y1,x, x1 = 305, 340, 672, 725
+            recordToCompare = self.retrieveText(y,y1,x,x1)
+            new_rec.append(recordToCompare.strip()) 
+            #Seq ID
+            y, y1,x, x1 = 305, 340, 735, 780
+            recordToCompare = self.retrieveText(y,y1,x,x1)
+            new_rec.append(recordToCompare.strip()) 
+            #COMMENT
+            y, y1,x, x1 = 305, 340, 800, 960
+            recordToCompare = self.retrieveText(y,y1,x,x1)
+            new_rec.append(recordToCompare.strip()) 
 
-    def reviewCarrierEdits2(self):
-        pass
+            records.append(new_rec)
 
-    def enterReasonForReject(ReasonForRejecting):
-        pass
-
-    def verifyCharactersEntered(ExpectedValue):
-        pass
-
-    #ESTOS DICEN FUNCTION 
-    def getRecord(RecordID, EditedIndex):
-        pass
-
-    def getTableValue(ColumnName, RecordID, EditedIndex):
-        pass
-
-    def testRecordAge(theRecord, differAge, testAge):
-        pass
-
-    #ESTOS DICEN ON
-    def compareDates(firstRecord, secondRecord, type):
-        pass
-
+            if findOrder == "Asc":
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
+            else:
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+        return records
 
 
     #CertifyTestCase
