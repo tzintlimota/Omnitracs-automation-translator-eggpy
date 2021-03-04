@@ -761,56 +761,63 @@ class IVG_ELD_CORE:
         driver_found = False
         unidentified_profile = False
 
+        #Clicks on banner of HOS app to remove highlight of DriverID
+        # This because tesseract shows erros when the word is highlighted
         self.img_proc.click_image_by_max_key_points_offset(
             "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
             -0, 130)
 
+        #Capture of current screen in the IVG
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
         img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
 
-        #Gets the current DriverID
+        #Gets the current DriverID selected
         crop_img2 = img[int(95):int(126), int(42):int(327)]
         current_driver = pytesseract.image_to_string(crop_img2)
-        current_driver = current_driver.strip()
-        driver_id = driver_id.replace("O","0")
-        current_driver = current_driver.replace("O", "0")
-        print(driver_id)
-        print(current_driver)
 
+        #Removes blank spaces at end/beginning of text
+        current_driver = current_driver.strip()
+
+        #Need to replace all O to 0 to fox error of tesseract confusing char with digits.
+        driver_id = driver_id.replace("O", "0")
+        current_driver = current_driver.replace("O", "0")
+
+        #This compares driverID with values on dropdown to select the expected one.
         if driver_id in current_driver:
             print("Driver ID is already selected")
         else:
+            #Click to open DriverID dropdown
             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
                                                                -200, 45)
 
             self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
             img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
 
-            self.img_proc.click_image_by_max_key_points_offset(
-                "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
-                -200, 45)
-
+            #Selects 2nd option of dropdown
             self.img_proc.click_image_by_max_key_points_offset(
                 "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
                 -250, 88)
 
-            time.sleep(2)
+            time.sleep(1)
+            #Flag is set to True if UNIDENTIFIED Profile appears - This is to know if there is a copilot logged in
             if self.img_proc.expect_image('vnc-unidentified-profile-screen', 'ExpectedScreens', 2):
                 unidentified_profile = True
-                print("On UNIDENTIFIED profile")
 
             if driver_id == 'UNIDENTIFIED' and not unidentified_profile:
                 print("Unidentified needs to be selected")
+                #Click to open the dropdown.
                 self.img_proc.click_image_by_max_key_points_offset(
                     "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
                      -200, 45)
-
+                #Selects 3rd option from dropdown
                 self.img_proc.click_image_by_max_key_points_offset(
                     "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
                     -250, 115)
                 driver_found = True
+            elif driver_id == 'UNIDENTIFIED' and unidentified_profile:
+                print("Already in UNIDENTIFIED profile")
             else:
-                print('There are two drivers LOGGED IN')
+                #Case when there is a Driver and Copilot logged in
                 self.img_proc.click_image_by_max_key_points_offset(
                     "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
                     -200, 45)
@@ -821,23 +828,22 @@ class IVG_ELD_CORE:
                     "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
                     -250, 115)
 
+                #Selects option to highlight UNIDENTIFIED
+                #This prevents error when the driver text is retrieved
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
                 -200, 45)
 
                 time.sleep(1)
-
                 self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
                 img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
 
-                # Gets the current DriverID
+                #Captures region of the first two options of the dropdown.
                 crop_img2 = img[int(124):int(200), int(40):int(327)]
-                plt.imshow(crop_img2)
-                plt.show()
 
-                '''Change to gray scale'''
+
                 crop_img2 = cv2.cvtColor(crop_img2, cv2.COLOR_BGR2GRAY)
 
-                '''Otsu Tresholding automatically find best threshold value'''
+                #Otsu Tresholding automatically find best threshold value
                 _, binary_image = cv2.threshold(crop_img2, 0, 255, cv2.THRESH_OTSU)
 
                 # invert the image colors
@@ -846,10 +852,10 @@ class IVG_ELD_CORE:
                 if count_black > count_white:
                     binary_image = 255 - binary_image
 
-                '''Padding'''
+                #Padding
                 crop_img2 = cv2.copyMakeBorder(binary_image, 10, 10, 10, 10, cv2.BORDER_CONSTANT, value=(255, 255, 255))
 
-                '''Blur the image'''
+                #Blur the image
                 crop_img2 = cv2.GaussianBlur(crop_img2, (3, 3), 0)
 
                 string = pytesseract.image_to_string(crop_img2)
@@ -859,12 +865,10 @@ class IVG_ELD_CORE:
                 slist = list(filter(str.strip, slist))
 
                 for i in range(len(slist)):
-                    print("-----------------------")
-                    print(i)
                     text = str(slist[i])
                     text = text.replace("O", "0")
                     driver_id = driver_id.replace("O", "0")
-                    print(str(text) + " " + str(driver_id))
+
                     if driver_id in text and i == 0:
                         self.img_proc.click_image_by_max_key_points_offset(
                             "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
@@ -879,10 +883,10 @@ class IVG_ELD_CORE:
                         driver_found = True
                         break
 
-                    if driver_found:
-                        print("The DriverID {" + str(slist[i]) + "} has been selected.")
-                    else:
-                        print("The DriverID {" + str(slist[i]) + "} has NOT been selected.")
+            if driver_found:
+                print("The DriverID {" + str(slist[i]) + "} has been selected.")
+            else:
+                print("The DriverID {" + str(slist[i]) + "} has NOT been selected.")
 
 
 
