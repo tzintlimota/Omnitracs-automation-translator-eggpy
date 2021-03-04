@@ -326,6 +326,16 @@ def tokenization():
                 # "ON","N" ,"AUTOMATION"
                 toadd = "\neld_core.getTable('" + params[0] + "', '" + params[1] + "', int(" + params[2] + "))"
                 file2.writelines(toadd)
+            elif (str(doc[0]) == 'ELDTestCase' and str(doc[2]) == 'SelectDriverFromDropDown'):
+                # (driverID)
+                params = []
+                stringToPass = ''
+                for i in range(3, len(doc)):
+                    stringToPass += str(doc[i].text)
+                print(stringToPass)
+
+                new = stringToPass.replace('"', '')
+                new = new.replace(',', ' ')
             else:
                 #file2.writelines('\n AUN NO CONOZCO ESTA FUNCION ' + line[0: len(line)-1] + '\n')
                 file2.writelines('\n')
