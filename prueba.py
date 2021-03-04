@@ -31,5 +31,6 @@ img_proc = ImageProcessor('192.168.1.118', 'None', .15)
 
 #Funcion de eggplant log
 print('log "***Script name OHOS2810***"') 
-prueba = eld_core.day_log_records_driver("Bottom", "Asc", 1)
+
+prueba =eld_core.getTable('Bottom', 'Asc', int(2))
 print(prueba)
