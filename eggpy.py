@@ -336,6 +336,14 @@ def tokenization():
 
                 new = stringToPass.replace('"', '')
                 new = new.replace(',', ' ')
+                params = new.split()
+
+                print(params)
+                while len(params) < 1:
+                    params.append(' ')
+                # "DriverID"
+                toadd = "\neld_core.select_driver_from_dropdown('" + params[0] + "')"
+                file2.writelines(toadd)
             else:
                 #file2.writelines('\n AUN NO CONOZCO ESTA FUNCION ' + line[0: len(line)-1] + '\n')
                 file2.writelines('\n')
