@@ -20,7 +20,7 @@ import re
 class IVG_ELD_CORE:
 
     def __init__(self):
-        self.img_proc = ImageProcessor('192.168.100.13', 'None', .15)
+        self.img_proc = ImageProcessor('192.168.1.118', 'None', .15)
         #self.img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])
         self.ivg_common = IVG_Common()
 
