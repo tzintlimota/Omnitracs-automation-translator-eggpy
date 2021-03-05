@@ -57,11 +57,11 @@ def tokenization():
             file2.writelines(line)   
             #for token in doc:
             #    print(token.text, token.pos_, token.dep_)
-        elif(commentb):
-            file2.writelines(line)
-            if(doc_string[len(doc_string)-2] == ')' and doc_string[len(doc_string)-3] == '*'):
-                commentb = False
-                file2.writelines("'''\n")
+        '''elif(commentb):
+            file2.writelines(line)'''
+        if(doc_string[len(doc_string)-2] == ')' and doc_string[len(doc_string)-3] == '*' and 1 == 2):
+            commentb = False
+            file2.writelines("'''\n")
         else:
             #Functions from Eld Scripts
             start_of_script = True
@@ -108,6 +108,30 @@ def tokenization():
                     while len(params) < 1:
                         params.append(' ')
                     toadd = "\neld_core.getLoadDate('" + params[0] + "')"
+                    file2.writelines(toadd)
+
+                elif ('StatusTestCase' in str(doc[0]) and 'ValidateStatus' in str(doc[2])):
+                    # (driverID)
+                    params = []
+                    stringToPass = ''
+                    for i in range(3, len(doc)):
+                        stringToPass += str(doc[i].text)
+                    print(stringToPass)
+
+                    new = stringToPass.replace('"', '')
+                    new = new.replace(',', ' ')
+                    params = new.split()
+
+                    print(params)
+                    while len(params) < 1:
+                        params.append(' ')
+
+                    if "Translator" in params[0]:
+                        string = params[0]
+                        string = string.split(':')
+                        status = string[1].split(')')
+
+                    toadd = "\neld_core.validate_status('" + status[0] + "')"
                     file2.writelines(toadd)
                 else:
                     #file2.writelines('\n AUN NO CONOZCO ESTA FUNCION VERBO' + line[0: len(line)-1] + '\n')
