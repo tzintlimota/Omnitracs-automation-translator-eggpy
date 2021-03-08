@@ -153,8 +153,8 @@ class IVG_ELD_CORE:
         img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
         crop_img2 = img[int(y-20):int(y+20), int(x+70-30):int(x+60+100)]
 
-        plt.imshow(crop_img2)
-        plt.show()       
+        #plt.imshow(crop_img2)
+        #plt.show()
         print(pytesseract.image_to_string(crop_img2))
         loadDate = pytesseract.image_to_string(crop_img2)
         return loadDate
@@ -427,8 +427,8 @@ class IVG_ELD_CORE:
         dsize = (width, height)
         # resize image
         crop_img2 = cv2.resize(crop_img2, dsize)
-        plt.imshow(crop_img2)
-        plt.show()
+        #plt.imshow(crop_img2)
+        #plt.show()
         string = pytesseract.image_to_string(crop_img2)
         recordToCompare = string.lower()   
         print(recordToCompare)
@@ -456,8 +456,8 @@ class IVG_ELD_CORE:
                     dsize = (width, height)
                     # resize image
                     crop_img2 = cv2.resize(crop_img2, dsize)
-                    plt.imshow(crop_img2)
-                    plt.show()
+                    #plt.imshow(crop_img2)
+                    #plt.show()
                     string = pytesseract.image_to_string(crop_img2)
                     recordToCompare = string.lower()   
                     print(recordToCompare)
@@ -757,7 +757,7 @@ class IVG_ELD_CORE:
             print(search)
         print("LOG UPDATE RECEIVED")
     
-    def retrieveText(self, y, y1, x, x1):
+    def retrieve_text(self, y, y1, x, x1):
         self.img_proc.click_image_by_coordinates(150, 300)
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
         img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
@@ -771,20 +771,20 @@ class IVG_ELD_CORE:
         crop_img2 = cv2.resize(crop_img2, dsize)
         #crop_img2 = cv2.resize(crop_img2, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
         #crop_img2 = cv2.blur(crop_img2,(3,3))
-        plt.imshow(crop_img2)
-        plt.show()
+        #plt.imshow(crop_img2)
+        #plt.show()
         string = pytesseract.image_to_string(crop_img2)
         print(string)
         recordToCompare = string.lower()
         return recordToCompare
 
-    def retrieve_text_with_config(self, y, y1, x, x1, params=None):
+    def retrieve_text_with_config(self, y, y1, x, x1, params=None, lang_param=None):
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
         img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
         crop_img2 = img[int(y):int(y1), int(x):int(x1)]
 
-        width = int(crop_img2.shape[1] * 200 / 100)
-        height = int(crop_img2.shape[0] * 200 / 100)
+        width = int(crop_img2.shape[1] * 800 / 100)
+        height = int(crop_img2.shape[0] * 800 / 100)
         # dsize
         dsize = (width, height)
         # resize image
@@ -806,16 +806,26 @@ class IVG_ELD_CORE:
 
         # Blur the image
         crop_img2 = cv2.GaussianBlur(crop_img2, (3, 3), 0)
+
+        #This duplicates capture and appends it to original
+        #crop_img2 = cv2.hconcat([crop_img2,crop_img2])
         #plt.imshow(crop_img2)
         #plt.show()
 
-        string = pytesseract.image_to_string(crop_img2, config=params)
+        string = pytesseract.image_to_string(crop_img2, lang=lang_param, config=params)
         return string
 
     def daylog_get_records_inspector(self,StartPoint, FindOrder, NumRecords):
         self.goTo("DayLog")
 
-        self.img_proc.click_image_by_max_key_points('ELD_Core/DayLogTab/InspectorButton/InspectorButton')
+        match = self.img_proc.image_exists('ELD_Core/DayLogTab/InspectorButton/InspectorButton')
+
+        if match:
+            print("Switching to INSPECTOR profile")
+            self.img_proc.click_image_by_max_key_points('ELD_Core/DayLogTab/InspectorButton/InspectorButton')
+            print("Currently in DRIVER profile")
+        else:
+            print("Currently in INSPECTOR profile")
         
         findOrder = ""
         
@@ -843,35 +853,35 @@ class IVG_ELD_CORE:
             new_rec = []
             #TIME
             y, y1,x, x1 = 305, 340, 0, 95
-            recordToCompare = self.retrieveText(y,y1,x,x1)
+            recordToCompare = self.retrieve_text(y,y1,x,x1)
             new_rec.append(recordToCompare.strip()) 
             #EVENT 
             y, y1,x, x1 = 305, 340, 103, 245
-            recordToCompare = self.retrieveText(y,y1,x,x1)
+            recordToCompare = self.retrieve_text(y,y1,x,x1)
             new_rec.append(recordToCompare.strip()) 
             #LOCATION 
             y, y1,x, x1 = 305, 340, 255, 370
-            recordToCompare = self.retrieveText(y,y1,x,x1)
+            recordToCompare = self.retrieve_text(y,y1,x,x1)
             new_rec.append(recordToCompare.strip()) 
             #ACCUM MILES
             y, y1,x, x1 = 305, 340, 417, 530
-            recordToCompare = self.retrieveText(y,y1,x,x1)
+            recordToCompare = self.retrieve_text(y,y1,x,x1)
             new_rec.append(recordToCompare.strip()) 
             #Eng. Hrs
             y, y1,x, x1 = 305, 340, 570, 650
-            recordToCompare = self.retrieveText(y,y1,x,x1)
+            recordToCompare = self.retrieve_text(y,y1,x,x1)
             new_rec.append(recordToCompare.strip()) 
             #Record Status
             y, y1,x, x1 = 305, 340, 672, 725
-            recordToCompare = self.retrieveText(y,y1,x,x1)
+            recordToCompare = self.retrieve_text(y,y1,x,x1)
             new_rec.append(recordToCompare.strip()) 
             #Seq ID
             y, y1,x, x1 = 305, 340, 735, 780
-            recordToCompare = self.retrieveText(y,y1,x,x1)
+            recordToCompare = self.retrieve_text(y,y1,x,x1)
             new_rec.append(recordToCompare.strip()) 
             #COMMENT
             y, y1,x, x1 = 305, 340, 800, 960
-            recordToCompare = self.retrieveText(y,y1,x,x1)
+            recordToCompare = self.retrieve_text(y,y1,x,x1)
             new_rec.append(recordToCompare.strip()) 
 
             records.append(new_rec)
@@ -885,7 +895,16 @@ class IVG_ELD_CORE:
     def day_log_records_driver(self,StartPoint, FindOrder, NumRecords):
         self.goTo("DayLog")
 
-        self.img_proc.click_image_by_max_key_points('ELD_Core/DayLogTab/DriverButton/DriverButton')
+        match = self.img_proc.image_exists('ELD_Core/DayLogTab/InspectorButton/InspectorButton')
+
+        if match:
+            print("Currently in DRIVER profile")
+        else:
+            print("Switching to DRIVER profile")
+            self.img_proc.click_image_by_max_key_points('ELD_Core/DayLogTab/DriverButton/DriverButton')
+
+
+
         
         findOrder = ""
         
@@ -930,13 +949,13 @@ class IVG_ELD_CORE:
             #STATUS
 
             y, y1, x, x1 = 310, 325, 85, 115
-            recordToCompare = self.retrieveText(y,y1,x,x1)
+            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1, '--psm 6 --oem 3 -c tessedit_char_whitelist=PCONSBYMDF')
             print(recordToCompare)
             new_rec.append(recordToCompare.strip())   
        
             #START
             y, y1, x, x1 = 310, 330, 160, 245
-            recordToCompare = self.retrieveText(y,y1,x,x1)
+            recordToCompare = self.retrieve_text(y,y1,x,x1)
             new_rec.append(recordToCompare.strip()) 
        
             self.img_proc.click_image_by_coordinates(150, 300)
@@ -997,22 +1016,22 @@ class IVG_ELD_CORE:
                 
                 
             #LOCATION
-            y, y1, x, x1 = 310, 330, 340, 460
-            recordToCompare = self.retrieveText(y,y1,x,x1)
-            new_rec.append(string.strip()) 
+            y, y1, x, x1 = 310, 330, 340, 465
+            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1, None, 'eng')
+            new_rec.append(recordToCompare.strip())
 
             #CODRIVER
-            y, y1, x, x1 = 310, 330, 600, 625
-            recordToCompare = self.retrieveText(y,y1,x,x1)
-            new_rec.append(recordToCompare.strip()) 
+            y, y1, x, x1 = 310, 330, 602, 620
+            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1, '--psm 6 --oem 3 -c tessedit_char_whitelist=NoYes')
+            new_rec.append(recordToCompare.strip())
             
             #ORIGIN
             y, y1, x, x1 = 310, 330, 645, 730
-            recordToCompare = self.retrieveText(y,y1,x,x1)
+            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1)
             new_rec.append(recordToCompare.strip())
             #COMMENT
             y, y1, x, x1 = 310, 330, 740, 960
-            recordToCompare = self.retrieveText(y,y1,x,x1)
+            recordToCompare = self.retrieve_text(y,y1,x,x1)
             new_rec.append(recordToCompare.strip())
 
             
