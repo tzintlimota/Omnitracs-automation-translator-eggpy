@@ -134,7 +134,6 @@ def tokenization():
                     toadd = "\neld_core.validate_status('" + status[0] + "')"
                     file2.writelines(toadd)
                 else:
-                    #file2.writelines('\n AUN NO CONOZCO ESTA FUNCION VERBO' + line[0: len(line)-1] + '\n')
                     file2.writelines('\n')
                     for token in doc:
                         print(token.text, token.pos_, token.dep_)
