@@ -13,6 +13,7 @@ import pytesseract
 from dateutil.parser import parse
 import connection_credentials as cfg
 import re
+import pytest
 
 
 #import pyGPSFeed_IMR
@@ -1148,6 +1149,12 @@ class IVG_ELD_CORE:
             else:
                 print("The DriverID {" + str(slist[i]) + "} has NOT been selected.")
 
+    def validate_status(self, string):
+        #self.goToHOS()
+        actual_status = self.retrieveText(245, 270, 132, 370)
+        expected_status = string.lower()
+        assert expected_status in actual_status, \
+            f"expected_status '{expected_status}' is no substring of '{actual_status}'"
 
 
 
