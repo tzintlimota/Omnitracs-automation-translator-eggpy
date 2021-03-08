@@ -394,8 +394,8 @@ class ImageProcessor:
 
         self.get_vnc_full_screen("last_screen", "ExpectedScreens")
         total_x, total_y = self.get_image_coordinates_by_max_key_points(image_name)
-        plt.imshow(self.img3)
-        plt.show()
+        #plt.imshow(self.img3)
+        #plt.show()
         if total_x > 0:
             print('Clicking')
             self.client.mouseMove(math.floor(total_x), math.floor(total_y))
@@ -580,3 +580,16 @@ class ImageProcessor:
         output = cv2.resize(src, dsize)
 
         cv2.imwrite(os.getcwd() + '/Images/Buttons/ELD_Core/LoadTab/EndDay/EndDay.png',output)
+
+    def image_exists(self, image_name):
+
+        self.get_vnc_full_screen("last_screen", "ExpectedScreens")
+        total_x, total_y = self.get_image_coordinates_by_max_key_points(image_name)
+        #plt.imshow(self.img3)
+        #plt.show()
+        if total_x > 0:
+            print(f'Image {image_name} was found')
+            return True
+        else:
+            print(f'Could NOT find Image {image_name}')
+            return False
