@@ -20,6 +20,7 @@ class webElem():
     DA_SAVE_BUTTON = (By.ID,"MDriverUC1_cmdSave")
     DA_YARDMOVE_RADIO_YES = (By.ID,"MDriverUC1_rblYardMove_0")
     DA_YARDMOVE_RADIO_NO = (By.ID,"MDriverUC1_rblYardMove_1")
+    DA_MESSAGEBAR_LABEL = (By.ID,"MDriverUC1_messageBar_lblMessage")
 
     #----- Carrier administration page -----
     CA_CARRIER_SELECT = (By.ID,"MCarrierUC1_ddlCarriers")
@@ -42,6 +43,9 @@ class webElem():
     DCP_EXCEPTION2_SELECT = (By.ID, "ddlEventFlag2")
     DCP_EDITREASON_TXT = (By.ID,"comboboxEditReason")
     DCP_SAVE_BUTTON = (By.ID,"cmdChange")
+    DCP_DURATIONHOURS_TEXT = (By.ID,"txtDuration2Hour")
+    DCP_DURATIONMIN_TEXT = (By.ID,"txtDuration2Minute")
+    DCP_DURATIONSEC_TEXT = (By.ID,"txtDuration2Second")
 
     #----- Driving swap popup -----
     DSP_DRIVERID_TEXT = (By.ID,"DrvIDTextBox")

@@ -228,9 +228,116 @@ class WinMachine_Common:
 
         driverOpt.click()
 
+        if enable == True:
+            radioYes = globalDriver.find_element(webElem.DA_YARDMOVE_RADIO_YES)
+            if radioYes.get_property("checked") != "checked":
+                radioYes.click()
+                print("Yard move set to yes")
+            else:
+                print("Yard move is already set to yes")
 
+        elif enable == False:
+            radioNo = globalDriver.find_element(webElem.DA_YARDMOVE_RADIO_NO)
+            if radioNo.get_property("checked") != "checked":
+                radioNo.click()
+                print("Yard move is set to no")
+            else:
+                print("Yard move is already set to no")
 
+        else:
+            raise RuntimeError("The value provided is not a boolean value")
 
+        globalDriver.find_element(webElem.DA_SAVE_BUTTON).click()
+
+        try:
+            popup = globalDriver.switch_to.alert()
+            popup.accept()
+        except:
+            print("JS popup did not appear")
+
+        try:
+            globalDriver.find_element(webElem.DA_MESSAGEBAR_LABEL)
+            print("The message bar was properly displayed")
+        except NoSuchElementException:
+            raise RuntimeError("Unable to find the success message bar")
+
+    def editStatusWithMinDuration (preStatus, time, change, recordNum, duration, message):
+        durationArray = duration.split(" ")
+        durationHours =  durationArray[0].replace("h","")
+        durationMin = durationArray[1].replace("m","")
+        durationSeconds = durationArray[2].replace("s","")
+
+        globalDriver.find_element(webElem.DD_DUTYSTATUSCHANGES_SELECT).click()
+        if time != None:
+            timeOption = globalDriver.find_element_by_xpath("//select[@id='ddlTimeFrame']/option[text()='" + time + "']")
+            timeOption.click()
+        else:
+            globalDriver.find_element(webElem.DD_24HRS_SELECT_OPT).click()
+
+        preStatusList = globalDriver.find_elements_by_xpath(
+            "//table[@id='dgDetails']//img[contains(@id,'dgDetails_imgConfirmed_')]/following-sibling::span[text()='"+preStatus+"']/..//input[contains(@id,'dgDetails_cmdCorrect_')]")
+
+        if len(preStatusList) == 0:
+            preStatusList = globalDriver.find_elements_by_xpath(
+                "//table[@id='dgDetails']//img[contains(@id,'dgDetails_imgConfirmed_')]/following-sibling::span[text()='" + preStatus + "']/../..//input[contains(@id,'dgDetails_cmdCorrect_')]")
+
+        if len(preStatusList) == 0:
+            raise RuntimeError("Could not identify any record corresponding to the pre-status indicated")
+
+        firstButton = preStatusList[0]
+        locatorID = firstButton.get_property('id')
+        splitLocator = locatorID.split("_")
+        finalID = splitLocator[-1]
+        firstButton.click()
+
+        currentWindow = globalDriver.current_window_handle
+        openWindows = globalDriver.window_handles
+        globalDriver.switch_to.window(openWindows[-1])
+
+        globalDriver.find_element(webElem.DCP_SPLIT_ICON).click()
+
+        if recordNum == 1:
+            globalDriver.find_element(webElem.DCP_DUTY1_SELECT).click()
+            globalDriver.find_element_by_xpath("//select[@id='ddlDuty1']/option[contains(text(),'" + change + "')]").click()
+
+            #type down hours minutes and seconds
+            globalDriver.find_element(webElem.DCP_DURATIONHOURS_TEXT).clear()
+            globalDriver.find_element(webElem.DCP_DURATIONHOURS_TEXT).send_keys(durationHours)
+
+            globalDriver.find_element(webElem.DCP_DURATIONMIN_TEXT).clear()
+            globalDriver.find_element(webElem.DCP_DURATIONMIN_TEXT).send_keys(durationMin)
+
+            globalDriver.find_element(webElem.DCP_DURATIONSEC_TEXT).clear()
+            globalDriver.find_element(webElem.DCP_DURATIONSEC_TEXT).send_keys(durationSeconds)
+
+        elif recordNum == 2:
+            globalDriver.find_element(webElem.DCP_DUTY1_SELECT).click()
+            globalDriver.find_element_by_xpath("//select[@id='ddlDuty2']/option[contains(text(),'" + change + "')]").click()
+
+            # type down hours minutes and seconds
+            globalDriver.find_element(webElem.DCP_DURATIONHOURS_TEXT).clear()
+            globalDriver.find_element(webElem.DCP_DURATIONHOURS_TEXT).send_keys(durationHours)
+
+            globalDriver.find_element(webElem.DCP_DURATIONMIN_TEXT).clear()
+            globalDriver.find_element(webElem.DCP_DURATIONMIN_TEXT).send_keys(durationMin)
+
+            globalDriver.find_element(webElem.DCP_DURATIONSEC_TEXT).clear()
+            globalDriver.find_element(webElem.DCP_DURATIONSEC_TEXT).send_keys(durationSeconds)
+
+        globalDriver.find_element(webElem.DCP_EDITREASON_TXT).click()
+        globalDriver.find_element(webElem.DCP_EDITREASON_TXT).send_keys(message)
+
+        globalDriver.find_element(webElem.DCP_SAVE_BUTTON).click()
+
+        globalDriver.switch_to.window(currentWindow)
+
+        editedID = "dgDetails_lblActivity_" + finalID
+
+        try:
+            editedRecord = globalDriver.find_element_by_xpath("//span[@id='"+editedID+"' and contains(text(),'"+change+"')]")
+            print ("Record properly updated")
+        except NoSuchElementException:
+            raise RuntimeError("Unable to find the edited record on the table.")
 
 
 
