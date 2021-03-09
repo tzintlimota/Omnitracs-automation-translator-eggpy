@@ -14,4 +14,40 @@ log "***Script name OHOS2810***"
 
 getTable Bottom, Asc, 5
 
+...BeforeTest.oiidcnidoncd
+
+SendMessageToUpdateLogs
 CertifyTestCase.findTableRecord On Duty, Status, Bottom, Asc
+
+SummaryTestCase.getRestBreakClockValue
+SummaryTestCase.getDrivingClockValue
+SummaryTestCase.getOnDutyClockValue
+SummaryTestCase.getDutyCycleClockValue
+
+getLoadDate
+
+LoginDriver
+
+Log Update.up
+
+GoTo.DayForward Certify , 3
+GoTo.DayBack Certify , 3
+
+GoToHistory
+
+Sytata.ChangeDriverStatus ON
+
+BackToHome
+ClearAlerts
+
+SendMessage
+
+GoToMessagingPage
+
+GoToLoginPage
+
+GoTo Certify
+
+GIUG.findTableRecord
+
+iohoishdhsiod.SelectDriverFromDropDown

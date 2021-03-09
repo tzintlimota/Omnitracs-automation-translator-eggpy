@@ -13,6 +13,7 @@ import pytesseract
 from dateutil.parser import parse
 import connection_credentials as cfg
 import re
+import pytest
 
 
 #import pyGPSFeed_IMR
@@ -153,8 +154,8 @@ class IVG_ELD_CORE:
         img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
         crop_img2 = img[int(y-20):int(y+20), int(x+70-30):int(x+60+100)]
 
-        plt.imshow(crop_img2)
-        plt.show()       
+        #plt.imshow(crop_img2)
+        #plt.show()
         print(pytesseract.image_to_string(crop_img2))
         loadDate = pytesseract.image_to_string(crop_img2)
         return loadDate
@@ -427,8 +428,8 @@ class IVG_ELD_CORE:
         dsize = (width, height)
         # resize image
         crop_img2 = cv2.resize(crop_img2, dsize)
-        plt.imshow(crop_img2)
-        plt.show()
+        #plt.imshow(crop_img2)
+        #plt.show()
         string = pytesseract.image_to_string(crop_img2)
         recordToCompare = string.lower()   
         print(recordToCompare)
@@ -456,8 +457,8 @@ class IVG_ELD_CORE:
                     dsize = (width, height)
                     # resize image
                     crop_img2 = cv2.resize(crop_img2, dsize)
-                    plt.imshow(crop_img2)
-                    plt.show()
+                    #plt.imshow(crop_img2)
+                    #plt.show()
                     string = pytesseract.image_to_string(crop_img2)
                     recordToCompare = string.lower()   
                     print(recordToCompare)
@@ -482,10 +483,10 @@ class IVG_ELD_CORE:
         findOrder = ""
         
         if StartPoint =="Bottom":
-            for i in range(10):
+            for i in range(2):
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
         elif StartPoint =="Top":
-            for i in range(10):
+            for i in range(2):
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
         else:
             print("In the middle of the table")
@@ -544,9 +545,13 @@ class IVG_ELD_CORE:
             recordToCompare = string.lower()
             new_rec.append(recordToCompare.strip())    
 
+
+
             #Duration
             recordToCompare = self.retrieve_duration()
             new_rec.append(recordToCompare.strip())
+
+
 
             #LOCATION
             y, y1,x, x1 = 285, 310, 445, 600
@@ -618,8 +623,8 @@ class IVG_ELD_CORE:
             crop_img2 = img[int(285):int(310), int(x):int(x1)]
 
             '''calculate the 50 percent of original dimensions'''
-            width = int(crop_img2.shape[1] * 600 / 100)
-            height = int(crop_img2.shape[0] * 600 / 100)
+            width = int(crop_img2.shape[1] * 300 / 100)
+            height = int(crop_img2.shape[0] * 300 / 100)
             # dsize
             dsize = (width, height)
             '''resize image'''
@@ -753,38 +758,82 @@ class IVG_ELD_CORE:
             print(search)
         print("LOG UPDATE RECEIVED")
     
-    def retrieveText(self, y, y1, x, x1):
+    def retrieve_text(self, y, y1, x, x1):
         self.img_proc.click_image_by_coordinates(150, 300)
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
         img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
         crop_img2 = img[int(y):int(y1), int(x):int(x1)]
         
-        width = int(crop_img2.shape[1] * 200 / 100)
-        height = int(crop_img2.shape[0] * 200 / 100)
+        width = int(crop_img2.shape[1] * 800 / 100)
+        height = int(crop_img2.shape[0] * 800 / 100)
         # dsize
         dsize = (width, height)
         # resize image
         crop_img2 = cv2.resize(crop_img2, dsize)
         #crop_img2 = cv2.resize(crop_img2, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
-        plt.imshow(crop_img2)
-        plt.show()
+        #crop_img2 = cv2.blur(crop_img2,(3,3))
+        #plt.imshow(crop_img2)
+        #plt.show()
         string = pytesseract.image_to_string(crop_img2)
         print(string)
         recordToCompare = string.lower()
         return recordToCompare
 
-    def day_log_records_driver(self,StartPoint, FindOrder, NumRecords):
+    def retrieve_text_with_config(self, y, y1, x, x1, params=None, lang_param=None):
+        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        crop_img2 = img[int(y):int(y1), int(x):int(x1)]
+
+        width = int(crop_img2.shape[1] * 800 / 100)
+        height = int(crop_img2.shape[0] * 800 / 100)
+        # dsize
+        dsize = (width, height)
+        # resize image
+        crop_img2 = cv2.resize(crop_img2, dsize)
+
+        crop_img2 = cv2.cvtColor(crop_img2, cv2.COLOR_BGR2GRAY)
+
+        # Otsu Tresholding automatically find best threshold value
+        _, binary_image = cv2.threshold(crop_img2, 0, 255, cv2.THRESH_OTSU)
+
+        # invert the image colors
+        count_white = np.sum(binary_image > 0)
+        count_black = np.sum(binary_image == 0)
+        if count_black > count_white:
+            binary_image = 255 - binary_image
+
+        # Padding
+        crop_img2 = cv2.copyMakeBorder(binary_image, 10, 10, 10, 10, cv2.BORDER_CONSTANT, value=(255, 255, 255))
+
+        # Blur the image
+        crop_img2 = cv2.GaussianBlur(crop_img2, (3, 3), 0)
+
+        #This duplicates capture and appends it to original
+        #crop_img2 = cv2.hconcat([crop_img2,crop_img2])
+        #plt.imshow(crop_img2)
+        #plt.show()
+
+        string = pytesseract.image_to_string(crop_img2, lang=lang_param, config=params)
+        return string
+
+    def daylog_get_records_inspector(self,StartPoint, FindOrder, NumRecords):
         self.goTo("DayLog")
 
-        self.img_proc.click_image_by_max_key_points('ELD_Core/DayLogTab/InspectorButton/InspectorButton')
+        match = self.img_proc.image_exists('ELD_Core/DayLogTab/InspectorButton/InspectorButton')
+
+        if match:
+            print("Switching to INSPECTOR profile")
+            self.img_proc.click_image_by_max_key_points('ELD_Core/DayLogTab/InspectorButton/InspectorButton')
+        else:
+            print("Currently in INSPECTOR profile")
         
         findOrder = ""
         
         if StartPoint =="Bottom":
-            for i in range(1):
+            for i in range(10):
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
         elif StartPoint =="Top":
-            for i in range(1):
+            for i in range(10):
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
         else:
             print("In the middle of the table")
@@ -804,35 +853,35 @@ class IVG_ELD_CORE:
             new_rec = []
             #TIME
             y, y1,x, x1 = 305, 340, 0, 95
-            recordToCompare = self.retrieveText(y,y1,x,x1)
+            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1)
             new_rec.append(recordToCompare.strip()) 
             #EVENT 
             y, y1,x, x1 = 305, 340, 103, 245
-            recordToCompare = self.retrieveText(y,y1,x,x1)
+            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1)
             new_rec.append(recordToCompare.strip()) 
             #LOCATION 
-            y, y1,x, x1 = 305, 340, 255, 370
-            recordToCompare = self.retrieveText(y,y1,x,x1)
+            y, y1,x, x1 = 305, 340, 255, 374
+            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1)
             new_rec.append(recordToCompare.strip()) 
             #ACCUM MILES
             y, y1,x, x1 = 305, 340, 417, 530
-            recordToCompare = self.retrieveText(y,y1,x,x1)
+            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1)
             new_rec.append(recordToCompare.strip()) 
             #Eng. Hrs
             y, y1,x, x1 = 305, 340, 570, 650
-            recordToCompare = self.retrieveText(y,y1,x,x1)
+            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1)
             new_rec.append(recordToCompare.strip()) 
             #Record Status
             y, y1,x, x1 = 305, 340, 672, 725
-            recordToCompare = self.retrieveText(y,y1,x,x1)
+            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1)
             new_rec.append(recordToCompare.strip()) 
             #Seq ID
-            y, y1,x, x1 = 305, 340, 735, 780
-            recordToCompare = self.retrieveText(y,y1,x,x1)
+            y, y1,x, x1 = 305, 340, 735, 783
+            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1,'--psm 1 --oem 3 -c tessedit_char_whitelist=0123456789')
             new_rec.append(recordToCompare.strip()) 
             #COMMENT
             y, y1,x, x1 = 305, 340, 800, 960
-            recordToCompare = self.retrieveText(y,y1,x,x1)
+            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1)
             new_rec.append(recordToCompare.strip()) 
 
             records.append(new_rec)
@@ -842,6 +891,348 @@ class IVG_ELD_CORE:
             else:
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
         return records
+
+    def day_log_records_driver(self,StartPoint, FindOrder, NumRecords):
+        self.goTo("DayLog")
+
+        match = self.img_proc.image_exists('ELD_Core/DayLogTab/InspectorButton/InspectorButton')
+
+        if match:
+            print("Currently in DRIVER profile")
+        else:
+            print("Switching to DRIVER profile")
+            self.img_proc.click_image_by_max_key_points('ELD_Core/DayLogTab/DriverButton/DriverButton')
+
+
+
+        
+        findOrder = ""
+        
+        if StartPoint =="Bottom":
+            for i in range(2):
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+        elif StartPoint =="Top":
+            for i in range(2):
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
+        else:
+            print("In the middle of the table")
+
+        if FindOrder == "Asc":
+            findOrder = "Asc"
+        elif FindOrder == "Desc":
+            findOrder = "Desc"
+        else:
+            findOrder = "Asc"
+        
+        records = []
+        for i in range(NumRecords):
+            time.sleep(1)
+            self.img_proc.click_image_by_coordinates(150, 300)
+            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+            new_rec = []
+            
+            #CERTIFIED
+            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+            crop_img2 = img[int(280):int(305), int(0):int(40)]
+            
+            string = pytesseract.image_to_string(crop_img2)
+            recordToCompare = string.lower() 
+            color = self.img_proc.color_check(20,20 ,crop_img2)
+            print("COLOR")
+            print(color)
+            
+            if color == 'green':
+                new_rec.append("Certified")
+            else:
+                new_rec.append("Empty")
+            
+            #STATUS
+
+            y, y1, x, x1 = 310, 325, 85, 115
+            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1, '--psm 6 --oem 3 -c tessedit_char_whitelist=PCONSBYMDF')
+            print(recordToCompare)
+            new_rec.append(recordToCompare.strip())   
+       
+            #START
+            y, y1, x, x1 = 310, 330, 160, 245
+            recordToCompare = self.retrieve_text(y,y1,x,x1)
+            new_rec.append(recordToCompare.strip()) 
+       
+            self.img_proc.click_image_by_coordinates(150, 300)
+            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+            
+            #Duration
+
+            string = ""
+            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+            #y, y1, x, x1 = 310, 330, 242, 320
+            for i in range(3):
+                '''This defines with region is being captured (hh:mm:ss)'''
+                if i == 0:
+                    x, x1 = 250, 265
+                    time_char = "h "
+                elif i == 1:
+                    x, x1 = 275, 290
+                    time_char = "m "
+                else:
+                    x, x1 = 300, 320
+                    time_char = "s "
+
+                crop_img2 = img[int(310):int(330), int(x):int(x1)]
+
+                '''calculate the 50 percent of original dimensions'''
+                width = int(crop_img2.shape[1] * 600 / 100)
+                height = int(crop_img2.shape[0] * 600 / 100)
+                # dsize
+                dsize = (width, height)
+                '''resize image'''
+                crop_img2 = cv2.resize(crop_img2, dsize)
+
+                '''Change to gray scale'''
+                crop_img2 = cv2.cvtColor(crop_img2, cv2.COLOR_BGR2GRAY)
+
+                '''Otsu Tresholding automatically find best threshold value'''
+                _, binary_image = cv2.threshold(crop_img2, 0, 255, cv2.THRESH_OTSU)
+
+                '''Invert the colors of the image'''
+                count_white = np.sum(binary_image > 0)
+                count_black = np.sum(binary_image == 0)
+                if count_black > count_white:
+                    binary_image = 255 - binary_image
+
+                '''Padding'''
+                crop_img2 = cv2.copyMakeBorder(binary_image, 10, 10, 10, 10, cv2.BORDER_CONSTANT, value=(255, 255, 255))
+                crop_img2 = cv2.GaussianBlur(crop_img2, (3, 3), 0)
+                #plt.imshow(crop_img2)
+                #plt.show()
+
+                string += pytesseract.image_to_string(crop_img2,
+                                                    config='--psm 6 --oem 3 -c tessedit_char_whitelist=0123456789')
+                string = string.strip()
+                string += time_char
+                print(string)
+                
+                
+            #LOCATION
+            y, y1, x, x1 = 310, 330, 340, 465
+            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1, None, 'eng')
+            new_rec.append(recordToCompare.strip())
+
+            #CODRIVER
+            y, y1, x, x1 = 310, 330, 602, 620
+            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1, '--psm 6 --oem 3 -c tessedit_char_whitelist=NoYes')
+            new_rec.append(recordToCompare.strip())
+            
+            #ORIGIN
+            y, y1, x, x1 = 310, 330, 645, 730
+            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1)
+            new_rec.append(recordToCompare.strip())
+            #COMMENT
+            y, y1, x, x1 = 310, 330, 740, 960
+            recordToCompare = self.retrieve_text(y,y1,x,x1)
+            new_rec.append(recordToCompare.strip())
+
+            
+            records.append(new_rec)
+            if findOrder == "Asc":
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
+            else:
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+        return records
+
+    def select_driver_from_dropdown(self, driver_id):
+        driver_found = False
+        unidentified_profile = False
+
+        #Clicks on banner of HOS app to remove highlight of DriverID
+        # This because tesseract shows erros when the word is highlighted
+        self.img_proc.click_image_by_max_key_points_offset(
+            "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+            -0, 130)
+
+        #Capture of current screen in the IVG
+        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+
+        #Gets the current DriverID selected
+        crop_img2 = img[int(95):int(126), int(42):int(327)]
+        current_driver = pytesseract.image_to_string(crop_img2)
+
+        #Removes blank spaces at end/beginning of text
+        current_driver = current_driver.strip()
+
+        #Need to replace all O to 0 to fox error of tesseract confusing char with digits.
+        driver_id = driver_id.replace("O", "0")
+        current_driver = current_driver.replace("O", "0")
+
+        #This compares driverID with values on dropdown to select the expected one.
+        if driver_id in current_driver:
+            print("Driver ID is already selected")
+        else:
+            #Click to open DriverID dropdown
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                                                               -200, 45)
+
+            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+
+            #Selects 2nd option of dropdown
+            self.img_proc.click_image_by_max_key_points_offset(
+                "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                -250, 88)
+
+            time.sleep(1)
+            #Flag is set to True if UNIDENTIFIED Profile appears - This is to know if there is a copilot logged in
+            if self.img_proc.expect_image('vnc-unidentified-profile-screen', 'ExpectedScreens', 2):
+                unidentified_profile = True
+
+            if driver_id == 'UNIDENTIFIED' and not unidentified_profile:
+                print("Unidentified needs to be selected")
+                #Click to open the dropdown.
+                self.img_proc.click_image_by_max_key_points_offset(
+                    "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                     -200, 45)
+                #Selects 3rd option from dropdown
+                self.img_proc.click_image_by_max_key_points_offset(
+                    "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                    -250, 115)
+                driver_found = True
+            elif driver_id == 'UNIDENTIFIED' and unidentified_profile:
+                print("Already in UNIDENTIFIED profile")
+            else:
+                #Case when there is a Driver and Copilot logged in
+                self.img_proc.click_image_by_max_key_points_offset(
+                    "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                    -200, 45)
+
+                time.sleep(1)
+
+                self.img_proc.click_image_by_max_key_points_offset(
+                    "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                    -250, 115)
+
+                #Selects option to highlight UNIDENTIFIED
+                #This prevents error when the driver text is retrieved
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                    -200, 45)
+
+                string = self.retrieve_text_with_config(124, 200, 40, 327)
+
+                string = string.strip()
+                slist = string.splitlines()
+                slist = list(filter(str.strip, slist))
+
+                for i in range(len(slist)):
+                    text = str(slist[i])
+                    text = text.replace("O", "0")
+                    driver_id = driver_id.replace("O", "0")
+
+                    if driver_id in text and i == 0:
+                        self.img_proc.click_image_by_max_key_points_offset(
+                            "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                            -250, 65)
+                        driver_found = True
+                        break
+
+                    if driver_id in text and i == 1:
+                        self.img_proc.click_image_by_max_key_points_offset(
+                            "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                            -250, 88)
+                        driver_found = True
+                        break
+
+            if driver_found:
+                print("The DriverID {" + str(slist[i]) + "} has been selected.")
+            else:
+                print("The DriverID {" + str(slist[i]) + "} has NOT been selected.")
+
+    def validate_status(self, string):
+        #self.goToHOS()
+        actual_status = self.retrieveText(245, 270, 132, 370)
+        expected_status = string.lower()
+        assert expected_status in actual_status, \
+            f"expected_status '{expected_status}' is no substring of '{actual_status}'"
+
+    def get_clock(self, x, x1, y, y1):
+
+        if self.img_proc.expect_image('vnc-summary-screen','ExpectedScreens',1):
+            print("Already in Summary page")
+        else:
+            self.goToHOS()
+            self.goTo('Summary')
+        
+        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        crop_img2 = img[int(y):int(y1), int(x):int(x1)]
+        width = int(crop_img2.shape[1] * 100 / 100)
+        height = int(crop_img2.shape[0] * 100 / 100)
+        # dsize
+        dsize = (width, height)
+        # resize image
+        crop_img2 = cv2.resize(crop_img2, dsize)
+        #crop_img2 = cv2.resize(crop_img2, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+        #crop_img2 = cv2.blur(crop_img2,(3,3))
+        plt.imshow(crop_img2)
+        plt.show()
+        string = pytesseract.image_to_string(crop_img2, config='--psm 6 --oem 3 -c tessedit_char_whitelist=0123456789:-' )
+        print(string)
+        recordToCompare = string.lower()
+        return recordToCompare
+
+    def get_driving_clock(self):
+        clock_val = self.get_clock(840,940,245,280)
+        return clock_val
+
+    def get_on_duty_clock(self):
+        clock_val = self.get_clock(840,940,275,315)
+        return clock_val
+     
+    def get_duty_cycle_clock(self):
+        clock_val = self.get_clock(840,940,315,355)
+        return clock_val
+
+    def get_rest_break_clock(self):
+        clock_val = self.get_clock(835,925,365, 395)
+        return clock_val
+
+
+    def changeCarrier(self,Carrier, Send):
+        pass
+
+    def reviewCarrierEdits(self):
+        pass
+
+    def checkRecordStatus(ExpectedValue, RecordToCheck, EditedIndex):
+        pass
+
+    def confirmRejectCarrierEdit( BooleanReject):
+        pass
+
+    def reviewCarrierEdits2(self):
+        pass
+
+    def enterReasonForReject(ReasonForRejecting):
+        pass
+
+    def verifyCharactersEntered(ExpectedValue):
+        pass
+
+    #ESTOS DICEN FUNCTION 
+    def getRecord(RecordID, EditedIndex):
+        pass
+
+    def getTableValue(ColumnName, RecordID, EditedIndex):
+        pass
+
+    def testRecordAge(theRecord, differAge, testAge):
+        pass
+
+    #ESTOS DICEN ON
+    def compareDates(firstRecord, secondRecord, type):
+        pass
+
 
 
     #CertifyTestCase
