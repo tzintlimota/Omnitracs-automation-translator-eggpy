@@ -824,7 +824,6 @@ class IVG_ELD_CORE:
         if match:
             print("Switching to INSPECTOR profile")
             self.img_proc.click_image_by_max_key_points('ELD_Core/DayLogTab/InspectorButton/InspectorButton')
-            print("Currently in DRIVER profile")
         else:
             print("Currently in INSPECTOR profile")
         
@@ -854,35 +853,35 @@ class IVG_ELD_CORE:
             new_rec = []
             #TIME
             y, y1,x, x1 = 305, 340, 0, 95
-            recordToCompare = self.retrieve_text(y,y1,x,x1)
+            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1)
             new_rec.append(recordToCompare.strip()) 
             #EVENT 
             y, y1,x, x1 = 305, 340, 103, 245
-            recordToCompare = self.retrieve_text(y,y1,x,x1)
+            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1)
             new_rec.append(recordToCompare.strip()) 
             #LOCATION 
-            y, y1,x, x1 = 305, 340, 255, 370
-            recordToCompare = self.retrieve_text(y,y1,x,x1)
+            y, y1,x, x1 = 305, 340, 255, 374
+            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1)
             new_rec.append(recordToCompare.strip()) 
             #ACCUM MILES
             y, y1,x, x1 = 305, 340, 417, 530
-            recordToCompare = self.retrieve_text(y,y1,x,x1)
+            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1)
             new_rec.append(recordToCompare.strip()) 
             #Eng. Hrs
             y, y1,x, x1 = 305, 340, 570, 650
-            recordToCompare = self.retrieve_text(y,y1,x,x1)
+            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1)
             new_rec.append(recordToCompare.strip()) 
             #Record Status
             y, y1,x, x1 = 305, 340, 672, 725
-            recordToCompare = self.retrieve_text(y,y1,x,x1)
+            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1)
             new_rec.append(recordToCompare.strip()) 
             #Seq ID
-            y, y1,x, x1 = 305, 340, 735, 780
-            recordToCompare = self.retrieve_text(y,y1,x,x1)
+            y, y1,x, x1 = 305, 340, 735, 783
+            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1,'--psm 1 --oem 3 -c tessedit_char_whitelist=0123456789')
             new_rec.append(recordToCompare.strip()) 
             #COMMENT
             y, y1,x, x1 = 305, 340, 800, 960
-            recordToCompare = self.retrieve_text(y,y1,x,x1)
+            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1)
             new_rec.append(recordToCompare.strip()) 
 
             records.append(new_rec)
