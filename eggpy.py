@@ -138,7 +138,6 @@ def tokenization():
         elif(search_func('GoToHistory', doc)):
             toadd = "\neld_core.goToHistory()"
             file2.writelines(toadd)
-        #Preguntar TZINTLI
         elif (search_func('CreateLoad', doc)):
             # self, loadId, Trailer1, Trailer2, Trailer3, BL, StartDate, EndDate, Finish
             params = []
@@ -331,9 +330,9 @@ def tokenization():
                 print(token.text, token.pos_, token.dep_)
         
         #file2.writelines(line)
-        #Peguntar TZINTLI  
-        #daylog_get_records_driver
-        #daylog_get_records_inspector
+        #Peguntar TZINTLI
+        #daylog_get_records_driver (num_records, start_point, direction)
+        #daylog_get_records_inspector (num_records, start_point, direction)
 
 tokenization()
 
