@@ -11,7 +11,7 @@ globalDriver: WebDriver = webdriver.Chrome()
 
 class WinMachine_Common:
 
-    def goToCarrierInAdmin(carrier):
+    def goToCarrierInAdmin(self, carrier):
         globalDriver.get(webElem.ADMIN_URL)
         globalDriver.find_element(webElem.ADMIN_CARRIER_LINK).click()
 
@@ -19,7 +19,7 @@ class WinMachine_Common:
 
         globalDriver.find_element(webElem.CA_CARRIER_SELECT).send_keys(carrier,Keys.ENTER)
 
-    def goToVehicleInAdmin(UA):
+    def goToVehicleInAdmin(self, UA):
         globalDriver.get(webElem.ADMIN_URL)
         globalDriver.find_element(webElem.ADMIN_VEHICLE_LINK).click()
 
@@ -130,7 +130,111 @@ class WinMachine_Common:
 
         records_on_day_list = []
 
+        date_lbl = globalDriver.find_elements_by_xpath("//table[@id='dgDetails']//td[contains(text(),'{}')]".format(date))
+        next_btn = globalDriver.find_element(webElem.DRIVERS_EDIT_NEXT_PAGE_BTN)
+
         while len(records_on_day_list) == 0:
+            for i in date_lbl:
+                correct = i.find_element_by_xpath(webElem.DRIVERS_EDIT_CORRECTION_BTN_XPATH)
+                records_on_day_list.append(correct)
+
+            if len(records_on_day_list) == 0:
+                correct2 = globalDriver.find_elements_by_xpath("//table[@id='dgDetails']//*[contains(text(),'{}')]/../..//input[contains(@id,'dgDetails_cmdCorrect_')]".format(date))
+                records_on_day_list.append(correct2)
+
+            if len(records_on_day_list) == 0:
+                if next_btn.is_enabled():
+                    next_btn.click()
+                else:
+                    pytest.fail("No status registries found for the specified date.")
+
+        # Get the number of the web element identifier for afterwards validations
+        if len(records_on_day_list) == 1:
+            first_btn = records_on_day_list[0]
+        else:
+            first_btn = records_on_day_list[recordnum]
+
+        locatorid = first_btn.get_attribute("id")
+        locator_split = locatorid.split("_")
+        idnumber = locator_split[-1]
+
+        main_window = globalDriver.window_handles[0]
+
+        first_btn.click()
+
+        edit_popup = globalDriver.window_handles[1]
+        globalDriver.switch_to.window(edit_popup)
+
+        # Read information of original status to modify
+        header_info = globalDriver.find_element(webElem.DRIVERS_CORRECT_POPUP_ENTRY)
+        status_info = header_info.text
+
+        if not split:
+            status_dd = globalDriver.find_element(webElem.DRIVERS_CORRECT_POPUP_STATUS_DROPDOWN1)
+            status = Select(status_dd)
+
+            if 'On Duty' in status_info:
+                status.select_by_visible_text('Off Duty')
+                new_status = 'Off Duty'
+            elif 'Sleeper Berth' in status_info:
+                status.select_by_visible_text('On Duty')
+                new_status = 'On Duty'
+            elif 'Off Duty' in status_info:
+                status.select_by_visible_text('Sleeper Berth')
+                new_status = 'Sleeper Berth'
+            else:
+                status.select_by_visible_text('On Duty')
+                new_status = 'On Duty'
+
+        else:
+            globalDriver.find_element(webElem.DRIVERS_CORRECT_POPUP_SPLIT_IMG).click()
+
+            status_dd = globalDriver.find_element(webElem.DRIVERS_CORRECT_POPUP_STATUS_DROPDOWN2)
+            status2 = Select(status_dd)
+
+            if 'On Duty' in status_info:
+                status2.select_by_visible_text('Off Duty')
+                new_status = 'Off Duty'
+            elif 'Sleeper Berth' in status_info:
+                status2.select_by_visible_text('On Duty')
+                new_status = 'On Duty'
+            elif 'Off Duty' in status_info:
+                status2.select_by_visible_text('Sleeper Berth')
+                new_status = 'Sleeper Berth'
+            else:
+                status2.select_by_visible_text('On Duty')
+                new_status = 'On Duty'
+
+        if remark1 is not '':
+            rmk1 = globalDriver.find_element(webElem.DRIVERS_CORRECT_POPUP_REMARK1_TXT)
+            rmk1.clear()
+            rmk1.send_keys(remark1)
+
+        if remark2 is not '':
+            rmk2 = globalDriver.find_element(webElem.DRIVERS_CORRECT_POPUP_REMARK2_TXT)
+            rmk2.clear()
+            rmk2.send_keys(remark2)
+
+        if splitremark1 is not '':
+            srmk1 = globalDriver.find_element(webElem.DRIVERS_CORRECT_POPUP_SPLIT_REMARK1_TXT)
+            srmk1.clear()
+            srmk1.send_keys(splitremark1)
+
+        if splitremark2 is not '':
+            srmk2 = globalDriver.find_element(webElem.DRIVERS_CORRECT_POPUP_SPLIT_REMARK2_TXT)
+            srmk2.clear()
+            srmk2.send_keys(splitremark2)
+
+        globalDriver.find_element(webElem.DRIVERS_CORRECT_POPUP_EDIT_REASON_TXT).send_keys(message)
+        globalDriver.find_element(webElem.DRIVERS_CORRECT_POPUP_SAVE_BTN).click()
+
+        globalDriver.switch_to.window(main_window)
+
+        record_updated_id = 'dgDetails_lblActivity_' + idnumber
+
+        record = globalDriver.find_element_by_xpath("//span[@id='{0}' and text()='{1}' - Pending']".format(record_updated_id, new_status))
+
+        assert record in globalDriver.page_source
 
     def enable_yard_move(self, enable):
 
@@ -168,10 +272,10 @@ class WinMachine_Common:
         if alert.is_displayed():
             alert.accept()
 
-        update_img = globalDriver.find_element(webElem.HOS_SETUP_UPDATE_IMG)
+        update_msg = globalDriver.find_element(webElem.HOS_SETUP_UPDATE_MSG)
 
         # The 'updated' message is searched to validate the change
-        assert update_img in globalDriver.page_source
+        assert update_msg in globalDriver.page_source
 
     def enable_remarks_on_status_changes(self, enable):
 
@@ -213,10 +317,10 @@ class WinMachine_Common:
         if flag_req_remarks is False:
             alert.accept()
 
-        update_img = globalDriver.find_element(webElem.HOS_SETUP_UPDATE_IMG)
+        update_msg = globalDriver.find_element(webElem.HOS_SETUP_UPDATE_MSG)
 
         # This assertion is done only if there was a modification in the value to validate the Updated message
-        assert update_img in globalDriver.page_source
+        assert update_msg in globalDriver.page_source
 
     def set_personal_conveyance_limit(self, type, limit):
 
@@ -289,10 +393,10 @@ class WinMachine_Common:
         if flag_pc_config is False:
             alert.accept()
 
-        update_img = globalDriver.find_element(webElem.HOS_SETUP_UPDATE_IMG)
+        update_msg = globalDriver.find_element(webElem.HOS_SETUP_UPDATE_MSG)
 
         # This assertion is done only if there was a modification in the value to validate the Updated message
-        assert update_img in globalDriver.page_source
+        assert update_msg in globalDriver.page_source
 
     def enable_driver_personal_conveyance(self, driverid, enable):
 
@@ -344,7 +448,28 @@ class WinMachine_Common:
         if alert.is_displayed():
             alert.accept()
 
-        update_img = globalDriver.find_element(webElem.DA_UPDATE_IMG)
+        update_msg = globalDriver.find_element(webElem.DA_UPDATE_MESSAGE)
 
         # The 'updated' message is searched to validate the change
-        assert update_img in globalDriver.page_source
+        assert update_msg in globalDriver.page_source
+
+    def update_carrier_name(self, carrier_to_update, new_carrier_name):
+
+        # Go to Carrier page
+        self.goToCarrierInAdmin(carrier_to_update)
+
+        # Update carrier
+        name = globalDriver.find_element(webElem.CA_CARRIER_NAME)
+        name.clear()
+        name.send_keys(new_carrier_name)
+
+        # This condition handles the Javascript Pop-Up that appears when Canadian Rules is switched from Yes to No
+        alert = globalDriver.switch_to.alert
+
+        # If the Javascript Alert appears the following code will handle it
+        if alert.is_displayed():
+            alert.accept()
+
+        # The 'updated' message is searched to validate the change
+        update_msg = globalDriver.find_element(webElem.CA_UPDATE_MESSAGE)
+        assert update_msg in globalDriver.page_source
