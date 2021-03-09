@@ -35,11 +35,18 @@ ivg_common = IVG_Common()
     file2.writelines(imports) 
     print(imports)
 
+
 def search_func(search, space):
     search = re.search(r""+search+"",str(space))
     if search != None:
         return True
     return False
+
+def remove_translator_func(text):
+    string = str(text).split('(')
+    status = string[1].split(')')
+    return status[0]
+
 
 def tokenization():
     start_of_script = False
@@ -322,7 +329,27 @@ def tokenization():
             # "DriverID"
             toadd = "\neld_core.select_driver_from_dropdown('" + params[0] + "')"
             file2.writelines(toadd)
-        
+
+        elif (search_func('ValidateStatus', doc)):
+            params = []
+            stringToPass = ''
+            for i in range(3, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            params = new.split()
+
+            while len(params) < 1:
+                params.append(' ')
+
+            if "Translator" in params[0]:
+                clean_param = remove_translator_func(params[0])
+
+            toadd = "\neld_core.validate_status('" + clean_param + "') #Translator Removed"
+            file2.writelines(toadd)
+
         else:
             print('\n AUN NO CONOZCO ESTA FUNCION ' + line[0: len(line)-1] + '\n')
             #file2.writelines('\n')
