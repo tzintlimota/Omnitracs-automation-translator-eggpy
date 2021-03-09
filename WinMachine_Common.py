@@ -1,24 +1,14 @@
 from selenium import webdriver
-<<<<<<< HEAD
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.common.action_chains import ActionChains
-from HOS_Elements import webElem
-
-#Global variable to store web driver
-globalDriver = webdriver.Chrome()
-globalDriver.implicitly_wait(10)
-=======
-from selenium.webdriver.chrome.webdriver import WebDriver
-from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.support.select import Select
+from HOS_Elements import webElem
 import pytest
 
-from HOS_Elements import webElem
-
-#Global variable to store web driver
-globalDriver: WebDriver = webdriver.Chrome()
->>>>>>> 55e2762d213eaff82689ccb381c8e01328c12f58
+#Global variable to store web driver¿
+globalDriver = webdriver.Chrome()
+globalDriver.implicitly_wait(10)
 
 class WinMachine_Common:
 
@@ -43,8 +33,7 @@ class WinMachine_Common:
 
         globalDriver.find_element_by_partial_link_text(UA).click()
 
-<<<<<<< HEAD
-    def editCertStatus(preStatus,type,change,recordNum,time,exceptionStatus):
+    def editCertStatus(self, preStatus,type,change,recordNum,time,exceptionStatus):
         globalDriver.find_element(webElem.DD_DUTYSTATUSCHANGES_SELECT).click()
         if time != None:
             timeOption = globalDriver.find_element_by_xpath("//select[@id='ddlTimeFrame']/option[text()='"+time+"']")
@@ -107,7 +96,7 @@ class WinMachine_Common:
         except NoSuchElementException:
             raise RuntimeError("Unable to find the edited record on the table.")
 
-    def swapDrivingStatus (time, driverId, newStatus, reason, index):
+    def swapDrivingStatus (self, time, driverId, newStatus, reason, index):
         globalDriver.find_element(webElem.DD_DUTYSTATUSCHANGES_SELECT).click()
         if time != None:
             timeOption = globalDriver.find_element_by_xpath("//select[@id='ddlTimeFrame']/option[text()='" + time + "']")
@@ -158,7 +147,7 @@ class WinMachine_Common:
         except NoSuchElementException:
             raise RuntimeError("Unable to find the edited record on the table.")
 
-    def exemptDriver (driverId, exempt, reason):
+    def exemptDriver (self, driverId, exempt, reason):
         #go_to_driver_in_admin driverId
 
         if exempt == True:
@@ -192,7 +181,7 @@ class WinMachine_Common:
             action0.perform()
             resultElem = globalDriver.find_element_by_xpath("//span[@id='MDriverUC1_messageBar_lblMessage' and text()='" + driverId + " updated.']")
 
-    def setYardMoveTermination(type):
+    def setYardMoveTermination(self, type):
         globalDriver.get(webElem.ADMIN_URL)
         globalDriver.find_element(webElem.ADMIN_HOSSETUP_LINK).click()
 
@@ -219,7 +208,7 @@ class WinMachine_Common:
         else:
             raise RuntimeError("Yard move checkbox is not checked")
 
-    def enableDriverYardMove(driverId,enable):
+    def enableDriverYardMove(self, driverId,enable):
         globalDriver.get(webElem.ADMIN_DRIVER_URL)
 
         searchDepot = globalDriver.find_element(webElem.DA_SEARCH_DEPOT_TXT)
@@ -230,7 +219,7 @@ class WinMachine_Common:
 
         searchDriver = globalDriver.find_element(webElem.DA_SEARCH_DRIVER_TXT)
         searchDriver.clear()
-        searchDriver.send_keys(driverId)
+        searchDriver.send_keys(self, driverId)
 
         try:
             driverOpt = globalDriver.find_element_by_xpath("//*[contains(text(),'"+driverId+"')]")
@@ -272,7 +261,7 @@ class WinMachine_Common:
         except NoSuchElementException:
             raise RuntimeError("Unable to find the success message bar")
 
-    def editStatusWithMinDuration (preStatus, time, change, recordNum, duration, message):
+    def editStatusWithMinDuration (self, preStatus, time, change, recordNum, duration, message):
         durationArray = duration.split(" ")
         durationHours =  durationArray[0].replace("h","")
         durationMin = durationArray[1].replace("m","")
@@ -349,7 +338,7 @@ class WinMachine_Common:
             print ("Record properly updated")
         except NoSuchElementException:
             raise RuntimeError("Unable to find the edited record on the table.")
-=======
+
     def hos_portal_login(self, customer, username, password, portaltype):
 
         # For Non-SSO portal
@@ -780,7 +769,6 @@ class WinMachine_Common:
         name = globalDriver.find_element(webElem.CA_CARRIER_NAME)
         name.clear()
         name.send_keys(new_carrier_name)
->>>>>>> 55e2762d213eaff82689ccb381c8e01328c12f58
 
         # This condition handles the Javascript Pop-Up that appears when Canadian Rules is switched from Yes to No
         alert = globalDriver.switch_to.alert

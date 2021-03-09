@@ -43,7 +43,6 @@ class webElem():
 
     # ----- Administration page -----
     ADMIN_URL = "https://hos.int.omnitracs.com/QHOS/~admin/admin.aspx"
-<<<<<<< HEAD
     ADMIN_DRIVER_URL = "https://hos.int.omnitracs.com/QHOS/~admin/mdriver.aspx"
     ADMIN_DRIVER_LINK = (By.ID,"AdminUC1_hlDrivers")
     ADMIN_CARRIER_LINK = (By.ID,"AdminUC1_h1Carriers")
@@ -99,7 +98,6 @@ class webElem():
     HS_BOTH_CHECKBOX = (By.ID, "rblYardMoveTermination_2")
     HS_SAVE_BUTTON = (By.ID,"cmdSave")
 
-=======
     ADMIN_CARRIER_LINK = (By.ID, "AdminUC1_h1Carriers")
     ADMIN_DRIVER_LINK = (By.ID, "AdminUC1_hlDrivers")
     ADMIN_VEHICLE_LINK = (By.ID, "AdminUC1_hlVehicles")
