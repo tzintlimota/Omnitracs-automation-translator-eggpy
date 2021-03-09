@@ -1,6 +1,7 @@
 import spacy
 
 from spacy.lang.en import English
+import re
 
 
 nlp = spacy.load('en_core_web_sm')
@@ -34,6 +35,11 @@ ivg_common = IVG_Common()
     file2.writelines(imports) 
     print(imports)
 
+def search_func(search, space):
+    search = re.search(r""+search+"",str(space))
+    if search != None:
+        return True
+    return False
 
 def tokenization():
     start_of_script = False
@@ -54,14 +60,13 @@ def tokenization():
         if(str(doc[0]) == 'ConnectUnit' or str(doc[0])=='Global'):
                 toadd = str("\n#"+str(doc[0:len(doc)-1])+"")
                 file2.writelines(toadd)
-        elif (str(doc[0]) == 'BeforeTest'):
+        elif (search_func('BeforeTest', doc)):
             toadd = "\nivg_common.logOutAllDrivers()"
             file2.writelines(toadd)
-           
         elif str(doc[0]) == 'log':
             toadd = str("print('"+str(doc[0:len(doc)-1])+"') \n")
             file2.writelines(toadd)
-        elif str(doc[0]) == 'SendMessageToUpdateLogs':
+        elif (search_func('SendMessageToUpdateLogs', doc)):
             toadd = "\nivg_common.sendMessageToUpdateLogs()"
             file2.writelines(toadd)
         elif str(doc[0]) == 'put' and doc[2].pos_ == 'PROPN':
@@ -73,7 +78,7 @@ def tokenization():
             else:
                 toadd = '\ntime.sleep(' + str(doc[1]) + ')'
             file2.writelines(toadd)
-        elif str(doc[0]) == 'getLoadDate':
+        elif (search_func('getLoadDate', doc)):
             params = []
             stringToPass = ''
             for i in range(1, len(doc)):
@@ -90,7 +95,7 @@ def tokenization():
             toadd = "\neld_core.getLoadDate('" + params[0] + "')"
             file2.writelines(toadd)
 
-        elif (str(doc[0]) == 'GoTo' and str(doc[2]) == 'DayForward'):
+        elif (search_func('DayForward', doc)):
             # (newStatus, condition, remark1, remark2, complete)
             params = []
             stringToPass = ''
@@ -108,7 +113,7 @@ def tokenization():
             # "ON","N" ,"AUTOMATION"
             toadd = "\neld_core.dayForward('" + params[0] + "', " + params[1] + ")"
             file2.writelines(toadd)
-        elif (str(doc[0]) == 'GoTo' and str(doc[2]) == 'DayBack'):
+        elif (search_func('DayBack', doc)):
             # (newStatus, condition, remark1, remark2, complete)
             params = []
             stringToPass = ''
@@ -130,11 +135,11 @@ def tokenization():
                 params[1] = 'False'
             toadd = "\neld_core.dayBack('" + params[0] + "', bool(" + params[1] + "), " + params[2] + ")"
             file2.writelines(toadd)
-        elif str(doc[0]) == 'GoToHistory':
+        elif(search_func('GoToHistory', doc)):
             toadd = "\neld_core.goToHistory()"
             file2.writelines(toadd)
         #Preguntar TZINTLI
-        elif (str(doc[0]) == 'CreateLoad' and str(doc[2]) == 'CreateLoad'):
+        elif (search_func('CreateLoad', doc)):
             # self, loadId, Trailer1, Trailer2, Trailer3, BL, StartDate, EndDate, Finish
             params = []
             stringToPass = ''
@@ -156,7 +161,7 @@ def tokenization():
                 params[7] = 'False'
             toadd = "\neld_core.createLoad('" + params[0] + "', '" + params[1] + "','" + params[2] + "','" + params[3] + "','" + params[4] + "','" + params[5] + "','" + params[6] + "', bool(" + params[7] + "))"
             file2.writelines(toadd)
-        elif (str(doc[0]) == 'Status_ChangeTestCase' and str(doc[2]) == 'ChangeDriverStatus'):
+        elif (search_func('ChangeDriverStatus', doc)):
             # (newStatus, condition, remark1, remark2, complete)
             params = []
             stringToPass = ''
@@ -174,7 +179,7 @@ def tokenization():
             # "ON","N" ,"AUTOMATION"
             toadd = "\neld_core.changeDriverStatus('" + params[0] + "', '" + params[1] + "', '" + params[2] + "', '" + params[3] + "', '" + params[4] + "')"
             file2.writelines(toadd)
-        elif str(doc[0]) == 'LoginDriver':
+        elif (search_func('LoginDriver', doc)):
             params = []
             stringToPass = ''
             for i in range(2, len(doc)):
@@ -192,13 +197,13 @@ def tokenization():
             toadd = "\neld_core.loginDriver('" + params[0] + "', '" + params[0] + "', '" + params[2] + "', '" + \
                     params[3] + "')"
             file2.writelines(toadd)
-        elif str(doc[0]) == 'BackToHome':
+        elif (search_func('BackToHome', doc)):
             toadd = "\nivg_common.backToHome()"
             file2.writelines(toadd)
-        elif str(doc[0]) == 'ClearAlerts':
+        elif (search_func('ClearAlerts', doc)):
             toadd = "\nivg_common.clearAlerts()"
             file2.writelines(toadd)
-        elif str(doc[0]) == 'SendMessage':
+        elif (search_func('SendMessage', doc) and not (search_func('SendMessageToUpdateLogs', doc))):
             #Enviar mensaje
             message = ''
             for token in doc:
@@ -207,19 +212,31 @@ def tokenization():
                     message += str(token.text) + " "
             toadd = "\nivg_common.sendMessage('" + message + "')"
             file2.writelines(toadd)
-        elif str(doc[0]) == 'GoToMessagingPage':
+        elif (search_func('GoToMessagingPage', doc)):
             toadd = "\nivg_common.goToMessagingPage()"
             file2.writelines(toadd)
-        elif str(doc[0]) == 'DeleteAllOutboxMessages':
+        elif (search_func('DeleteAllOutboxMessages', doc)):
             toadd = "\nivg_common.deleteAllOutboxMessages()"
             file2.writelines(toadd)
-        elif str(doc[0]) == 'GoToLoginPage':
+        elif (search_func('GoToLoginPage', doc)):
             toadd = "\nivg_common.goToLoginPage()"
             file2.writelines(toadd)
-        elif str(doc[0]) == 'CertifyAllLogs':
+        elif (search_func('CertifyAllLogs', doc)):
             toadd = "\neld_core.certifyAllLogs()"
             file2.writelines(toadd)
-        elif str(doc[0]) == 'GoTo':
+        elif (search_func('getRestBreakClockValue', doc)):
+            toadd = "\neld_core.get_rest_break_clock()"
+            file2.writelines(toadd)
+        elif (search_func('getDrivingClockValue', doc)):
+            toadd = "\neld_core.get_driving_clock()"
+            file2.writelines(toadd)
+        elif (search_func('getOnDutyClockValue', doc)):
+            toadd = "\neld_core.get_on_duty_clock()"
+            file2.writelines(toadd)
+        elif (search_func('getDutyCycleClockValue', doc)):
+            toadd = "\neld_core.get_duty_cycle_clock()"
+            file2.writelines(toadd)
+        elif (search_func('GoTo', doc) and not (search_func('GoToLoginPage', doc))):
             params = []
             stringToPass = ''
             for i in range(1, len(doc)):
@@ -236,7 +253,7 @@ def tokenization():
             toadd = "\neld_core.goTo('" + params[0] + "')"
             file2.writelines(toadd)
             #eld_core.certifyLogOfDay(1)
-        elif str(doc[0]) == 'CertifyLogsOfDay':
+        elif (search_func('CertifyLogsOfDay', doc)):
             params = []
             stringToPass = ''
             for i in range(1, len(doc)):
@@ -252,7 +269,7 @@ def tokenization():
                 params.append(' ')
             toadd = "\neld_core.certifyLogsOfDay(" + params[0] + ")"
             file2.writelines(toadd)
-        elif (str(doc[0]) == 'CertifyTestCase.findTableRecord'):
+        elif (search_func('findTableRecord', doc)):
             params = []
             stringToPass = ''
             for i in range(1, len(doc)):
@@ -269,7 +286,8 @@ def tokenization():
             # "ON","N" ,"AUTOMATION"
             toadd = "\neld_core.findTableRecord('" + params[0] + "', '" + params[1] + "','" + params[2] + "','" + params[3] + "')"
             file2.writelines(toadd)
-        elif (str(doc[0]) == 'getTable'):
+        
+        elif (search_func('getTable', doc)):
             params = []
             stringToPass = ''
             for i in range(1, len(doc)):
@@ -286,7 +304,8 @@ def tokenization():
             # "ON","N" ,"AUTOMATION"
             toadd = "\neld_core.getTable('" + params[0] + "', '" + params[1] + "', int(" + params[2] + "))"
             file2.writelines(toadd)
-        elif (str(doc[0]) == 'ELDTestCase' and str(doc[2]) == 'SelectDriverFromDropDown'):
+        
+        elif (search_func('SelectDriverFromDropDown', doc)):
             # (driverID)
             params = []
             stringToPass = ''
@@ -304,9 +323,10 @@ def tokenization():
             # "DriverID"
             toadd = "\neld_core.select_driver_from_dropdown('" + params[0] + "')"
             file2.writelines(toadd)
+        
         else:
             print('\n AUN NO CONOZCO ESTA FUNCION ' + line[0: len(line)-1] + '\n')
-            file2.writelines('\n')
+            #file2.writelines('\n')
             for token in doc:
                 print(token.text, token.pos_, token.dep_)
         
