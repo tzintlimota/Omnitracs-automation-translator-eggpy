@@ -1156,16 +1156,19 @@ class IVG_ELD_CORE:
         assert expected_status in actual_status, \
             f"expected_status '{expected_status}' is no substring of '{actual_status}'"
 
-    def get_rest_break_clock(self):
-        self.goToHOS()
-        self.goTo('Summary')
+    def get_clock(self, x, x1, y, y1):
+
+        if self.img_proc.expect_image('vnc-summary-screen','ExpectedScreens',1):
+            print("Already in Summary page")
+        else:
+            self.goToHOS()
+            self.goTo('Summary')
         
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
         img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-        crop_img2 = img[int(30):int(300), int(200):int(290)]
-        
-        width = int(crop_img2.shape[1] * 300 / 100)
-        height = int(crop_img2.shape[0] * 300 / 100)
+        crop_img2 = img[int(y):int(y1), int(x):int(x1)]
+        width = int(crop_img2.shape[1] * 100 / 100)
+        height = int(crop_img2.shape[0] * 100 / 100)
         # dsize
         dsize = (width, height)
         # resize image
@@ -1174,38 +1177,27 @@ class IVG_ELD_CORE:
         #crop_img2 = cv2.blur(crop_img2,(3,3))
         plt.imshow(crop_img2)
         plt.show()
-        string = pytesseract.image_to_string(crop_img2)
-        print(string)
-        recordToCompare = string.lower()
-        return recordToCompare
-
-    def get_clock(self, x, x1, y, y1):
-        #self.goToHOS()
-        #self.goTo('Summary')
-        
-        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-        crop_img2 = img[int(y):int(y1), int(x):int(x1)]
-        #crop_img2 = cv2.resize(crop_img2, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
-        #crop_img2 = cv2.blur(crop_img2,(3,3))
-        plt.imshow(crop_img2)
-        plt.show()
-        string = pytesseract.image_to_string(crop_img2)
+        string = pytesseract.image_to_string(crop_img2, config='--psm 6 --oem 3 -c tessedit_char_whitelist=0123456789:-' )
         print(string)
         recordToCompare = string.lower()
         return recordToCompare
 
     def get_driving_clock(self):
-        self.get_clock(840,940,230,270)
+        clock_val = self.get_clock(840,940,245,280)
+        return clock_val
 
     def get_on_duty_clock(self):
-        self.get_clock(840,940,275,315)
+        clock_val = self.get_clock(840,940,275,315)
+        return clock_val
      
     def get_duty_cycle_clock(self):
-        self.get_clock(840,940,315,355)
+        clock_val = self.get_clock(840,940,315,355)
+        return clock_val
 
     def get_rest_break_clock(self):
-        self.get_clock(840,940,355, 395)
+        clock_val = self.get_clock(835,925,365, 395)
+        return clock_val
+
 
     def changeCarrier(self,Carrier, Send):
         pass
