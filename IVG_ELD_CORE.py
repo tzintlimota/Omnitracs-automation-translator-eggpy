@@ -25,6 +25,12 @@ class IVG_ELD_CORE:
         #self.img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])
         self.ivg_common = IVG_Common()
 
+    def search_func(self, search, space):
+        search = re.search(r"" + search + "", str(space))
+        if search != None:
+            return True
+        return False
+
     #Code to discard/accept Certify Day prompt
     def closeCertifyDayPrompt(self):
         print("Discarding/Accepting Certify Day Prompt...")
@@ -435,7 +441,7 @@ class IVG_ELD_CORE:
         print(recordToCompare)
         print(RecordToFind.lower())
 
-        if str(recordToCompare.strip()) == str(RecordToFind.lower().strip()):
+        if self.search_func(str(RecordToFind.lower().strip()), str(recordToCompare.strip())):
             print("Found " + str(RecordToFind))
         else:
             print("Searching")
@@ -462,7 +468,7 @@ class IVG_ELD_CORE:
                     string = pytesseract.image_to_string(crop_img2)
                     recordToCompare = string.lower()   
                     print(recordToCompare)
-                    if str(recordToCompare.strip()) == str(RecordToFind.lower().strip()):
+                    if self.search_func(str(RecordToFind.lower().strip()), str(recordToCompare.strip())):
                         found = True
                         print("Found " + str(RecordToFind))
                         '''if findOrder == 'Asc':
@@ -903,9 +909,6 @@ class IVG_ELD_CORE:
             print("Switching to DRIVER profile")
             self.img_proc.click_image_by_max_key_points('ELD_Core/DayLogTab/DriverButton/DriverButton')
 
-
-
-        
         findOrder = ""
         
         if StartPoint =="Bottom":
@@ -1093,7 +1096,7 @@ class IVG_ELD_CORE:
         recordToCompare = records[0][x].lower()
         records = None
 
-        if str(recordToCompare.strip()) == str(RecordToFind.lower().strip()):
+        if self.search_func(str(RecordToFind.lower().strip()), str(recordToCompare.strip())):
             print("Found " + str(RecordToFind))
             return records
         else:
@@ -1118,7 +1121,7 @@ class IVG_ELD_CORE:
                  
                     records = None
                     
-                    if str(recordToCompare.strip()) == str(RecordToFind.lower().strip()):
+                    if self.search_func(str(RecordToFind.lower().strip()), str(recordToCompare.strip())):
                         found = True
                         print("Found " + str(RecordToFind))
                         '''if findOrder == 'Asc':
@@ -1139,6 +1142,26 @@ class IVG_ELD_CORE:
         #CertifyTestCase.findTableRecord
 
         self.goTo("DayLog")
+
+        findOrder = ""
+        if StartPoint == "Bottom":
+            for i in range(10):
+                self.img_proc.click_image_by_max_key_points_offset(
+                    "IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+        elif StartPoint == "Top":
+            for i in range(10):
+                self.img_proc.click_image_by_max_key_points_offset(
+                    "IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
+        else:
+            print("In the middle of the table")
+
+        if FindOrder == "Asc":
+            findOrder = "Asc"
+        elif FindOrder == "Desc":
+            findOrder = "Desc"
+        else:
+            findOrder = "Asc"
+
         if ColumnToSearch == 'Time':
             x = 0
         elif ColumnToSearch == 'Location':
@@ -1164,28 +1187,10 @@ class IVG_ELD_CORE:
         print(records[0][x].lower())
         recordToCompare = records[0][x].lower()
         records = None
-
-        findOrder = ""
-        if StartPoint =="Bottom":
-            for i in range(10):
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
-        elif StartPoint =="Top":
-            for i in range(10):
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
-        else:
-            print("In the middle of the table")
-
-        if FindOrder == "Asc":
-            findOrder = "Asc"
-        elif FindOrder == "Desc":
-            findOrder = "Desc"
-        else:
-            findOrder = "Asc"
         
         #Certified Status Start Duration Location CoDriver Origin Comment
-        
 
-        if str(recordToCompare.strip()) == str(RecordToFind.lower().strip()):
+        if self.search_func(str(RecordToFind.lower().strip()), str(recordToCompare.strip())):
             print("Found " + str(RecordToFind))
             return records
         else:
@@ -1210,7 +1215,7 @@ class IVG_ELD_CORE:
             
                     records = None
                     
-                    if str(recordToCompare.strip()) == str(RecordToFind.lower().strip()):
+                    if self.search_func(str(RecordToFind.lower().strip()), str(recordToCompare.strip())):
                         found = True
                         print("Found " + str(RecordToFind))
                         '''if findOrder == 'Asc':
