@@ -22,7 +22,7 @@ import sys
 class IVG_ELD_CORE:
 
     def __init__(self):
-        self.img_proc = ImageProcessor('192.168.1.118', 'None', .15)
+        self.img_proc = ImageProcessor('192.168.100.13', 'None', .15)
         #self.img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])
         self.ivg_common = IVG_Common()
 
@@ -779,8 +779,8 @@ class IVG_ELD_CORE:
         crop_img2 = cv2.resize(crop_img2, dsize)
         #crop_img2 = cv2.resize(crop_img2, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
         #crop_img2 = cv2.blur(crop_img2,(3,3))
-        #plt.imshow(crop_img2)
-        #plt.show()
+        plt.imshow(crop_img2)
+        plt.show()
         string = pytesseract.image_to_string(crop_img2)
         print(string)
         recordToCompare = string.lower()
@@ -1231,127 +1231,115 @@ class IVG_ELD_CORE:
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
 
 
-
-
-
-
-
-
-
-
-
-
-
-
     def select_driver_from_dropdown(self, driver_id):
-        driver_found = False
-        unidentified_profile = False
+            driver_found = False
+            unidentified_profile = False
 
-        #Clicks on banner of HOS app to remove highlight of DriverID
-        # This because tesseract shows erros when the word is highlighted
-        self.img_proc.click_image_by_max_key_points_offset(
-            "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
-            -0, 130)
+            #Clicks on banner of HOS app to remove highlight of DriverID
+            # This because tesseract shows erros when the word is highlighted
+            self.img_proc.click_image_by_max_key_points_offset(
+                "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                -0, 130)
 
-        #Capture of current screen in the IVG
-        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-
-        #Gets the current DriverID selected
-        crop_img2 = img[int(95):int(126), int(42):int(327)]
-        current_driver = pytesseract.image_to_string(crop_img2)
-
-        #Removes blank spaces at end/beginning of text
-        current_driver = current_driver.strip()
-
-        #Need to replace all O to 0 to fox error of tesseract confusing char with digits.
-        driver_id = driver_id.replace("O", "0")
-        current_driver = current_driver.replace("O", "0")
-
-        #This compares driverID with values on dropdown to select the expected one.
-        if driver_id in current_driver:
-            print("Driver ID is already selected")
-        else:
-            #Click to open DriverID dropdown
-            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
-                                                               -200, 45)
-
+            #Capture of current screen in the IVG
             self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
             img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
 
-            #Selects 2nd option of dropdown
-            self.img_proc.click_image_by_max_key_points_offset(
-                "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
-                -250, 88)
+            #Gets the current DriverID selected
+            crop_img2 = img[int(95):int(126), int(42):int(327)]
+            current_driver = pytesseract.image_to_string(crop_img2)
 
-            time.sleep(1)
-            #Flag is set to True if UNIDENTIFIED Profile appears - This is to know if there is a copilot logged in
-            if self.img_proc.expect_image('vnc-unidentified-profile-screen', 'ExpectedScreens', 2):
-                unidentified_profile = True
+            #Removes blank spaces at end/beginning of text
+            current_driver = current_driver.strip()
 
-            if driver_id == 'UNIDENTIFIED' and not unidentified_profile:
-                print("Unidentified needs to be selected")
-                #Click to open the dropdown.
-                self.img_proc.click_image_by_max_key_points_offset(
-                    "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
-                     -200, 45)
-                #Selects 3rd option from dropdown
-                self.img_proc.click_image_by_max_key_points_offset(
-                    "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
-                    -250, 115)
-                driver_found = True
-            elif driver_id == 'UNIDENTIFIED' and unidentified_profile:
-                print("Already in UNIDENTIFIED profile")
+            #Need to replace all O to 0 to fox error of tesseract confusing char with digits.
+            driver_id = driver_id.replace("O", "0")
+            current_driver = current_driver.replace("O", "0")
+
+            #This compares driverID with values on dropdown to select the expected one.
+            if driver_id in current_driver:
+                print("Driver ID is already selected")
             else:
-                #Case when there is a Driver and Copilot logged in
+                #Click to open DriverID dropdown
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                                                                   -200, 45)
+
+                self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+                img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+
+                #Selects 2nd option of dropdown
                 self.img_proc.click_image_by_max_key_points_offset(
                     "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
-                    -200, 45)
+                    -250, 88)
 
                 time.sleep(1)
+                #Flag is set to True if UNIDENTIFIED Profile appears - This is to know if there is a copilot logged in
+                if self.img_proc.expect_image('vnc-unidentified-profile-screen', 'ExpectedScreens', 2):
+                    unidentified_profile = True
 
-                self.img_proc.click_image_by_max_key_points_offset(
-                    "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
-                    -250, 115)
+                if driver_id == 'UNIDENTIFIED' and not unidentified_profile:
+                    print("Unidentified needs to be selected")
+                    #Click to open the dropdown.
+                    self.img_proc.click_image_by_max_key_points_offset(
+                        "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                         -200, 45)
+                    #Selects 3rd option from dropdown
+                    self.img_proc.click_image_by_max_key_points_offset(
+                        "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                        -250, 115)
+                    driver_found = True
+                elif driver_id == 'UNIDENTIFIED' and unidentified_profile:
+                    print("Already in UNIDENTIFIED profile")
+                else:
+                    #Case when there is a Driver and Copilot logged in
+                    self.img_proc.click_image_by_max_key_points_offset(
+                        "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                        -200, 45)
 
-                #Selects option to highlight UNIDENTIFIED
-                #This prevents error when the driver text is retrieved
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
-                    -200, 45)
+                    time.sleep(1)
 
-                string = self.retrieve_text_with_config(124, 200, 40, 327)
+                    self.img_proc.click_image_by_max_key_points_offset(
+                        "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                        -250, 115)
 
-                string = string.strip()
-                slist = string.splitlines()
-                slist = list(filter(str.strip, slist))
+                    #Selects option to highlight UNIDENTIFIED
+                    #This prevents error when the driver text is retrieved
+                    self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                        -200, 45)
 
-                for i in range(len(slist)):
-                    text = str(slist[i])
-                    text = text.replace("O", "0")
-                    driver_id = driver_id.replace("O", "0")
+                    string = self.retrieve_text_with_config(124, 200, 40, 327)
 
-                    if driver_id in text and i == 0:
-                        self.img_proc.click_image_by_max_key_points_offset(
-                            "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
-                            -250, 65)
-                        driver_found = True
-                        break
+                    string = string.strip()
+                    slist = string.splitlines()
+                    slist = list(filter(str.strip, slist))
 
-                    if driver_id in text and i == 1:
-                        self.img_proc.click_image_by_max_key_points_offset(
-                            "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
-                            -250, 88)
-                        driver_found = True
-                        break
+                    for i in range(len(slist)):
+                        text = str(slist[i])
+                        text = text.replace("O", "0")
+                        driver_id = driver_id.replace("O", "0")
 
-            if driver_found:
-                print("The DriverID {" + str(slist[i]) + "} has been selected.")
-            else:
-                print("The DriverID {" + str(slist[i]) + "} has NOT been selected.")
+                        if driver_id in text and i == 0:
+                            self.img_proc.click_image_by_max_key_points_offset(
+                                "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                                -250, 65)
+                            driver_found = True
+                            break
+
+                        if driver_id in text and i == 1:
+                            self.img_proc.click_image_by_max_key_points_offset(
+                                "IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
+                                -250, 88)
+                            driver_found = True
+                            break
+
+                if driver_found:
+                    print("The DriverID {" + str(slist[i]) + "} has been selected.")
+                else:
+                    print("The DriverID {" + str(slist[i]) + "} has NOT been selected.")
 
     def validate_status(self, string):
         #self.goToHOS()
-        actual_status = self.retrieveText(245, 270, 132, 370)
+        actual_status = self.retrieve_text(245, 270, 132, 370)
         expected_status = string.lower()
         assert expected_status in actual_status, \
             f"expected_status '{expected_status}' is no substring of '{actual_status}'"
@@ -1416,6 +1404,41 @@ class IVG_ELD_CORE:
             else:
                 print("!!!!!!!!!!!!!!!!!!!!!!!!!\n Error: Carrier Edit alert not found. Be sure the Carrier has requested edits.")
                 sys.exit(1)
+
+    def accept_unassigned_events(self, uva_type, remark1, remark2):
+        '''if self.img_proc.expect_image('vnc-review-unassigned-driving-event', 'ExpectedScreens', 2):
+            print('Already in Please Review All Unassigned Driving Events screen')
+        else:
+            self.goToHOS()
+            self.img_proc.expect_image('vnc-review-unassigned-driving-event', 'ExpectedScreens', 3)
+
+        self.img_proc.click_image_by_max_key_points('ELD_Core/UnassignedDriving/NextButton/NextButton')
+
+        #Accepting UVA by clicking NEXT button
+        text = self.retrieve_text(530, 570, 755, 840)
+        if 'reject' in text.lower():
+            print('Currently in Review Unassigned Driving Time screen')
+            self.img_proc.click_image_by_max_key_points('ELD_Core/UnassignedDriving/NextButton/NextButton')
+        '''
+
+        #Click on Status dropdown
+        self.img_proc.click_image_by_max_key_points_offset(
+            'ELD_Core/UnassignedDriving/UVAStatusDropdownMenu_A/UVAStatusDropdownMenu_A', 55, 35)
+
+        if not uva_type:
+            print("Selecting D for unassigned driving event")
+            self.img_proc.click_image_by_max_key_points_offset(
+                'ELD_Core/UnassignedDriving/UVAStatusDropdownMenu_A/UVAStatusDropdownMenu_A', 45, 70)
+        elif uva_type.lower() in 'pc':
+            print("Selecting PC for unassigned driving event")
+            self.img_proc.click_image_by_max_key_points_offset(
+                'ELD_Core/UnassignedDriving/UVAStatusDropdownMenu_A/UVAStatusDropdownMenu_A', 45, 100)
+        elif uva_type.lower() in 'ym':
+            print("Selecting YM for unassigned driving event")
+            self.img_proc.click_image_by_max_key_points_offset(
+                'ELD_Core/UnassignedDriving/UVAStatusDropdownMenu_A/UVAStatusDropdownMenu_A', 45, 130)
+
+
 
 
 
