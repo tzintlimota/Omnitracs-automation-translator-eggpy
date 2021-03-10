@@ -14,6 +14,7 @@ from dateutil.parser import parse
 import connection_credentials as cfg
 import re
 import pytest
+import sys
 
 
 #import pyGPSFeed_IMR
@@ -1196,6 +1197,24 @@ class IVG_ELD_CORE:
     def get_rest_break_clock(self):
         clock_val = self.get_clock(835,925,365, 395)
         return clock_val
+
+            print('Already in Carrier Edits Screen')
+        elif self.img_proc.expect_image('vnc-edits-review-carrier-edits', 'ExpectedScreens', 2):
+            self.img_proc.click_image_by_max_key_points('ELD_Core/CarrierEdit/ReviewCarrierEditsButton/ReviewCarrierEditsButton')
+            lbl_carrier_edit = self.img_proc.image_exists('ELD_Core/CarrierEdit/YourCarrierHasProposedThisEdit/YourCarrierHasProposedThisEdit')
+            if lbl_carrier_edit:
+                print("Carrier Edits Screen displayed successfully")
+        else:
+            self.goToHOS()
+            if self.img_proc.expect_image('vnc-edits-review-carrier-edits', 'ExpectedScreens', 2):
+                self.img_proc.click_image_by_max_key_points('ELD_Core/CarrierEdit/ReviewCarrierEditsButton/ReviewCarrierEditsButton')
+                lbl_carrier_edit = self.img_proc.image_exists('ELD_Core/CarrierEdit/YourCarrierHasProposedThisEdit/YourCarrierHasProposedThisEdit')
+                if lbl_carrier_edit:
+                    print("Carrier Edits Screen displayed successfully")
+            else:
+                print("!!!!!!!!!!!!!!!!!!!!!!!!!\n Error: Carrier Edit alert not found. Be sure the Carrier has requested edits.")
+                sys.exit(1)
+
 
 
     def changeCarrier(self,Carrier, Send):
