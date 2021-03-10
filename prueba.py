@@ -35,13 +35,16 @@ ivg_common.goToLoginPage()
 eld_core.goTo('Certify')
 eld_core.findTableRecord(' ', ' ',' ',' ')
 eld_core.select_driver_from_dropdown(' ')
-'''
+
 eld_core.get_driving_clock()
 eld_core.get_on_duty_clock()
 eld_core.get_duty_cycle_clock()
 eld_core.get_rest_break_clock()
 
-'''
 
 eld_core.get_on_duty_clock()
 eld_core.get_duty_cycle_clock()'''
+
+eld_core.find_driver_record('Unknown position', 'Location', 'Bottom', 'Asc')
+eld_core.find_inspector_record('Unknown position', 'Location', 'Bottom', 'Asc')
+#eld_core.find_driver_record('No', 'CoDriver', 'Bottom', 'Asc')

@@ -1013,7 +1013,7 @@ class IVG_ELD_CORE:
                 string = string.strip()
                 string += time_char
                 print(string)
-                
+            new_rec.append(string)
                 
             #LOCATION
             y, y1, x, x1 = 310, 330, 340, 465
@@ -1041,6 +1041,201 @@ class IVG_ELD_CORE:
             else:
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
         return records
+
+
+
+    def find_driver_record(self,RecordToFind,ColumnToSearch,StartPoint, FindOrder):
+        #CertifyTestCase.findTableRecord
+        self.goTo("DayLog")
+        findOrder = ""
+        if StartPoint =="Bottom":
+            for i in range(10):
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+        elif StartPoint =="Top":
+            for i in range(10):
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
+        else:
+            print("In the middle of the table")
+
+        if FindOrder == "Asc":
+            findOrder = "Asc"
+        elif FindOrder == "Desc":
+            findOrder = "Desc"
+        else:
+            findOrder = "Asc"
+        
+        #Certified Status Start Duration Location CoDriver Origin Comment
+        
+
+        if ColumnToSearch == 'Certified':
+            x = 0
+        elif ColumnToSearch == 'Start':
+            x = 2
+        elif ColumnToSearch == 'Status':
+            x = 1
+        elif ColumnToSearch == 'Duration':
+            x = 3
+        elif ColumnToSearch == 'Origin':
+            #ORIGIN
+            x = 6
+        elif ColumnToSearch == 'Location':
+            #LOCATION
+            x = 4
+            
+        elif ColumnToSearch == 'CoDriver':
+            x = 5
+        else:
+            x = 7
+
+        records = self.day_log_records_driver('', '', 1)
+        print(records)
+        print(records[0][x].lower())
+        recordToCompare = records[0][x].lower()
+        records = None
+
+        if str(recordToCompare.strip()) == str(RecordToFind.lower().strip()):
+            print("Found " + str(RecordToFind))
+            return records
+        else:
+            print("Searching")
+            found = False
+            for i in range(10):
+                if found:
+                    print("Record Found")
+                    print(records)
+                    return records
+                else:
+                    self.img_proc.click_image_by_coordinates(150, 300)
+                    self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+                    #self.img_proc.click_image_by_coordinates(150,300)
+                    img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+                    
+                    records = self.day_log_records_driver('', '', 1)
+                    print(records)
+                
+                    print(records[0][x].lower())
+                    recordToCompare = records[0][x].lower()
+                 
+                    records = None
+                    
+                    if str(recordToCompare.strip()) == str(RecordToFind.lower().strip()):
+                        found = True
+                        print("Found " + str(RecordToFind))
+                        '''if findOrder == 'Asc':
+                            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+                        else:
+                            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
+                        self.img_proc.click_image_by_coordinates(150,300)'''
+                    else:
+                        if findOrder == "Asc":
+                            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
+                        else:
+                            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+
+
+
+
+    def find_inspector_record(self,RecordToFind,ColumnToSearch,StartPoint, FindOrder):
+        #CertifyTestCase.findTableRecord
+
+        self.goTo("DayLog")
+        if ColumnToSearch == 'Time':
+            x = 0
+        elif ColumnToSearch == 'Location':
+            x = 2
+        elif ColumnToSearch == 'Event':
+            x = 1
+        elif ColumnToSearch == 'Odometer':
+            x = 3
+        elif ColumnToSearch == 'Eng.Hrs':
+            #ORIGIN
+            x = 4
+        elif ColumnToSearch == 'Record Status':
+            #LOCATION
+            x = 5
+            
+        elif ColumnToSearch == 'Seq.ID':
+            x = 6
+        else:
+            x = 7
+
+        records = self.daylog_get_records_inspector('', '', 1)
+        print(records)
+        print(records[0][x].lower())
+        recordToCompare = records[0][x].lower()
+        records = None
+
+        findOrder = ""
+        if StartPoint =="Bottom":
+            for i in range(10):
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+        elif StartPoint =="Top":
+            for i in range(10):
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
+        else:
+            print("In the middle of the table")
+
+        if FindOrder == "Asc":
+            findOrder = "Asc"
+        elif FindOrder == "Desc":
+            findOrder = "Desc"
+        else:
+            findOrder = "Asc"
+        
+        #Certified Status Start Duration Location CoDriver Origin Comment
+        
+
+        if str(recordToCompare.strip()) == str(RecordToFind.lower().strip()):
+            print("Found " + str(RecordToFind))
+            return records
+        else:
+            print("Searching")
+            found = False
+            for i in range(10):
+                if found:
+                    print("Record Found")
+                    print(records)
+                    return records
+                else:
+                    self.img_proc.click_image_by_coordinates(150, 300)
+                    self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+                    #self.img_proc.click_image_by_coordinates(150,300)
+                    img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+                    
+                    records = self.daylog_get_records_inspector('', '', 1)
+                    print(records)
+                
+                    print(records[0][x].lower())
+                    recordToCompare = records[0][x].lower()
+            
+                    records = None
+                    
+                    if str(recordToCompare.strip()) == str(RecordToFind.lower().strip()):
+                        found = True
+                        print("Found " + str(RecordToFind))
+                        '''if findOrder == 'Asc':
+                            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+                        else:
+                            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
+                        self.img_proc.click_image_by_coordinates(150,300)'''
+                    else:
+                        if findOrder == "Asc":
+                            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
+                        else:
+                            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+
+
+
+
+
+
+
+
+
+
+
+
+
 
     def select_driver_from_dropdown(self, driver_id):
         driver_found = False
