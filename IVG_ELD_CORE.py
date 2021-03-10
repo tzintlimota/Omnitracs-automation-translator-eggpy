@@ -1198,6 +1198,8 @@ class IVG_ELD_CORE:
         clock_val = self.get_clock(835,925,365, 395)
         return clock_val
 
+    def review_carrier_edits(self):
+        if self.img_proc.expect_image('vnc-edits-carrier-summary', 'ExpectedScreens', 2):
             print('Already in Carrier Edits Screen')
         elif self.img_proc.expect_image('vnc-edits-review-carrier-edits', 'ExpectedScreens', 2):
             self.img_proc.click_image_by_max_key_points('ELD_Core/CarrierEdit/ReviewCarrierEditsButton/ReviewCarrierEditsButton')

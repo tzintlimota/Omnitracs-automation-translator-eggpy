@@ -31,6 +31,7 @@ import os
 from datetime import datetime, timedelta
 from datetime import timedelta
 import pytesseract
+import sys
 
 
 class ImageProcessor:
@@ -226,15 +227,18 @@ class ImageProcessor:
 
         self.get_vnc_full_screen("last_screen", "ExpectedScreens")
         img2 = cv2.imread(os.getcwd() + '/Images/Buttons/' + image_name + '.png')
-        
-        #img2 = cv2.imread(os.getcwd() +'/' + image_name + '.png')
-        #print(img2)
-        img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+
+        try:
+            img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
+        except cv2.error as cv_error:
+            print("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!\n" + "Error: " + str(cv_error))
+            print("Possible cause: The path to the button's image is not correct. By default it will search on "
+                  f"Images\Buttons\ \n Path received:  '{os.getcwd()}/Images/Buttons/{image_name}.png' ")
+            sys.exit(1)
+
 
         img1 = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-        #img1 = cv2.imread(os.getcwd() + '/last_screen.png')
         img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
-        #print(os.getcwd() + '\\Images\\ExpectedScreens\\')
 
         try:
             kp1, descs1 = self.sift.detectAndCompute(img1, None)
