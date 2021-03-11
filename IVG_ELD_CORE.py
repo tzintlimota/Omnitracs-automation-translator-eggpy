@@ -482,34 +482,6 @@ class IVG_ELD_CORE:
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
                         else:
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
-    def get_starting_time(self):
-        y, y1, x, x1 = 310, 330, 160, 245
-        
-        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-        crop_img2 = img[int(y):int(y1), int(x):int(x1)]
-        #Redefinir
-        x,x1 =0, 0
-        crop_img3 = img[int(y):int(y1), int(x):int(x1)]
-        x,x1 =0, 0
-        crop_img4 = img[int(y):int(y1), int(x):int(x1)]
-        
-        width = int(crop_img2.shape[1] * 100 / 100)
-        height = int(crop_img2.shape[0] * 100 / 100)
-        # dsize
-        dsize = (width, height)
-        # resize image
-        crop_img2 = cv2.resize(crop_img2, dsize)
-        crop_img3 = cv2.resize(crop_img3, dsize)
-        crop_img4 = cv2.resize(crop_img4, dsize)
-        
-        string = pytesseract.image_to_string(crop_img2)
-        string += pytesseract.image_to_string(crop_img3)
-        string += pytesseract.image_to_string(crop_img4)
-        print(string)
-        recordToCompare = string.lower()
-        return recordToCompare
-        
 
     def getTable(self, StartPoint, FindOrder, NumRecords):
         
@@ -555,7 +527,7 @@ class IVG_ELD_CORE:
             
             #START
             self.img_proc.click_image_by_coordinates(150, 300)
-            recordToCompare = self.retrieve_start()
+            recordToCompare = self.retrieve_start('Certify')
             new_rec.append(recordToCompare.strip())   
        
             #STATUS
@@ -690,25 +662,44 @@ class IVG_ELD_CORE:
 
         return string
 
-    def retrieve_start(self):
+    def retrieve_start(self, screen):
         string = ""
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
         img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
 
+        if screen.lower() == 'certify':
+            y, y1 = 285, 310
+        else:
+            y, y1 = 310, 325
+
+
         for i in range(3):
 
-            '''This defines with region is being captured (hh:mm:ss)'''
-            if i == 0:
-                x, x1 = 34, 56
-                time_char = ":"
-            elif i == 1:
-                x, x1 = 57, 77
-                time_char = ":"
+            '''This defines with region is being captured (hh:mm:ss) for CERTIFY screen'''
+            if screen.lower() == 'certify':
+                if i == 0:
+                    x, x1 = 34, 56
+                    time_char = ":"
+                elif i == 1:
+                    x, x1 = 57, 77
+                    time_char = ":"
+                else:
+                    x, x1 = 80, 100
+                    time_char = ""
             else:
-                x, x1 = 80, 100
-                time_char = ""
+                '''This defines with region is being captured (hh:mm:ss) for DAYLOG screen'''
+                if i == 0:
+                    x, x1 = 170, 189
+                    time_char = ":"
+                elif i == 1:
+                    x, x1 = 192, 206
+                    time_char = ":"
+                else:
+                    x, x1 = 210, 235
+                    time_char = ""
 
-            crop_img2 = img[int(285):int(310), int(x):int(x1)]
+
+            crop_img2 = img[int(y):int(y1), int(x):int(x1)]
             '''calculate the 50 percent of original dimensions'''
             width = int(crop_img2.shape[1] * 600 / 100)
             height = int(crop_img2.shape[0] * 600 / 100)
