@@ -475,6 +475,33 @@ class IVG_ELD_CORE:
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
                         else:
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+    def get_starting_time(self):
+        y, y1, x, x1 = 310, 330, 160, 245
+        
+        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        crop_img2 = img[int(y):int(y1), int(x):int(x1)]
+        #Redefinir
+        x,x1 =0, 0
+        crop_img3 = img[int(y):int(y1), int(x):int(x1)]
+        x,x1 =0, 0
+        crop_img4 = img[int(y):int(y1), int(x):int(x1)]
+        
+        width = int(crop_img2.shape[1] * 100 / 100)
+        height = int(crop_img2.shape[0] * 100 / 100)
+        # dsize
+        dsize = (width, height)
+        # resize image
+        crop_img2 = cv2.resize(crop_img2, dsize)
+        crop_img3 = cv2.resize(crop_img3, dsize)
+        crop_img4 = cv2.resize(crop_img4, dsize)
+        
+        string = pytesseract.image_to_string(crop_img2)
+        string += pytesseract.image_to_string(crop_img3)
+        string += pytesseract.image_to_string(crop_img4)
+        print(string)
+        recordToCompare = string.lower()
+        return recordToCompare
         
 
     def getTable(self, StartPoint, FindOrder, NumRecords):
@@ -954,7 +981,7 @@ class IVG_ELD_CORE:
             new_rec.append(recordToCompare.strip())   
        
             #START
-            y, y1, x, x1 = 310, 330, 160, 245
+            self.get_starting_time()
             recordToCompare = self.retrieve_text(y,y1,x,x1)
             new_rec.append(recordToCompare.strip()) 
        
@@ -1183,7 +1210,6 @@ class IVG_ELD_CORE:
             findOrder = "Asc"
         
         #Certified Status Start Duration Location CoDriver Origin Comment
-        
 
         if str(recordToCompare.strip()) == str(RecordToFind.lower().strip()):
             print("Found " + str(RecordToFind))
