@@ -985,8 +985,7 @@ class IVG_ELD_CORE:
             new_rec.append(recordToCompare.strip())   
        
             #START
-            self.get_starting_time()
-            recordToCompare = self.retrieve_text(y,y1,x,x1)
+            recordToCompare = self.retrieve_start('Daylog')
             new_rec.append(recordToCompare.strip()) 
        
             self.img_proc.click_image_by_coordinates(150, 300)
