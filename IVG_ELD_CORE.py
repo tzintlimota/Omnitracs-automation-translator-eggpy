@@ -14,6 +14,7 @@ from dateutil.parser import parse
 import connection_credentials as cfg
 import re
 import pytest
+import sys
 
 
 #import pyGPSFeed_IMR
@@ -24,6 +25,12 @@ class IVG_ELD_CORE:
         self.img_proc = ImageProcessor('192.168.1.118', 'None', .15)
         #self.img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])
         self.ivg_common = IVG_Common()
+
+    def search_func(self, search, space):
+        search = re.search(r"" + search + "", str(space))
+        if search != None:
+            return True
+        return False
 
     #Code to discard/accept Certify Day prompt
     def closeCertifyDayPrompt(self):
@@ -435,7 +442,7 @@ class IVG_ELD_CORE:
         print(recordToCompare)
         print(RecordToFind.lower())
 
-        if str(recordToCompare.strip()) == str(RecordToFind.lower().strip()):
+        if self.search_func(str(RecordToFind.lower().strip()), str(recordToCompare.strip())):
             print("Found " + str(RecordToFind))
         else:
             print("Searching")
@@ -462,7 +469,7 @@ class IVG_ELD_CORE:
                     string = pytesseract.image_to_string(crop_img2)
                     recordToCompare = string.lower()   
                     print(recordToCompare)
-                    if str(recordToCompare.strip()) == str(RecordToFind.lower().strip()):
+                    if self.search_func(str(RecordToFind.lower().strip()), str(recordToCompare.strip())):
                         found = True
                         print("Found " + str(RecordToFind))
                         '''if findOrder == 'Asc':
@@ -930,9 +937,6 @@ class IVG_ELD_CORE:
             print("Switching to DRIVER profile")
             self.img_proc.click_image_by_max_key_points('ELD_Core/DayLogTab/DriverButton/DriverButton')
 
-
-
-        
         findOrder = ""
         
         if StartPoint =="Bottom":
@@ -1120,7 +1124,7 @@ class IVG_ELD_CORE:
         recordToCompare = records[0][x].lower()
         records = None
 
-        if str(recordToCompare.strip()) == str(RecordToFind.lower().strip()):
+        if self.search_func(str(RecordToFind.lower().strip()), str(recordToCompare.strip())):
             print("Found " + str(RecordToFind))
             return records
         else:
@@ -1145,7 +1149,7 @@ class IVG_ELD_CORE:
                  
                     records = None
                     
-                    if str(recordToCompare.strip()) == str(RecordToFind.lower().strip()):
+                    if self.search_func(str(RecordToFind.lower().strip()), str(recordToCompare.strip())):
                         found = True
                         print("Found " + str(RecordToFind))
                         '''if findOrder == 'Asc':
@@ -1166,6 +1170,26 @@ class IVG_ELD_CORE:
         #CertifyTestCase.findTableRecord
 
         self.goTo("DayLog")
+
+        findOrder = ""
+        if StartPoint == "Bottom":
+            for i in range(10):
+                self.img_proc.click_image_by_max_key_points_offset(
+                    "IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+        elif StartPoint == "Top":
+            for i in range(10):
+                self.img_proc.click_image_by_max_key_points_offset(
+                    "IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
+        else:
+            print("In the middle of the table")
+
+        if FindOrder == "Asc":
+            findOrder = "Asc"
+        elif FindOrder == "Desc":
+            findOrder = "Desc"
+        else:
+            findOrder = "Asc"
+
         if ColumnToSearch == 'Time':
             x = 0
         elif ColumnToSearch == 'Location':
@@ -1191,27 +1215,10 @@ class IVG_ELD_CORE:
         print(records[0][x].lower())
         recordToCompare = records[0][x].lower()
         records = None
-
-        findOrder = ""
-        if StartPoint =="Bottom":
-            for i in range(10):
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
-        elif StartPoint =="Top":
-            for i in range(10):
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
-        else:
-            print("In the middle of the table")
-
-        if FindOrder == "Asc":
-            findOrder = "Asc"
-        elif FindOrder == "Desc":
-            findOrder = "Desc"
-        else:
-            findOrder = "Asc"
         
         #Certified Status Start Duration Location CoDriver Origin Comment
 
-        if str(recordToCompare.strip()) == str(RecordToFind.lower().strip()):
+        if self.search_func(str(RecordToFind.lower().strip()), str(recordToCompare.strip())):
             print("Found " + str(RecordToFind))
             return records
         else:
@@ -1236,7 +1243,7 @@ class IVG_ELD_CORE:
             
                     records = None
                     
-                    if str(recordToCompare.strip()) == str(RecordToFind.lower().strip()):
+                    if self.search_func(str(RecordToFind.lower().strip()), str(recordToCompare.strip())):
                         found = True
                         print("Found " + str(RecordToFind))
                         '''if findOrder == 'Asc':
@@ -1417,6 +1424,26 @@ class IVG_ELD_CORE:
     def get_rest_break_clock(self):
         clock_val = self.get_clock(835,925,365, 395)
         return clock_val
+
+    def review_carrier_edits(self):
+        if self.img_proc.expect_image('vnc-edits-carrier-summary', 'ExpectedScreens', 2):
+            print('Already in Carrier Edits Screen')
+        elif self.img_proc.expect_image('vnc-edits-review-carrier-edits', 'ExpectedScreens', 2):
+            self.img_proc.click_image_by_max_key_points('ELD_Core/CarrierEdit/ReviewCarrierEditsButton/ReviewCarrierEditsButton')
+            lbl_carrier_edit = self.img_proc.image_exists('ELD_Core/CarrierEdit/YourCarrierHasProposedThisEdit/YourCarrierHasProposedThisEdit')
+            if lbl_carrier_edit:
+                print("Carrier Edits Screen displayed successfully")
+        else:
+            self.goToHOS()
+            if self.img_proc.expect_image('vnc-edits-review-carrier-edits', 'ExpectedScreens', 2):
+                self.img_proc.click_image_by_max_key_points('ELD_Core/CarrierEdit/ReviewCarrierEditsButton/ReviewCarrierEditsButton')
+                lbl_carrier_edit = self.img_proc.image_exists('ELD_Core/CarrierEdit/YourCarrierHasProposedThisEdit/YourCarrierHasProposedThisEdit')
+                if lbl_carrier_edit:
+                    print("Carrier Edits Screen displayed successfully")
+            else:
+                print("!!!!!!!!!!!!!!!!!!!!!!!!!\n Error: Carrier Edit alert not found. Be sure the Carrier has requested edits.")
+                sys.exit(1)
+
 
 
     def changeCarrier(self,Carrier, Send):
