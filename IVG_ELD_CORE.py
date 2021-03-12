@@ -1405,7 +1405,7 @@ class IVG_ELD_CORE:
                 print("!!!!!!!!!!!!!!!!!!!!!!!!!\n Error: Carrier Edit alert not found. Be sure the Carrier has requested edits.")
                 sys.exit(1)
 
-    def accept_unassigned_events(self, uva_type, remark1, remark2):
+    def accept_unassigned_events(self, uva_type, remark1=None, remark2=None):
         '''if self.img_proc.expect_image('vnc-review-unassigned-driving-event', 'ExpectedScreens', 2):
             print('Already in Please Review All Unassigned Driving Events screen')
         else:
@@ -1419,10 +1419,10 @@ class IVG_ELD_CORE:
         if 'reject' in text.lower():
             print('Currently in Review Unassigned Driving Time screen')
             self.img_proc.click_image_by_max_key_points('ELD_Core/UnassignedDriving/NextButton/NextButton')
-        '''
+
 
         # Click on Status dropdown
-        '''self.img_proc.click_image_by_max_key_points_offset(
+        self.img_proc.click_image_by_max_key_points_offset(
             'ELD_Core/UnassignedDriving/UVAStatusDropdownMenu_A/UVAStatusDropdownMenu_A', 55, 35)
 
         if not uva_type:
@@ -1436,7 +1436,7 @@ class IVG_ELD_CORE:
         elif uva_type.lower() in 'ym':
             print("Selecting YM for unassigned driving event")
             self.img_proc.click_image_by_max_key_points_offset(
-                'ELD_Core/UnassignedDriving/UVAStatusDropdownMenu_A/UVAStatusDropdownMenu_A', 45, 130)
+                'ELD_Core/UnassignedDriving/UVAStatusDropdownMenu_A/UVAStatusDropdownMenu_A', 45, 130)'''
 
         # Click on first field of remarks to enter a comment
         self.img_proc.click_image_by_max_key_points_offset(
@@ -1445,11 +1445,12 @@ class IVG_ELD_CORE:
             print("Entering text for default remarks1 'AUTOMATED TESTING'")
             self.img_proc.send_keys('AUTOMATION TESTING')
         else:
-            print(f"Entering text for remarks1 {remark1}")
+            print(f"Entering text for remarks1 {remark1}...")
+            self.img_proc.send_keys(remark1)
 
         # Click to close the remarks1 dropdown
-        self.img_proc.click_image_by_max_key_points_offset(
-            'ELD_Core/UnassignedDriving/RemarksTextBox1/RemarksTextBox1', 45, 55)
+        self.img_proc.click_image_by_max_key_points(
+            'ELD_Core/UnassignedDriving/RemarksTextBox1/RemarksTextBox1')
 
         # Click on the second field of remarks to enter a comment
         self.img_proc.click_image_by_max_key_points_offset(
@@ -1458,18 +1459,22 @@ class IVG_ELD_CORE:
             print("Entering text for default remarks1 'AUTOMATED TESTING'")
             self.img_proc.send_keys('AUTOMATION x2')
         else:
-            print(f"Entering text for remarks1 {remark2}")
+            print(f"Entering text for remarks1 {remark2}...")
+            self.img_proc.send_keys(remark2)
 
-        # Click to close the remarks2 dropdown
+        # Double Click to close the remarks2 dropdown
+        self.img_proc.click_image_by_max_key_points(
+            'ELD_Core/UnassignedDriving/RemarksTextBox1/RemarksTextBox1')
+        self.img_proc.click_image_by_max_key_points(
+            'ELD_Core/UnassignedDriving/RemarksTextBox1/RemarksTextBox1')
+
+        # Enter LOCATION value in case the field is empty
         self.img_proc.click_image_by_max_key_points_offset(
-            'ELD_Core/UnassignedDriving/RemarksTextBox1/RemarksTextBox1', 545, 50)'''
+            'ELD_Core/UnassignedDriving/Location/Location', 45, 50)
+        self.img_proc.send_keys('AUTOMATED LOCATION')
 
-        # Retrieve current value of the LOCATION field
-        location = self.retrieve_text_with_config(410, 440, 20, 400, None, 'eng')
-
-        if not location:
-            self.img_proc.click_image_by_max_key_points_offset(
-                'ELD_Core/UnassignedDriving/RemarksTextBox1/RemarksTextBox1', 55, 155)
+        # Click CONFIRM button
+        self.img_proc.click_image_by_max_key_points('UnassignedDriving/ConfirmButton/ConfirmButton')
 
 
 
