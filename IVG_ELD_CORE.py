@@ -18,13 +18,13 @@ import sys
 from General_Access_Functions import General_Access
 
 
-class IVG_ELD_CORE:
+class IVG_ELD_CORE(object):
 
-    def __init__(self):
-        self.general = General_Access()
+    def __init__(self, general):
+        self.general = general
         self.img_proc = self.general.img_proc
         #self.img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])
-        self.ivg_common = IVG_Common()
+        self.ivg_common = IVG_Common(general)
         
 
     #Code to discard/accept Certify Day prompt

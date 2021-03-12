@@ -15,10 +15,10 @@ from General_Access_Functions import General_Access
 
 #import pyGPSFeed_IMR
 
-class IVG_Common:
+class IVG_Common(object):
 
-    def __init__(self):
-        self.general = General_Access()
+    def __init__(self, general):
+        self.general = general
         self.img_proc = self.general.img_proc
         
 

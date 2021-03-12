@@ -20,15 +20,12 @@ import sys
 from General_Access_Functions import General_Access
 
 
-class Certify_Test_Case:
-    def __init__(self):
-        self.eld_core = IVG_ELD_CORE()
-        self.general = General_Access()
+class Certify_Test_Case(object):
+    def __init__(self, general):
+        self.eld_core = IVG_ELD_CORE(general)
+        self.general = general
         self.img_proc = self.general.img_proc
-        self.ivg_common = IVG_Common()
-
-        #self.img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])
-        self.ivg_common = IVG_Common()
+        self.ivg_common = IVG_Common(general)
 
     def certifyAllLogs(self):
         self.general.goTo("Certify")

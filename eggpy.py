@@ -30,13 +30,13 @@ from Certify_Test_Case import Certify_Test_Case
 import connection_credentials as cfg
 #import pyGPSFeed_IMR
 from ImageProcessor import ImageProcessor
+from General_Access_Functions import General_Access
 
-img_proc = ImageProcessor('192.168.1.118', 'None', .15)
-
-eld_core = IVG_ELD_CORE()
-ivg_common = IVG_Common()
-certify = Certify_Test_Case()
-daylog = Daylog_Test_Case()
+gral_access = General_Access()
+eld_core = IVG_ELD_CORE(gral_access)
+ivg_common = IVG_Common(gral_access)
+certify = Certify_Test_Case(gral_access)
+daylog = Daylog_Test_Case(gral_access)
 
 """
     file2.writelines(imports) 
