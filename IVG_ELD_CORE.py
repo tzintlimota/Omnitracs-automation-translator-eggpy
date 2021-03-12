@@ -1436,7 +1436,7 @@ class IVG_ELD_CORE:
         elif uva_type.lower() in 'ym':
             print("Selecting YM for unassigned driving event")
             self.img_proc.click_image_by_max_key_points_offset(
-                'ELD_Core/UnassignedDriving/UVAStatusDropdownMenu_A/UVAStatusDropdownMenu_A', 45, 130)'''
+                'ELD_Core/UnassignedDriving/UVAStatusDropdownMenu_A/UVAStatusDropdownMenu_A', 45, 130)
 
         # Click on first field of remarks to enter a comment
         self.img_proc.click_image_by_max_key_points_offset(
@@ -1474,8 +1474,14 @@ class IVG_ELD_CORE:
         self.img_proc.send_keys('AUTOMATED LOCATION')
 
         # Click CONFIRM button
-        self.img_proc.click_image_by_max_key_points('UnassignedDriving/ConfirmButton/ConfirmButton')
+        self.img_proc.click_image_by_max_key_points('ELD_Core/UnassignedDriving/ConfirmButton/ConfirmButton')
 
+        # A prompt to confirm the unassigned driving event appears
+        confirm_popup = self.img_proc.expect_image('vnc-unassigned-event-confirm-popup', 'ExpectedScreens', 3)
+        assert confirm_popup, f"Confirm Unassigned Driving Event has appeared"'''
+
+        # Click YES to confirm the UVA
+        self.img_proc.click_image_by_max_key_points('ELD_Core/UnassignedDriving/YesButton/YesButton')
 
 
 
