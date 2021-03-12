@@ -25,12 +25,19 @@ import math
 from PIL import Image
 from IVG_ELD_CORE import IVG_ELD_CORE
 from IVG_Common import IVG_Common
+from Daylog_Test_Case import Daylog_Test_Case
+from Certify_Test_Case import Certify_Test_Case
 import connection_credentials as cfg
 #import pyGPSFeed_IMR
+from ImageProcessor import ImageProcessor
 
+img_proc = ImageProcessor('192.168.1.118', 'None', .15)
 
 eld_core = IVG_ELD_CORE()
 ivg_common = IVG_Common()
+certify = Certify_Test_Case()
+daylog = Daylog_Test_Case()
+
 """
     file2.writelines(imports) 
     print(imports)
@@ -200,7 +207,7 @@ def tokenization():
             while len(params) < 4:
                 params.append(' ')
             # "ON","N" ,"AUTOMATION"
-            toadd = "\neld_core.loginDriver('" + params[0] + "', '" + params[0] + "', '" + params[2] + "', '" + \
+            toadd = "\nivg_common.loginDriver('" + params[0] + "', '" + params[0] + "', '" + params[2] + "', '" + \
                     params[3] + "')"
             file2.writelines(toadd)
         elif (search_func('BackToHome', doc)):
@@ -228,7 +235,7 @@ def tokenization():
             toadd = "\nivg_common.goToLoginPage()"
             file2.writelines(toadd)
         elif (search_func('CertifyAllLogs', doc)):
-            toadd = "\neld_core.certifyAllLogs()"
+            toadd = "\ncertify.certifyAllLogs()"
             file2.writelines(toadd)
         elif (search_func('getRestBreakClockValue', doc)):
             toadd = "\neld_core.get_rest_break_clock()"
@@ -256,7 +263,7 @@ def tokenization():
             print(params)
             while len(params) < 1:
                 params.append(' ')
-            toadd = "\neld_core.goTo('" + params[0] + "')"
+            toadd = "\neld_core.general.goTo('" + params[0] + "')"
             file2.writelines(toadd)
             #eld_core.certifyLogOfDay(1)
         elif (search_func('CertifyLogsOfDay', doc)):
@@ -273,7 +280,7 @@ def tokenization():
             print(params)
             while len(params) < 1:
                 params.append(' ')
-            toadd = "\neld_core.certifyLogsOfDay(" + params[0] + ")"
+            toadd = "\ncertify.certifyLogsOfDay(" + params[0] + ")"
             file2.writelines(toadd)
         elif (search_func('findTableRecord', doc)):
             params = []
@@ -290,7 +297,7 @@ def tokenization():
             while len(params) < 5:
                 params.append(' ')
             # "ON","N" ,"AUTOMATION"
-            toadd = "\neld_core.findTableRecord('" + params[0] + "', '" + params[1] + "','" + params[2] + "','" + params[3] + "')"
+            toadd = "\ncertify.findTableRecord('" + params[0] + "', '" + params[1] + "','" + params[2] + "','" + params[3] + "')"
             file2.writelines(toadd)
         
         elif (search_func('getTable', doc)):
@@ -308,7 +315,7 @@ def tokenization():
             while len(params) < 4:
                 params.append(' ')
             # "ON","N" ,"AUTOMATION"
-            toadd = "\neld_core.getTable('" + params[0] + "', '" + params[1] + "', int(" + params[2] + "))"
+            toadd = "\ncertify.getTable('" + params[0] + "', '" + params[1] + "', int(" + params[2] + "))"
             file2.writelines(toadd)
         
         elif (search_func('SelectDriverFromDropDown', doc)):
@@ -360,7 +367,7 @@ def tokenization():
         #Peguntar TZINTLI
         #daylog_get_records_driver (num_records, start_point, direction)
         #daylog_get_records_inspector (num_records, start_point, direction)
-
+        #find_driver_record
 tokenization()
 
 file2.close()
