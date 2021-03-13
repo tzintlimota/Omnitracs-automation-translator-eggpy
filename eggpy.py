@@ -349,6 +349,52 @@ def tokenization():
 
             toadd = "\neld_core.validate_status('" + clean_param + "') #Translator Removed"
             file2.writelines(toadd)
+        elif (search_func('AcceptUnassignedEvents', doc)):
+            params = []
+            stringToPass = ''
+            #new_doc = str(doc).split('UnassignedDrivingTestCase.AcceptUnassignedEvents')
+            #print(new_doc)
+
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            new = new.replace('.AcceptUnassignedEvents', '')
+            params = new.split()
+
+            print(params)
+            while len(params) < 3:
+                params.append(' ')
+
+            toadd = f"\neld_core.accept_unassigned_events('{params[0]}', '{params[1]}', '{params[2]}')"
+            file2.writelines(toadd)
+
+        elif (search_func('RejectUnassignedEvents', doc)):
+            params = []
+            stringToPass = ''
+
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            new = new.replace('.RejectUnassignedEvents', '')
+            params = new.split()
+
+            print(params)
+            while len(params) < 2:
+                params.append(' ')
+
+            if params[0] == 'true' or params[0] == 'True' or params[0] == "'true'":
+                params[0] = 'True'
+            else:
+                params[0] = 'False'
+
+            toadd = f"\neld_core.reject_unassigned_events('{params[0]}', '{params[1]}')"
+            file2.writelines(toadd)
 
         else:
             print('\n AUN NO CONOZCO ESTA FUNCION ' + line[0: len(line)-1] + '\n')

@@ -114,6 +114,7 @@ class IVG_ELD_CORE:
             self.img_proc.check_md_alert()
 
     def goToHOS(self):
+        print('***IVG_ELD_Core.goToHOS***')
         self.ivg_common.goToMainScreen()
         self.img_proc.click_image_by_max_key_points("HOS_ELD")
 
@@ -1405,8 +1406,8 @@ class IVG_ELD_CORE:
                 print("!!!!!!!!!!!!!!!!!!!!!!!!!\n Error: Carrier Edit alert not found. Be sure the Carrier has requested edits.")
                 sys.exit(1)
 
-    def accept_unassigned_events(self, uva_type, remark1=None, remark2=None):
-        '''if self.img_proc.expect_image('vnc-review-unassigned-driving-event', 'ExpectedScreens', 2):
+    def accept_unassigned_events(self, uva_type='', remark1=None, remark2=None):
+        if self.img_proc.expect_image('vnc-review-unassigned-driving-event', 'ExpectedScreens', 2):
             print('Already in Please Review All Unassigned Driving Events screen')
         else:
             self.goToHOS()
@@ -1478,10 +1479,63 @@ class IVG_ELD_CORE:
 
         # A prompt to confirm the unassigned driving event appears
         confirm_popup = self.img_proc.expect_image('vnc-unassigned-event-confirm-popup', 'ExpectedScreens', 3)
-        assert confirm_popup, f"Confirm Unassigned Driving Event has appeared"'''
+        assert confirm_popup, "CONFIRMATION pop up should have appeared"
 
         # Click YES to confirm the UVA
         self.img_proc.click_image_by_max_key_points('ELD_Core/UnassignedDriving/YesButton/YesButton')
+
+        # Return Main HOS page
+        self.goToHOS()
+
+        print("Unassigned Driving Event has been ACCEPTED")
+
+    def reject_unassigned_events(self, confirm_bool, reject_comment=None):
+        if self.img_proc.expect_image('vnc-review-unassigned-driving-event', 'ExpectedScreens', 2):
+            print('Already in Please Review All Unassigned Driving Events screen')
+        else:
+            self.goToHOS()
+            self.img_proc.expect_image('vnc-review-unassigned-driving-event', 'ExpectedScreens', 3)
+
+        self.img_proc.click_image_by_max_key_points('ELD_Core/UnassignedDriving/NextButton/NextButton')
+
+        self.img_proc.expect_image('vnc-unassigned-event-review-time', 'ExpectedScreens', 2)
+
+        # Rejecting UVA by clicking REJECT button
+        text = self.retrieve_text(530, 570, 755, 840)
+        if 'reject' in text.lower():
+            print('Currently in Review Unassigned Driving Time screen')
+            self.img_proc.click_image_by_max_key_points('ELD_Core/UnassignedDriving/RejectButton/RejectButton')
+
+        assert self.img_proc.expect_image('vnc-unassigned-event-comment-reject', 'ExpectedScreens', 3)
+
+        # Entering comment for reject reason
+        self.img_proc.click_image_by_max_key_points_offset('ELD_Core/UnassignedDriving/RejectUnassignedDrivingTimeReason/'
+                                                           'RejectUnassignedDrivingTimeReason', 10, 40)
+        if not reject_comment:
+            print("Entering text for default REJECT REASON")
+            self.img_proc.send_keys('AUTOMATION TESTING')
+        else:
+            self.img_proc.send_keys(reject_comment)
+
+        if self.img_proc.expect_image('vnc-unassigned-event-comment-reject-keyboard', 'ExpectedScreens', 2):
+            # Closing Keyword
+            self.img_proc.click_image_by_max_key_points('keyword_icon')
+
+        if confirm_bool or str(confirm_bool).lower() == 'true':
+            self.img_proc.click_image_by_max_key_points('ELD_Core/UnassignedDriving/SaveButton/SaveButton')
+            print('Unassigned Driving Event has been SAVED')
+        else:
+            self.img_proc.click_image_by_max_key_points('ELD_Core/UnassignedDriving/CancelButton/CancelButton')
+            print('Unassigned Driving Event has been CANCELED')
+
+        assert self.img_proc.expect_image('vnc-unassigned-event-review-time', 'ExpectedScreens', 2), "REVIEW screen " \
+                                                                                                "should be displayed"
+
+        # Returning to HOS Main page
+        #self.goToHOS()
+
+
+
 
 
 
