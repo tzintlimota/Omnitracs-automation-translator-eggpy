@@ -10,13 +10,17 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pytesseract
 import connection_credentials as cfg
+
+from General_Access_Functions import General_Access
+
 #import pyGPSFeed_IMR
 
-class IVG_Common:
+class IVG_Common(object):
 
-    def __init__(self):
-        #self.img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])
-        self.img_proc = ImageProcessor('192.168.1.118', 'None', .15)
+    def __init__(self, general):
+        self.general = general
+        self.img_proc = self.general.img_proc
+        
 
     def closeUnknownPositionAlert(self):
         self.img_proc.click_image_by_max_key_points("IVG_Common/Login/OkLoginStatus/OkLoginStatus")
