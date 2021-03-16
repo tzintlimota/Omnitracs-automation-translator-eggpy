@@ -11,7 +11,6 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pytesseract
 from dateutil.parser import parse
-import connection_credentials as cfg
 import re
 import pytest
 import sys
@@ -23,7 +22,6 @@ class IVG_ELD_CORE(object):
     def __init__(self, general):
         self.general = general
         self.img_proc = self.general.img_proc
-        #self.img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])
         self.ivg_common = IVG_Common(general)
         
 
@@ -109,6 +107,7 @@ class IVG_ELD_CORE(object):
             self.img_proc.check_md_alert()
 
     def goToHOS(self):
+        print('***IVG_ELD_Core.goToHOS***')
         self.ivg_common.goToMainScreen()
         self.img_proc.click_image_by_max_key_points("HOS_ELD")
 

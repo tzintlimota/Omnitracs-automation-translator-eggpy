@@ -26,7 +26,9 @@ class IVG_Common(object):
         self.img_proc.click_image_by_max_key_points("IVG_Common/Login/OkLoginStatus/OkLoginStatus")
 
     def goToMainScreen(self):
+        print('***IVG_Common.goToMainScreen***')
         while not self.img_proc.expect_image('vnc-main-screen', 'ExpectedScreens', 3):
+            print('Clicking RETURN button to go to IVG MAIN SCREEN')
             total_x, total_y = self.img_proc.click_image_by_max_key_points('IVG_Common/Home/Return/Return')
             time.sleep(.5)
 

@@ -25,7 +25,6 @@ class Daylog_Test_Case(object):
         self.eld_core = IVG_ELD_CORE(general)
         self.general = general
         self.img_proc = self.general.img_proc
-        #self.img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])
         self.ivg_common = IVG_Common(general)
 
     def daylog_get_records_inspector(self,StartPoint, FindOrder, NumRecords):

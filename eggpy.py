@@ -26,6 +26,7 @@ from PIL import Image
 from IVG_ELD_CORE import IVG_ELD_CORE
 from IVG_Common import IVG_Common
 from Daylog_Test_Case import Daylog_Test_Case
+from HOS_Unassigned_Driving_Test_Case import HOS_Unassigned_Driving_Test_Case
 from Certify_Test_Case import Certify_Test_Case
 import connection_credentials as cfg
 #import pyGPSFeed_IMR
@@ -37,6 +38,7 @@ eld_core = IVG_ELD_CORE(gral_access)
 ivg_common = IVG_Common(gral_access)
 certify = Certify_Test_Case(gral_access)
 daylog = Daylog_Test_Case(gral_access)
+uva_events = HOS_Unassigned_Driving_Test_Case(gral_access)
 
 """
     file2.writelines(imports) 
@@ -355,6 +357,51 @@ def tokenization():
                 clean_param = remove_translator_func(params[0])
 
             toadd = "\neld_core.validate_status('" + clean_param + "') #Translator Removed"
+            file2.writelines(toadd)
+
+        elif (search_func('AcceptUnassignedEvents', doc)):
+            params = []
+            stringToPass = ''
+
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            new = new.replace('.AcceptUnassignedEvents', '')
+            params = new.split()
+
+            print(params)
+            while len(params) < 3:
+                params.append(' ')
+
+            toadd = f"\nuva_events.accept_unassigned_events('{params[0]}', '{params[1]}', '{params[2]}')"
+            file2.writelines(toadd)
+
+        elif (search_func('RejectUnassignedEvents', doc)):
+            params = []
+            stringToPass = ''
+
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            new = new.replace('.RejectUnassignedEvents', '')
+            params = new.split()
+
+            print(params)
+            while len(params) < 2:
+                params.append(' ')
+
+            if params[0] == 'true' or params[0] == 'True' or params[0] == "'true'":
+                params[0] = 'True'
+            else:
+                params[0] = 'False'
+
+            toadd = f"\nuva_events.reject_unassigned_events('{params[0]}', '{params[1]}')"
             file2.writelines(toadd)
 
         else:
