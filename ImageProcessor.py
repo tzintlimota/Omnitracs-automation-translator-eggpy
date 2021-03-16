@@ -227,6 +227,7 @@ class ImageProcessor:
 
         self.get_vnc_full_screen("last_screen", "ExpectedScreens")
         img2 = cv2.imread(os.getcwd() + '/Images/Buttons/' + image_name + '.png')
+        img2 = self.imageResizer(img2)
 
         try:
             img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
@@ -386,8 +387,8 @@ class ImageProcessor:
         total_x, total_y = self.get_image_coordinates_by_max_key_points(image_name)
         cv2.line(self.img3, (math.floor(total_x), math.floor(total_y)),
                  (math.floor(total_x + x_offset), math.floor(total_y + y_offset)), (0, 255, 0), 3)
-        #plt.imshow(self.img3)
-        #plt.show()
+        plt.imshow(self.img3)
+        plt.show()
         self.client.mouseMove(math.floor(total_x + float(x_offset)), math.floor(total_y + float(y_offset)))
         self.client.mousePress(1)
         time.sleep(0.5)
@@ -567,23 +568,23 @@ class ImageProcessor:
 
         return total_x, total_y, color
 
-    def imageResizer(self):
-        src = cv2.imread(os.getcwd() + '/Images/Buttons/ELD_Core/LoadTab/EndDay/EndDay.png', cv2.IMREAD_UNCHANGED)
+    def imageResizer(self, image_name):
+        #src = cv2.imread(os.getcwd() + '/Images/Buttons/ELD_Core/LoadTab/EndDay/EndDay.png', cv2.IMREAD_UNCHANGED)
 
         #percent by which the image is resized
         scale_percent = 300
 
         #calculate the 50 percent of original dimensions
-        width = int(src.shape[1] * scale_percent / 100)
-        height = int(src.shape[0] * scale_percent / 100)
+        width = int(image_name.shape[1] * scale_percent / 100)
+        height = int(image_name.shape[0] * scale_percent / 100)
 
         # dsize
         dsize = (width, height)
 
         # resize image
-        output = cv2.resize(src, dsize)
-
-        cv2.imwrite(os.getcwd() + '/Images/Buttons/ELD_Core/LoadTab/EndDay/EndDay.png',output)
+        output = cv2.resize(image_name, dsize)
+        return output
+        #cv2.imwrite(os.getcwd() + '/Images/Buttons/ELD_Core/LoadTab/EndDay/EndDay.png',output)
 
     def image_exists(self, image_name):
 
