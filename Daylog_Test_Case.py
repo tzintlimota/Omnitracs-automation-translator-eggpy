@@ -178,7 +178,7 @@ class Daylog_Test_Case(object):
        
             #START
             
-            recordToCompare = self.general.retrieve_start()   
+            recordToCompare = self.general.retrieve_start('daylog')
             new_rec.append(recordToCompare.strip()) 
        
             self.img_proc.click_image_by_coordinates(150, 300)
