@@ -14,6 +14,7 @@ import connection_credentials as cfg
 import re
 import pytest
 import sys
+from subprocess import Popen, CalledProcessError, PIPE
 
 
 #import pyGPSFeed_IMR
@@ -245,4 +246,17 @@ class General_Access:
         string = pytesseract.image_to_string(crop_img2, lang=lang_param, config=params)
         return string
 
+    def run_vehsim_script(self, script_path, ip_address_, duration_min):
+        cmd = "ClientCommands\ClientCommands.exe"
+        input_data = os.linesep.join(['192.168.100.16', 'connect', 'open,C:\\ELD_VSIM\sample.xml', 'run', os.linesep])
+        p = Popen(cmd, stdin=PIPE, bufsize=0)
+        p.communicate(input_data.encode('ascii'))
+        if p.returncode != 0:
+           raise CalledProcessError(p.returncode, cmd)
+
+        input_data = os.linesep.join(['192.168.100.16', 'stop', os.linesep])
+        p = Popen(cmd, stdin=PIPE, bufsize=0)
+        p.communicate(input_data.encode('ascii'))
+        if p.returncode != 0:
+            raise CalledProcessError(p.returncode, cmd)
     
