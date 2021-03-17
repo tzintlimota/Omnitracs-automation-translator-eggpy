@@ -11,26 +11,19 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pytesseract
 from dateutil.parser import parse
-import connection_credentials as cfg
 import re
 import pytest
 import sys
+from General_Access_Functions import General_Access
 
 
-#import pyGPSFeed_IMR
+class IVG_ELD_CORE(object):
 
-class IVG_ELD_CORE:
-
-    def __init__(self):
-        self.img_proc = ImageProcessor('192.168.1.118', 'None', .15)
-        #self.img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])
-        self.ivg_common = IVG_Common()
-
-    def search_func(self, search, space):
-        search = re.search(r"" + search + "", str(space))
-        if search != None:
-            return True
-        return False
+    def __init__(self, general):
+        self.general = general
+        self.img_proc = self.general.img_proc
+        self.ivg_common = IVG_Common(general)
+        
 
     #Code to discard/accept Certify Day prompt
     def closeCertifyDayPrompt(self):
@@ -114,6 +107,7 @@ class IVG_ELD_CORE:
             self.img_proc.check_md_alert()
 
     def goToHOS(self):
+        print('***IVG_ELD_Core.goToHOS***')
         self.ivg_common.goToMainScreen()
         self.img_proc.click_image_by_max_key_points("HOS_ELD")
 
@@ -142,7 +136,7 @@ class IVG_ELD_CORE:
         #self.goToMainScreen()
         #go to hours of service
     def goToHistory(self):
-        self.goTo("Load")
+        self.general.goTo("Load")
         self.img_proc.click_image_by_max_key_points("ELD_Core/LoadTab/HistoryButton/HistoryButton")
         found = self.img_proc.expect_image("vnc-load-history-screen", "ExpectedScreens", 4)
         if found:
@@ -152,7 +146,7 @@ class IVG_ELD_CORE:
         
 
     def getLoadDate(self, TimePoint):
-        self.goTo("Load")
+        self.general.goTo("Load")
         if TimePoint == "Start":
             x, y = self.img_proc.click_image_by_max_key_points_offset("ELD_Core/StatusTab/Start_A/Start_A", 60, -5)
         elif TimePoint == "End":
@@ -167,58 +161,9 @@ class IVG_ELD_CORE:
         loadDate = pytesseract.image_to_string(crop_img2)
         return loadDate
 
-    def goTo(self, page):
-        print(page)
-        #self.goToELD()
-        if page == 'Summary':
-            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/SummaryTab/SummaryTabInactive/SummaryTabInactive")
-            if total_x > 120 and total_x < 170:
-                self.img_proc.click_image_by_max_key_points("ELD_Core/SummaryTab/SummaryTabInactive/SummaryTabInactive")
-        elif page == 'Status':
-            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/StatusTab/StatusTabInactive/StatusTabInactive")
-            print(total_x, total_y)
-            if total_x > 0 and total_x < 100:
-                self.img_proc.click_image_by_max_key_points("ELD_Core/StatusTab/StatusTabInactive/StatusTabInactive")
-        elif page == 'Clocks':
-            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/ClocksTab/ClocksTabInactive/ClocksTabInactive")
-            print(total_x, total_y)
-            if total_x > 250 and total_x < 290:
-                self.img_proc.click_image_by_max_key_points("ELD_Core/ClocksTab/ClocksTabInactive/ClocksTabInactive")
-        elif page == 'Graph':
-            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/GraphTab/GraphTabInactive/GraphTabInactive")
-            print(total_x, total_y)
-            if total_x > 300 and total_x < 330:
-                self.img_proc.click_image_by_max_key_points("ELD_Core/GraphTab/GraphTabInactive/GraphTabInactive")
-        elif page == 'DayLog':
-            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/DayLogTab/DayLogTabInactive/DayLogTabInactive")
-            print(total_x, total_y)
-            if total_x > 400 and total_x < 430:
-                self.img_proc.click_image_by_max_key_points("ELD_Core/DayLogTab/DayLogTabInactive/DayLogTabInactive")
-        elif page == 'Days':
-            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/8DaysTab/7DaysTabInactive/7DaysTabInactive")
-            print(total_x, total_y)
-            if total_x > 500 and total_x < 550:
-                self.img_proc.click_image_by_max_key_points("ELD_Core/8DaysTab/7DaysTabInactive/7DaysTabInactive")
-            elif total_x > 400 and total_x < 430:
-                self.img_proc.click_image_by_max_key_points_offset("ELD_Core/DayLogTab/DayLogTabInactive/DayLogTabInactive", 130, 0)
-        elif page == 'Certify':
-            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/CertifyTab/CertifyTabInactive/CertifyTabInactive")
-            print(total_x, total_y)
-            if total_x > 590 and total_x < 620:
-                self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/CertifyTabInactive/CertifyTabInactive")
-        elif page == 'Load':
-            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/LoadTab/LoadTabInactive/LoadTabInactive")
-            print(total_x, total_y)
-            if total_x > 690 and total_x < 730:
-                self.img_proc.click_image_by_max_key_points("ELD_Core/LoadTab/LoadTabInactive/LoadTabInactive")
-        elif page == 'Carriers':
-            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/CarriersTab/CarriersTabInactive/CarriersTabInactive")
-            print(total_x, total_y)
-            if total_x > 740 and total_x < 780:
-                self.img_proc.click_image_by_max_key_points("ELD_Core/CarriersTab/CarriersTabInactive/CarriersTabInactive")
 
     def dayBack(self, page, reset, clicks):
-        self.goTo(page)
+        self.general.goTo(page)
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
         firstAddX, secondAddX, firstAddY, secondAddY = 0,0,0,0
         if page == 'Graph':
@@ -265,7 +210,7 @@ class IVG_ELD_CORE:
             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", x1, y1)
 
     def dayForward(self, page, clicks):
-        self.goTo(page)
+        self.general.goTo(page)
         if page == 'Graph':
             x, y = 535, 150
         else:
@@ -276,60 +221,10 @@ class IVG_ELD_CORE:
 
             #self.img_proc.click_image_by_max_key_points("ELD_Core/NavigationButtons/Enabled/DayForward/DayForward")
     
-    def certifyAllLogs(self):
-        self.goTo("Certify")
-        f = open("IVG_var.txt", "w")
-        f.write("Certify")
-        f.close()
-        
-        self.dayBack("Certify", True, 0)
-        x, y  = 95,175
-        firstAddX, secondAddX, firstAddY, secondAddY = 500, 500, 20, 70
-   
-        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-        crop_img2 = img[int(y+firstAddY):int(y+secondAddY), int(x+firstAddX-17):int(x+secondAddX+100)]
-        print(pytesseract.image_to_string(crop_img2))
-        certifiedDays = str(pytesseract.image_to_string(crop_img2))
-
-
-        while certifiedDays[0] !=  "8" and (certifiedDays[0] != "1" or certifiedDays[1] != "5"):
-            self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/CertifyButton/CertifyButton")
-            self.img_proc.click_image_by_max_key_points("AgreeButton")
-            self.img_proc.expect_image("vnc_certify_tab_main", "ExpectedScreens", 10)
-            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-            crop_img2 = img[int(y+firstAddY):int(y+secondAddY), int(x+firstAddX-17):int(x+secondAddX+100)]
-            print(pytesseract.image_to_string(crop_img2))
-            certifiedDays = str(pytesseract.image_to_string(crop_img2))
-            self.dayBack("Certify", False, 1)
-
-        print("Nothing to certify")
-        time.sleep(5)
-        f = open("IVG_var.txt", "w")
-        f.write("None")
-        f.close()
     
-    def certifyLogsOfDay(self,page):
-        f = open("IVG_var.txt", "w")
-        f.write("Certify")
-        f.close()
-        
-        self.dayBack("Certify", True, page)
-        x, y  = 95,175
-        firstAddX, secondAddX, firstAddY, secondAddY = 500, 500, 20, 70
-   
-        self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/CertifyButton/CertifyButton")
-        self.img_proc.click_image_by_max_key_points("AgreeButton")
-        self.img_proc.expect_image("vnc_certify_tab_main", "ExpectedScreens", 10)
-
-        print("Nothing to certify")
-        time.sleep(5)
-        f = open("IVG_var.txt", "w")
-        f.write("None")
-        f.close()
-
     
     def createLoad(self, loadId, Trailer1, Trailer2, Trailer3, BL, StartDate, EndDate, Finish):
-        self.goTo("Load")
+        self.general.goTo("Load")
         self.img_proc.click_image_by_max_key_points("ELD_Core/LoadTab/NewLoadButton/NewLoadButton")
         self.img_proc.expect_image("vnc-load-create-new", "ExpectedScreens", 3)
         self.img_proc.expect_image("vnc-load-create-new-keyboardopen", "ExpectedScreens", 3)
@@ -382,7 +277,7 @@ class IVG_ELD_CORE:
         if found:
             print("'ERODS File Transfer' screen is being displayed")
         else:
-            self.goTo("DayLog")
+            self.general.goTo("DayLog")
 
             self.img_proc.click_image_by_max_key_points('ELD_Core/DayLogTab/DriverButton/DriverButton')
             time.sleep(1)
@@ -393,349 +288,6 @@ class IVG_ELD_CORE:
             self.img_proc.expect_image('vnc-erods-file-transfer-screen', "ExpectedScreens", 2)
             print("'ERODS File Transfer' screen is being displayed")
     
-    def findTableRecord(self,RecordToFind,ColumnToSearch,StartPoint, FindOrder):
-        #CertifyTestCase.findTableRecord
-        self.goTo("Certify")
-        findOrder = ""
-        if StartPoint =="Bottom":
-            for i in range(10):
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
-        elif StartPoint =="Top":
-            for i in range(10):
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
-        else:
-            print("In the middle of the table")
-
-        if FindOrder == "Asc":
-            findOrder = "Asc"
-        elif FindOrder == "Desc":
-            findOrder = "Desc"
-        else:
-            findOrder = "Asc"
-        
-        if ColumnToSearch == 'Start':
-            y, y1,x, x1 = 285, 310, 30, 110
-        elif ColumnToSearch == 'Status':
-            y, y1,x, x1 = 285, 310, 115, 245
-        elif ColumnToSearch == 'Duration':
-            y, y1,x, x1 = 285, 310, 320, 445
-        elif ColumnToSearch == 'Location':
-            y, y1,x, x1 = 285, 310, 445, 600
-        elif ColumnToSearch == 'Origin':
-            y, y1,x, x1 = 285, 310, 850, 970
-        else:
-            y, y1,x, x1 = 285, 310, 90, 115
-
-        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-        crop_img2 = img[int(y):int(y1), int(x):int(x1)]
-        #calculate the 50 percent of original dimensions
-        width = int(crop_img2.shape[1] * 600 / 100)
-        height = int(crop_img2.shape[0] * 600 / 100)
-        # dsize
-        dsize = (width, height)
-        # resize image
-        crop_img2 = cv2.resize(crop_img2, dsize)
-        #plt.imshow(crop_img2)
-        #plt.show()
-        string = pytesseract.image_to_string(crop_img2)
-        recordToCompare = string.lower()   
-        print(recordToCompare)
-        print(RecordToFind.lower())
-
-        if self.search_func(str(RecordToFind.lower().strip()), str(recordToCompare.strip())):
-            print("Found " + str(RecordToFind))
-        else:
-            print("Searching")
-            found = False
-            for i in range(10):
-                if found:
-                    print("Record Found")
-                    break
-                else:
-                    self.img_proc.click_image_by_coordinates(150, 300)
-                    self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-                    #self.img_proc.click_image_by_coordinates(150,300)
-                    img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-                    crop_img2 = img[int(y):int(y1), int(x):int(x1)]
-                    #calculate the 50 percent of original dimensions
-                    width = int(crop_img2.shape[1] * 600 / 100)
-                    height = int(crop_img2.shape[0] * 600 / 100)
-                    # dsize
-                    dsize = (width, height)
-                    # resize image
-                    crop_img2 = cv2.resize(crop_img2, dsize)
-                    #plt.imshow(crop_img2)
-                    #plt.show()
-                    string = pytesseract.image_to_string(crop_img2)
-                    recordToCompare = string.lower()   
-                    print(recordToCompare)
-                    if self.search_func(str(RecordToFind.lower().strip()), str(recordToCompare.strip())):
-                        found = True
-                        print("Found " + str(RecordToFind))
-                        '''if findOrder == 'Asc':
-                            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
-                        else:
-                            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
-                        self.img_proc.click_image_by_coordinates(150,300)'''
-                    else:
-                        if findOrder == "Asc":
-                            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
-                        else:
-                            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
-
-    def getTable(self, StartPoint, FindOrder, NumRecords):
-        
-        self.goTo("Certify")
-        findOrder = ""
-        
-        if StartPoint =="Bottom":
-            for i in range(2):
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
-        elif StartPoint =="Top":
-            for i in range(2):
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
-        else:
-            print("In the middle of the table")
-
-        if FindOrder == "Asc":
-            findOrder = "Asc"
-        elif FindOrder == "Desc":
-            findOrder = "Desc"
-        else:
-            findOrder = "Asc"
-        
-        records = []
-        for i in range(NumRecords):
-            time.sleep(1)
-            self.img_proc.click_image_by_coordinates(150, 300)
-            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-            new_rec = []
-            #CERTIFIED
-            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-            crop_img2 = img[int(280):int(305), int(0):int(40)]
-            
-            string = pytesseract.image_to_string(crop_img2)
-            recordToCompare = string.lower() 
-            color = self.img_proc.color_check(20,20 ,crop_img2)
-            print("COLOR")
-            print(color)
-            
-            if color == 'green':
-                new_rec.append("Certified")
-            else:
-                new_rec.append("Empty")
-            
-            #START
-            self.img_proc.click_image_by_coordinates(150, 300)
-            recordToCompare = self.retrieve_start('Certify')
-            new_rec.append(recordToCompare.strip())   
-       
-            #STATUS
-            y, y1,x, x1 = 285, 310, 115, 245
-            self.img_proc.click_image_by_coordinates(150, 300)
-            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-            crop_img2 = img[int(y):int(y1), int(x):int(x1)]
-            #calculate the 50 percent of original dimensions
-            width = int(crop_img2.shape[1] * 1200 / 400)
-            height = int(crop_img2.shape[0] * 1200 / 400)
-            # dsize
-            dsize = (width, height)
-            # resize image
-            #crop_img2 = cv2.resize(crop_img2, dsize)
-            crop_img2 = cv2.resize(crop_img2, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
-
-
-            string = pytesseract.image_to_string(crop_img2, lang='eng', config="--psm 6")
-            #string2 = ''.join(i for i in string if i.isalnum())
-            recordToCompare = string.lower()
-            new_rec.append(recordToCompare.strip())    
-
-
-
-            #Duration
-            recordToCompare = self.retrieve_duration()
-            new_rec.append(recordToCompare.strip())
-
-
-
-            #LOCATION
-            y, y1,x, x1 = 285, 310, 445, 600
-            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-            crop_img2 = img[int(y):int(y1), int(x):int(x1)]
-            #calculate the 50 percent of original dimensions
-            width = int(crop_img2.shape[1] * 800 / 100)
-            height = int(crop_img2.shape[0] * 800 / 100)
-            # dsize
-            dsize = (width, height)
-            # resize image
-            #crop_img2 = cv2.resize(crop_img2, dsize)
-            crop_img2 = cv2.resize(crop_img2, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
-            '''plt.imshow(crop_img2)
-            plt.show()'''
-            
-            custom_oem_psm_config = r'--oem 1 --psm 13'
-            string = pytesseract.image_to_string(crop_img2, lang='eng', config=custom_oem_psm_config)
-            recordToCompare = string.lower()
-            new_rec.append(recordToCompare.strip())    
-            
-            #ORIGIN
-            y, y1,x, x1 = 285, 310, 850, 960
-            self.img_proc.click_image_by_coordinates(150, 300)
-            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-
-            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-            
-            crop_img2 = img[int(y):int(y1), int(x):int(x1)]
-            #calculate the 50 percent of original dimensions
-            width = int(crop_img2.shape[1] * 600 / 100)
-            height = int(crop_img2.shape[0] * 600 / 100)
-            # dsize
-            dsize = (width, height)
-            # resize image
-            crop_img2 = cv2.resize(crop_img2, dsize)
-            #plt.imshow(crop_img2)
-            #plt.show()
-            
-            string = pytesseract.image_to_string(crop_img2, lang='eng', config="--psm 8")
-            #string = pytesseract.image_to_string(crop_img2)
-            recordToCompare = string.lower() 
-            new_rec.append(recordToCompare.strip()) 
-
-            records.append(new_rec)
-            if findOrder == "Asc":
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
-            else:
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
-        return records
-
-    def retrieve_duration(self):
-        string = ""
-        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-
-        for i in range(3):
-            '''This defines with region is being captured (hh:mm:ss)'''
-            if i == 0:
-                x, x1 = 320, 340
-                time_char = "h "
-            elif i == 1:
-                x, x1 = 352, 372
-                time_char = "m "
-            else:
-                x, x1 = 387, 407
-                time_char = "s "
-
-            crop_img2 = img[int(285):int(310), int(x):int(x1)]
-
-            '''calculate the 50 percent of original dimensions'''
-            width = int(crop_img2.shape[1] * 300 / 100)
-            height = int(crop_img2.shape[0] * 300 / 100)
-            # dsize
-            dsize = (width, height)
-            '''resize image'''
-            crop_img2 = cv2.resize(crop_img2, dsize)
-
-            '''Change to gray scale'''
-            crop_img2 = cv2.cvtColor(crop_img2, cv2.COLOR_BGR2GRAY)
-
-            '''Otsu Tresholding automatically find best threshold value'''
-            _, binary_image = cv2.threshold(crop_img2, 0, 255, cv2.THRESH_OTSU)
-
-            '''Invert the colors of the image'''
-            count_white = np.sum(binary_image > 0)
-            count_black = np.sum(binary_image == 0)
-            if count_black > count_white:
-                binary_image = 255 - binary_image
-
-            '''Padding'''
-            crop_img2 = cv2.copyMakeBorder(binary_image, 10, 10, 10, 10, cv2.BORDER_CONSTANT, value=(255, 255, 255))
-            crop_img2 = cv2.GaussianBlur(crop_img2, (3, 3), 0)
-            #plt.imshow(crop_img2)
-            #plt.show()
-
-            string += pytesseract.image_to_string(crop_img2,
-                                                  config='--psm 6 --oem 3 -c tessedit_char_whitelist=0123456789')
-            string = string.strip()
-            string += time_char
-            print(string)
-
-        return string
-
-    def retrieve_start(self, screen):
-        string = ""
-        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-
-        if screen.lower() == 'certify':
-            y, y1 = 285, 310
-        else:
-            y, y1 = 310, 325
-
-
-        for i in range(3):
-
-            '''This defines with region is being captured (hh:mm:ss) for CERTIFY screen'''
-            if screen.lower() == 'certify':
-                if i == 0:
-                    x, x1 = 34, 56
-                    time_char = ":"
-                elif i == 1:
-                    x, x1 = 57, 77
-                    time_char = ":"
-                else:
-                    x, x1 = 80, 100
-                    time_char = ""
-            else:
-                '''This defines with region is being captured (hh:mm:ss) for DAYLOG screen'''
-                if i == 0:
-                    x, x1 = 170, 189
-                    time_char = ":"
-                elif i == 1:
-                    x, x1 = 192, 206
-                    time_char = ":"
-                else:
-                    x, x1 = 210, 235
-                    time_char = ""
-
-
-            crop_img2 = img[int(y):int(y1), int(x):int(x1)]
-            '''calculate the 50 percent of original dimensions'''
-            width = int(crop_img2.shape[1] * 600 / 100)
-            height = int(crop_img2.shape[0] * 600 / 100)
-
-            # dsize
-            dsize = (width, height)
-            '''resize image'''
-            crop_img2 = cv2.resize(crop_img2, dsize)
-
-            '''Change to gray scale'''
-            crop_img2 = cv2.cvtColor(crop_img2, cv2.COLOR_BGR2GRAY)
-
-            '''Otsu Tresholding automatically find best threshold value'''
-            _, binary_image = cv2.threshold(crop_img2, 0, 255, cv2.THRESH_OTSU)
-
-            # invert the image colors
-            count_white = np.sum(binary_image > 0)
-            count_black = np.sum(binary_image == 0)
-            if count_black > count_white:
-                binary_image = 255 - binary_image
-
-            '''Padding'''
-            crop_img2 = cv2.copyMakeBorder(binary_image, 10, 10, 10, 10, cv2.BORDER_CONSTANT, value=(255, 255, 255))
-
-            '''Blur the image'''
-            crop_img2 = cv2.GaussianBlur(crop_img2, (3, 3), 0)
-
-            #plt.imshow(crop_img2)
-            #plt.show()
-
-            string += pytesseract.image_to_string(crop_img2, config='--psm 8 --oem 3 -c tessedit_char_whitelist=0123456789')
-            string = string.strip()
-            string += time_char
-            print(string)
-
-        return string
 
     def update_logs(self):
         string = ""
@@ -744,7 +296,7 @@ class IVG_ELD_CORE:
         self.img_proc.click_image_by_max_key_points('IVG_Common/Home/Return/Return')
         time.sleep(1)
         self.goToHOS()
-        self.goTo("Days")
+        self.general.goTo("Days")
         self.img_proc.click_image_by_max_key_points("LogRequestButton")
         while self.img_proc.expect_image("log-request-confirmation", "ExpectedScreens", 1):
             print("Waiting")
@@ -782,483 +334,6 @@ class IVG_ELD_CORE:
             search = re.search(r"Log Update|ELD Exempt", string)
             print(search)
         print("LOG UPDATE RECEIVED")
-    
-    def retrieve_text(self, y, y1, x, x1):
-        self.img_proc.click_image_by_coordinates(150, 300)
-        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-        crop_img2 = img[int(y):int(y1), int(x):int(x1)]
-        
-        width = int(crop_img2.shape[1] * 800 / 100)
-        height = int(crop_img2.shape[0] * 800 / 100)
-        # dsize
-        dsize = (width, height)
-        # resize image
-        crop_img2 = cv2.resize(crop_img2, dsize)
-        #crop_img2 = cv2.resize(crop_img2, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
-        #crop_img2 = cv2.blur(crop_img2,(3,3))
-        #plt.imshow(crop_img2)
-        #plt.show()
-        string = pytesseract.image_to_string(crop_img2)
-        print(string)
-        recordToCompare = string.lower()
-        return recordToCompare
-
-    def retrieve_text_with_config(self, y, y1, x, x1, params=None, lang_param=None):
-        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-        crop_img2 = img[int(y):int(y1), int(x):int(x1)]
-
-        width = int(crop_img2.shape[1] * 800 / 100)
-        height = int(crop_img2.shape[0] * 800 / 100)
-        # dsize
-        dsize = (width, height)
-        # resize image
-        crop_img2 = cv2.resize(crop_img2, dsize)
-
-        crop_img2 = cv2.cvtColor(crop_img2, cv2.COLOR_BGR2GRAY)
-
-        # Otsu Tresholding automatically find best threshold value
-        _, binary_image = cv2.threshold(crop_img2, 0, 255, cv2.THRESH_OTSU)
-
-        # invert the image colors
-        count_white = np.sum(binary_image > 0)
-        count_black = np.sum(binary_image == 0)
-        if count_black > count_white:
-            binary_image = 255 - binary_image
-
-        # Padding
-        crop_img2 = cv2.copyMakeBorder(binary_image, 10, 10, 10, 10, cv2.BORDER_CONSTANT, value=(255, 255, 255))
-
-        # Blur the image
-        crop_img2 = cv2.GaussianBlur(crop_img2, (3, 3), 0)
-
-        #This duplicates capture and appends it to original
-        #crop_img2 = cv2.hconcat([crop_img2,crop_img2])
-        #plt.imshow(crop_img2)
-        #plt.show()
-
-        string = pytesseract.image_to_string(crop_img2, lang=lang_param, config=params)
-        return string
-
-    def daylog_get_records_inspector(self,StartPoint, FindOrder, NumRecords):
-        self.goTo("DayLog")
-
-        match = self.img_proc.image_exists('ELD_Core/DayLogTab/InspectorButton/InspectorButton')
-
-        if match:
-            print("Switching to INSPECTOR profile")
-            self.img_proc.click_image_by_max_key_points('ELD_Core/DayLogTab/InspectorButton/InspectorButton')
-        else:
-            print("Currently in INSPECTOR profile")
-        
-        findOrder = ""
-        
-        if StartPoint =="Bottom":
-            for i in range(10):
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
-        elif StartPoint =="Top":
-            for i in range(10):
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
-        else:
-            print("In the middle of the table")
-
-        if FindOrder == "Asc":
-            findOrder = "Asc"
-        elif FindOrder == "Desc":
-            findOrder = "Desc"
-        else:
-            findOrder = "Asc"
-        
-        records = []
-        for i in range(NumRecords):
-            time.sleep(1)
-
-            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-            new_rec = []
-            #TIME
-            y, y1,x, x1 = 305, 340, 0, 95
-            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1)
-            new_rec.append(recordToCompare.strip()) 
-            #EVENT 
-            y, y1,x, x1 = 305, 340, 103, 245
-            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1)
-            new_rec.append(recordToCompare.strip()) 
-            #LOCATION 
-            y, y1,x, x1 = 305, 340, 255, 374
-            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1)
-            new_rec.append(recordToCompare.strip()) 
-            #ACCUM MILES
-            y, y1,x, x1 = 305, 340, 417, 530
-            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1)
-            new_rec.append(recordToCompare.strip()) 
-            #Eng. Hrs
-            y, y1,x, x1 = 305, 340, 570, 650
-            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1)
-            new_rec.append(recordToCompare.strip()) 
-            #Record Status
-            y, y1,x, x1 = 305, 340, 672, 725
-            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1)
-            new_rec.append(recordToCompare.strip()) 
-            #Seq ID
-            y, y1,x, x1 = 305, 340, 735, 783
-            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1,'--psm 1 --oem 3 -c tessedit_char_whitelist=0123456789')
-            new_rec.append(recordToCompare.strip()) 
-            #COMMENT
-            y, y1,x, x1 = 305, 340, 800, 960
-            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1)
-            new_rec.append(recordToCompare.strip()) 
-
-            records.append(new_rec)
-
-            if findOrder == "Asc":
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
-            else:
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
-        return records
-
-    def day_log_records_driver(self,StartPoint, FindOrder, NumRecords):
-        self.goTo("DayLog")
-
-        match = self.img_proc.image_exists('ELD_Core/DayLogTab/InspectorButton/InspectorButton')
-
-        if match:
-            print("Currently in DRIVER profile")
-        else:
-            print("Switching to DRIVER profile")
-            self.img_proc.click_image_by_max_key_points('ELD_Core/DayLogTab/DriverButton/DriverButton')
-
-        findOrder = ""
-        
-        if StartPoint =="Bottom":
-            for i in range(2):
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
-        elif StartPoint =="Top":
-            for i in range(2):
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
-        else:
-            print("In the middle of the table")
-
-        if FindOrder == "Asc":
-            findOrder = "Asc"
-        elif FindOrder == "Desc":
-            findOrder = "Desc"
-        else:
-            findOrder = "Asc"
-        
-        records = []
-        for i in range(NumRecords):
-            time.sleep(1)
-            self.img_proc.click_image_by_coordinates(150, 300)
-            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-            new_rec = []
-            
-            #CERTIFIED
-            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-            crop_img2 = img[int(280):int(305), int(0):int(40)]
-            
-            string = pytesseract.image_to_string(crop_img2)
-            recordToCompare = string.lower() 
-            color = self.img_proc.color_check(20,20 ,crop_img2)
-            print("COLOR")
-            print(color)
-            
-            if color == 'green':
-                new_rec.append("Certified")
-            else:
-                new_rec.append("Empty")
-            
-            #STATUS
-
-            y, y1, x, x1 = 310, 325, 85, 115
-            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1, '--psm 6 --oem 3 -c tessedit_char_whitelist=PCONSBYMDF')
-            print(recordToCompare)
-            new_rec.append(recordToCompare.strip())   
-       
-            #START
-            recordToCompare = self.retrieve_start('Daylog')
-            new_rec.append(recordToCompare.strip()) 
-       
-            self.img_proc.click_image_by_coordinates(150, 300)
-            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-            
-            #Duration
-
-            string = ""
-            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-            #y, y1, x, x1 = 310, 330, 242, 320
-            for i in range(3):
-                '''This defines with region is being captured (hh:mm:ss)'''
-                if i == 0:
-                    x, x1 = 250, 265
-                    time_char = "h "
-                elif i == 1:
-                    x, x1 = 275, 290
-                    time_char = "m "
-                else:
-                    x, x1 = 300, 320
-                    time_char = "s "
-
-                crop_img2 = img[int(310):int(330), int(x):int(x1)]
-
-                '''calculate the 50 percent of original dimensions'''
-                width = int(crop_img2.shape[1] * 600 / 100)
-                height = int(crop_img2.shape[0] * 600 / 100)
-                # dsize
-                dsize = (width, height)
-                '''resize image'''
-                crop_img2 = cv2.resize(crop_img2, dsize)
-
-                '''Change to gray scale'''
-                crop_img2 = cv2.cvtColor(crop_img2, cv2.COLOR_BGR2GRAY)
-
-                '''Otsu Tresholding automatically find best threshold value'''
-                _, binary_image = cv2.threshold(crop_img2, 0, 255, cv2.THRESH_OTSU)
-
-                '''Invert the colors of the image'''
-                count_white = np.sum(binary_image > 0)
-                count_black = np.sum(binary_image == 0)
-                if count_black > count_white:
-                    binary_image = 255 - binary_image
-
-                '''Padding'''
-                crop_img2 = cv2.copyMakeBorder(binary_image, 10, 10, 10, 10, cv2.BORDER_CONSTANT, value=(255, 255, 255))
-                crop_img2 = cv2.GaussianBlur(crop_img2, (3, 3), 0)
-                #plt.imshow(crop_img2)
-                #plt.show()
-
-                string += pytesseract.image_to_string(crop_img2,
-                                                    config='--psm 6 --oem 3 -c tessedit_char_whitelist=0123456789')
-                string = string.strip()
-                string += time_char
-                print(string)
-            new_rec.append(string)
-                
-            #LOCATION
-            y, y1, x, x1 = 310, 330, 340, 465
-            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1, None, 'eng')
-            new_rec.append(recordToCompare.strip())
-
-            #CODRIVER
-            y, y1, x, x1 = 310, 330, 602, 620
-            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1, '--psm 6 --oem 3 -c tessedit_char_whitelist=NoYes')
-            new_rec.append(recordToCompare.strip())
-            
-            #ORIGIN
-            y, y1, x, x1 = 310, 330, 645, 730
-            recordToCompare = self.retrieve_text_with_config(y,y1,x,x1)
-            new_rec.append(recordToCompare.strip())
-            #COMMENT
-            y, y1, x, x1 = 310, 330, 740, 960
-            recordToCompare = self.retrieve_text(y,y1,x,x1)
-            new_rec.append(recordToCompare.strip())
-
-            
-            records.append(new_rec)
-            if findOrder == "Asc":
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
-            else:
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
-        return records
-
-
-
-    def find_driver_record(self,RecordToFind,ColumnToSearch,StartPoint, FindOrder):
-        #CertifyTestCase.findTableRecord
-        self.goTo("DayLog")
-        findOrder = ""
-        if StartPoint =="Bottom":
-            for i in range(10):
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
-        elif StartPoint =="Top":
-            for i in range(10):
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
-        else:
-            print("In the middle of the table")
-
-        if FindOrder == "Asc":
-            findOrder = "Asc"
-        elif FindOrder == "Desc":
-            findOrder = "Desc"
-        else:
-            findOrder = "Asc"
-        
-        #Certified Status Start Duration Location CoDriver Origin Comment
-        
-
-        if ColumnToSearch == 'Certified':
-            x = 0
-        elif ColumnToSearch == 'Start':
-            x = 2
-        elif ColumnToSearch == 'Status':
-            x = 1
-        elif ColumnToSearch == 'Duration':
-            x = 3
-        elif ColumnToSearch == 'Origin':
-            #ORIGIN
-            x = 6
-        elif ColumnToSearch == 'Location':
-            #LOCATION
-            x = 4
-            
-        elif ColumnToSearch == 'CoDriver':
-            x = 5
-        else:
-            x = 7
-
-        records = self.day_log_records_driver('', '', 1)
-        print(records)
-        print(records[0][x].lower())
-        recordToCompare = records[0][x].lower()
-        records = None
-
-        if self.search_func(str(RecordToFind.lower().strip()), str(recordToCompare.strip())):
-            print("Found " + str(RecordToFind))
-            return records
-        else:
-            print("Searching")
-            found = False
-            for i in range(10):
-                if found:
-                    print("Record Found")
-                    print(records)
-                    return records
-                else:
-                    self.img_proc.click_image_by_coordinates(150, 300)
-                    self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-                    #self.img_proc.click_image_by_coordinates(150,300)
-                    img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-                    
-                    records = self.day_log_records_driver('', '', 1)
-                    print(records)
-                
-                    print(records[0][x].lower())
-                    recordToCompare = records[0][x].lower()
-                 
-                    records = None
-                    
-                    if self.search_func(str(RecordToFind.lower().strip()), str(recordToCompare.strip())):
-                        found = True
-                        print("Found " + str(RecordToFind))
-                        '''if findOrder == 'Asc':
-                            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
-                        else:
-                            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
-                        self.img_proc.click_image_by_coordinates(150,300)'''
-                    else:
-                        if findOrder == "Asc":
-                            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
-                        else:
-                            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
-
-
-
-
-    def find_inspector_record(self,RecordToFind,ColumnToSearch,StartPoint, FindOrder):
-        #CertifyTestCase.findTableRecord
-
-        self.goTo("DayLog")
-
-        findOrder = ""
-        if StartPoint == "Bottom":
-            for i in range(10):
-                self.img_proc.click_image_by_max_key_points_offset(
-                    "IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
-        elif StartPoint == "Top":
-            for i in range(10):
-                self.img_proc.click_image_by_max_key_points_offset(
-                    "IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
-        else:
-            print("In the middle of the table")
-
-        if FindOrder == "Asc":
-            findOrder = "Asc"
-        elif FindOrder == "Desc":
-            findOrder = "Desc"
-        else:
-            findOrder = "Asc"
-
-        if ColumnToSearch == 'Time':
-            x = 0
-        elif ColumnToSearch == 'Location':
-            x = 2
-        elif ColumnToSearch == 'Event':
-            x = 1
-        elif ColumnToSearch == 'Odometer':
-            x = 3
-        elif ColumnToSearch == 'Eng.Hrs':
-            #ORIGIN
-            x = 4
-        elif ColumnToSearch == 'Record Status':
-            #LOCATION
-            x = 5
-            
-        elif ColumnToSearch == 'Seq.ID':
-            x = 6
-        else:
-            x = 7
-
-        records = self.daylog_get_records_inspector('', '', 1)
-        print(records)
-        print(records[0][x].lower())
-        recordToCompare = records[0][x].lower()
-        records = None
-        
-        #Certified Status Start Duration Location CoDriver Origin Comment
-
-        if self.search_func(str(RecordToFind.lower().strip()), str(recordToCompare.strip())):
-            print("Found " + str(RecordToFind))
-            return records
-        else:
-            print("Searching")
-            found = False
-            for i in range(10):
-                if found:
-                    print("Record Found")
-                    print(records)
-                    return records
-                else:
-                    self.img_proc.click_image_by_coordinates(150, 300)
-                    self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-                    #self.img_proc.click_image_by_coordinates(150,300)
-                    img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
-                    
-                    records = self.daylog_get_records_inspector('', '', 1)
-                    print(records)
-                
-                    print(records[0][x].lower())
-                    recordToCompare = records[0][x].lower()
-            
-                    records = None
-                    
-                    if self.search_func(str(RecordToFind.lower().strip()), str(recordToCompare.strip())):
-                        found = True
-                        print("Found " + str(RecordToFind))
-                        '''if findOrder == 'Asc':
-                            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
-                        else:
-                            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
-                        self.img_proc.click_image_by_coordinates(150,300)'''
-                    else:
-                        if findOrder == "Asc":
-                            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
-                        else:
-                            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
-
-
-
-
-
-
-
-
-
-
-
-
-
 
     def select_driver_from_dropdown(self, driver_id):
         driver_found = False
@@ -1336,7 +411,7 @@ class IVG_ELD_CORE:
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HOSPageTitle_split",
                     -200, 45)
 
-                string = self.retrieve_text_with_config(124, 200, 40, 327)
+                string = self.general.retrieve_text_with_config(124, 200, 40, 327)
 
                 string = string.strip()
                 slist = string.splitlines()
@@ -1368,7 +443,7 @@ class IVG_ELD_CORE:
 
     def validate_status(self, string):
         #self.goToHOS()
-        actual_status = self.retrieveText(245, 270, 132, 370)
+        actual_status = self.general.retrieve_text(245, 270, 132, 370)
         expected_status = string.lower()
         assert expected_status in actual_status, \
             f"expected_status '{expected_status}' is no substring of '{actual_status}'"
@@ -1379,7 +454,7 @@ class IVG_ELD_CORE:
             print("Already in Summary page")
         else:
             self.goToHOS()
-            self.goTo('Summary')
+            self.general.goTo('Summary')
         
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
         img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
@@ -1434,43 +509,11 @@ class IVG_ELD_CORE:
                 print("!!!!!!!!!!!!!!!!!!!!!!!!!\n Error: Carrier Edit alert not found. Be sure the Carrier has requested edits.")
                 sys.exit(1)
 
-
+    
+    
 
     def changeCarrier(self,Carrier, Send):
         pass
 
     def reviewCarrierEdits(self):
         pass
-
-    def checkRecordStatus(ExpectedValue, RecordToCheck, EditedIndex):
-        pass
-
-    def confirmRejectCarrierEdit( BooleanReject):
-        pass
-
-    def reviewCarrierEdits2(self):
-        pass
-
-    def enterReasonForReject(ReasonForRejecting):
-        pass
-
-    def verifyCharactersEntered(ExpectedValue):
-        pass
-
-    #ESTOS DICEN FUNCTION 
-    def getRecord(RecordID, EditedIndex):
-        pass
-
-    def getTableValue(ColumnName, RecordID, EditedIndex):
-        pass
-
-    def testRecordAge(theRecord, differAge, testAge):
-        pass
-
-    #ESTOS DICEN ON
-    def compareDates(firstRecord, secondRecord, type):
-        pass
-
-
-
-    #CertifyTestCase

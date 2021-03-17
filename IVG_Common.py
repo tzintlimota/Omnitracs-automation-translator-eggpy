@@ -10,19 +10,25 @@ import matplotlib.pyplot as plt
 import numpy as np
 import pytesseract
 import connection_credentials as cfg
+
+from General_Access_Functions import General_Access
+
 #import pyGPSFeed_IMR
 
-class IVG_Common:
+class IVG_Common(object):
 
-    def __init__(self):
-        #self.img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])
-        self.img_proc = ImageProcessor('192.168.1.118', 'None', .15)
+    def __init__(self, general):
+        self.general = general
+        self.img_proc = self.general.img_proc
+        
 
     def closeUnknownPositionAlert(self):
         self.img_proc.click_image_by_max_key_points("IVG_Common/Login/OkLoginStatus/OkLoginStatus")
 
     def goToMainScreen(self):
+        print('***IVG_Common.goToMainScreen***')
         while not self.img_proc.expect_image('vnc-main-screen', 'ExpectedScreens', 3):
+            print('Clicking RETURN button to go to IVG MAIN SCREEN')
             total_x, total_y = self.img_proc.click_image_by_max_key_points('IVG_Common/Home/Return/Return')
             time.sleep(.5)
 
