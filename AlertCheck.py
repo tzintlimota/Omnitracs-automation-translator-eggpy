@@ -8,12 +8,14 @@ from PIL import Image
 #import pyGPSFeed_IMR
 from IVG_ELD_CORE import IVG_ELD_CORE
 from IVG_Common import IVG_Common
+from General_Access_Functions import General_Access
 import connection_credentials as cfg
 
 #img_proc = ImageProcessor(cfg.vnc["ivg_ip"], cfg.vnc["password"], cfg.vnc["precision"])
+gral_access = General_Access()
 img_proc = ImageProcessor('192.168.1.118', 'None', .15)
-eld_core = IVG_ELD_CORE()
-ivg_common = IVG_Common()
+eld_core = IVG_ELD_CORE(gral_access)
+ivg_common = IVG_Common(gral_access)
 
 f = open("IVG_var.txt", "w")
 f.write("None")
