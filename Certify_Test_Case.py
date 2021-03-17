@@ -213,7 +213,7 @@ class Certify_Test_Case(object):
             
             #START
             self.img_proc.click_image_by_coordinates(150, 300)
-            recordToCompare = self.general.retrieve_start()
+            recordToCompare = self.general.retrieve_start('certify')
             new_rec.append(recordToCompare.strip())   
        
             #STATUS

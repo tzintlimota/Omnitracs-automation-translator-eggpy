@@ -21,7 +21,7 @@ from subprocess import Popen, CalledProcessError, PIPE
 
 class General_Access:
     def __init__(self):
-        self.img_proc = ImageProcessor('192.168.1.118', 'None', .15)
+        self.img_proc = ImageProcessor('192.168.100.13', 'None', .15)
 
     def search_func(self, search, space):
         search = re.search(r"" + search + "", str(space))
@@ -82,25 +82,43 @@ class General_Access:
 
         return string
 
-    def retrieve_start(self):
+    def retrieve_start(self, screen):
         string = ""
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
         img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
 
+        if screen.lower() == 'certify':
+            y, y1 = 285, 310
+        else:
+            y, y1 = 310, 325
+
+
         for i in range(3):
 
-            '''This defines with region is being captured (hh:mm:ss)'''
-            if i == 0:
-                x, x1 = 34, 56
-                time_char = ":"
-            elif i == 1:
-                x, x1 = 57, 77
-                time_char = ":"
+            '''This defines with region is being captured (hh:mm:ss) for CERTIFY screen'''
+            if screen.lower() == 'certify':
+                if i == 0:
+                    x, x1 = 34, 56
+                    time_char = ":"
+                elif i == 1:
+                    x, x1 = 57, 77
+                    time_char = ":"
+                else:
+                    x, x1 = 80, 100
+                    time_char = ""
             else:
-                x, x1 = 80, 100
-                time_char = ""
+                '''This defines with region is being captured (hh:mm:ss) for DAYLOG screen'''
+                if i == 0:
+                    x, x1 = 170, 189
+                    time_char = ":"
+                elif i == 1:
+                    x, x1 = 192, 206
+                    time_char = ":"
+                else:
+                    x, x1 = 210, 235
+                    time_char = ""
 
-            crop_img2 = img[int(285):int(310), int(x):int(x1)]
+            crop_img2 = img[int(y):int(y1), int(x):int(x1)]
             '''calculate the 50 percent of original dimensions'''
             width = int(crop_img2.shape[1] * 600 / 100)
             height = int(crop_img2.shape[0] * 600 / 100)
@@ -214,4 +232,3 @@ class General_Access:
         p.communicate(input_data.encode('ascii'))
         if p.returncode != 0:
             raise CalledProcessError(p.returncode, cmd)
-    
