@@ -28,11 +28,18 @@ class Daylog_Test_Case(object):
         self.ivg_common = IVG_Common(general)
 
     def daylog_get_records_inspector(self,StartPoint, FindOrder, NumRecords):
-        self.general.goTo("DayLog")
+        found = self.img_proc.expect_image('vnc-hos-daylog-screen', 'ExpectedScreens', 3)
 
-        match = self.img_proc.image_exists('ELD_Core/DayLogTab/InspectorButton/InspectorButton')
+        if found:
+            print('Already in DAYLOG screen')
+        else:
+            self.eld_core.goTo("DayLog")
 
-        if match:
+        y, y1, x, x1 = 540, 565, 460, 565
+        btn_txt = self.general.retrieve_text_with_config(y, y1, x, x1)
+        print(btn_txt)
+
+        if 'inspector' in btn_txt.lower():
             print("Switching to INSPECTOR profile")
             self.img_proc.click_image_by_max_key_points('ELD_Core/DayLogTab/InspectorButton/InspectorButton')
         else:
@@ -104,11 +111,19 @@ class Daylog_Test_Case(object):
         return records
 
     def day_log_records_driver(self,StartPoint, FindOrder, NumRecords):
-        self.general.goTo("DayLog")
 
-        match = self.img_proc.image_exists('ELD_Core/DayLogTab/InspectorButton/InspectorButton')
+        found = self.img_proc.expect_image('vnc-hos-daylog-screen', 'ExpectedScreens', 3)
 
-        if match:
+        if found:
+            print('Already in DAYLOG screen')
+        else:
+            self.eld_core.goTo("DayLog")
+
+        y, y1, x, x1 = 540, 565, 460, 565
+        btn_txt = self.general.retrieve_text_with_config(y, y1, x, x1)
+        print(btn_txt)
+
+        if 'inspector' in btn_txt.lower():
             print("Currently in DRIVER profile")
         else:
             print("Switching to DRIVER profile")
@@ -254,7 +269,7 @@ class Daylog_Test_Case(object):
 
     def find_driver_record(self,RecordToFind,ColumnToSearch,StartPoint, FindOrder):
         #CertifyTestCase.findTableRecord
-        self.general.goTo("DayLog")
+        self.eld_core.goTo("DayLog")
         findOrder = ""
         if StartPoint =="Bottom":
             for i in range(10):
@@ -344,7 +359,7 @@ class Daylog_Test_Case(object):
     def find_inspector_record(self,RecordToFind,ColumnToSearch,StartPoint, FindOrder):
         #CertifyTestCase.findTableRecord
 
-        self.general.goTo("DayLog")
+        self.eld_core.goTo("DayLog")
 
         findOrder = ""
         if StartPoint == "Bottom":
