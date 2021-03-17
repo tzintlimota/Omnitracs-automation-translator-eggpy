@@ -415,7 +415,6 @@ def tokenization():
 
             new = stringToPass.replace('"', '')
             new = new.replace(',', ' ')
-            #new = new.replace('.RejectUnassignedEvents', '')
             params = new.split()
 
             print(params)
@@ -423,6 +422,25 @@ def tokenization():
                 params.append(' ')
 
             toadd = f"\ngral_access.run_vehsim_script('192.168.100.16', 'C:\\ELD_VSIM\\{params[1]}.xml', '1')"
+            file2.writelines(toadd)
+
+        elif (search_func('CloseVsimAndWaitForUnlock', doc)):
+            params = []
+            stringToPass = ''
+
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            params = new.split()
+
+            print(params)
+            while len(params) < 2:
+                params.append(' ')
+
+            toadd = f"\ngral_access.stop_vehsim_script()"
             file2.writelines(toadd)
 
         else:
