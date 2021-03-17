@@ -509,6 +509,8 @@ class IVG_ELD_CORE(object):
                 print("!!!!!!!!!!!!!!!!!!!!!!!!!\n Error: Carrier Edit alert not found. Be sure the Carrier has requested edits.")
                 sys.exit(1)
 
+    
+    
 
     def changeCarrier(self,Carrier, Send):
         pass
