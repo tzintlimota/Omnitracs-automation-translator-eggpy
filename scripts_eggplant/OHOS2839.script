@@ -1,0 +1,157 @@
+﻿(*OHOS-2839: Verify in "Day Log" tab "Header" screen that the "Carrier" field lists all the Carrier names from older to newer when the Carrier's name assigned to the drives has changed.
+- Mobile has latest build. 
+- Mobile is in ELD Mode. 
+- At least one driver with "Driver ID" and Password. 
+- Driver is logged in the mobile. 
+- The driver's logs have arrived and are updated. 
+- The driver doesn't have pending UDT, Certify days, Edits nor Loads. 
+- Company, User and Password to enter to HOS Portal. 
+- Driver is on "Home" screen.*)
+
+log "***Script name OHOS2839***"
+put "JOSH0089" into DriverId
+Set CarrierName to "Test1"
+
+//Removed DevTest update and replaced it with Selenium due to issues with files
+(*put "ChangeCarrier.xls" into FileName
+put "UpdateCarrier2.xls" into FileName2*)
+
+//Go to HOS Portal and to Admin Drivers Profile
+HOSPortal.HOSPortalLogin "MEXICOHOS","AUTO001","A1234567", "SSO"
+HOSPortal.GoToDriverInAdmin DriverId
+
+//Select from Carrier's dropdown the CarrierName
+Click webXPath: "//option[contains(text(),'"&CarrierName&"')]"
+Click  webID: "MDriverUC1_cmdSave"
+assert that webElementFound(webID: "MDriverUC1_cmdSave") with "Driver has been updated"
+
+
+BeforeTest
+LoginDriver DriverId, DriverId, "OF", True
+ELDTestCase.SendMessageToUpdateLogs
+
+//Go to Header page
+GoToELDPage
+GoTo.DayForward DayLog,8
+if imagefound(5,Translator("DayLogTab/HeaderButton"))
+	click FoundImageLocation()
+else if imagefound(5, Translator("DayLogTab/Header/HeaderBanner"))
+	log "Header screen already displayed"
+else
+	logError "Failed to enter Header screen"
+end if
+
+//find Carrier
+Repeat until ImageFound(2,Translator("DayLogTab/Header/Carrier_A"))
+	DoubleClick "ScrollButtons/ScrollDownButton"
+End Repeat
+DoubleClick "ScrollButtons/ScrollDownButton"
+
+put readText(Translator("DayLogTab/Header/Carrier_A"),Translator("DayLogTab/Header/Carrier_B"),DPI:150) into FirstCarrier
+replace every occurrence of "Testl" in FirstCarrier with "Test1"
+replace every occurrence of "Testi" in FirstCarrier with "Test1"
+split FirstCarrier by ", "
+If FirstCarrier contains "Test1"
+	LogSuccess "Header contains initial carrier"
+else
+	LogError "Initial carrier not found in header"
+End If
+Click Translator("DayLogTab/DoneButton")
+
+//Update Carrier
+put "Test" & random(100, 999) into NewCarrier
+
+//Return to HOS Portal to Update the Carrier Name
+HOSPortal.UpdateCarrierName CarrierName,NewCarrier
+
+//Update Logs
+ConnectUnit
+GoTo8DaysTab
+Click Translator(ImageName:"8DaysTab/LogRequestButton",waitFor:10)
+Click Translator(ImageName:"Login/OkLoginStatus",waitFor:10)
+
+ClearAlerts
+ELDTestCase.SendMessageToUpdateLogs
+
+//Go to Header page
+CertifyTestCase.GoForward 8
+DayLogTestCase.goTo
+if imagefound(5,Translator("DayLogTab/HeaderButton"))
+	click FoundImageLocation()
+else if imagefound(5, Translator("DayLogTab/Header/HeaderBanner"))
+	log "Header screen already displayed"
+else
+	logError "Failed to enter Header screen"
+end if
+
+//find new Carrier
+Repeat until ImageFound(2,Translator("DayLogTab/Header/Carrier_A"))
+	DoubleClick "ScrollButtons/ScrollDownButton"
+End Repeat
+DoubleClick "ScrollButtons/ScrollDownButton"
+
+put readText(Translator("DayLogTab/Header/Carrier_A"),Translator("DayLogTab/Header/Carrier_B"),DPI:150) into SecondCarrier
+replace every occurrence of "Testl" in FirstCarrier with "Test1"
+replace every occurrence of "Testi" in FirstCarrier with "Test1"
+split SecondCarrier by ", "
+If SecondCarrier contains NewCarrier
+	LogSuccess "Header contains new carrier"
+else
+	LogError "New carrier not found in header"
+End If
+If the Index of "Test1" in SecondCarrier is less than the Index of NewCarrier in SecondCarrier
+	LogSuccess "New carrier comes after the initial carrier"
+else
+	LogError "New carrier isn't last"
+End If
+Click Translator("DayLogTab/DoneButton")
+
+//Update Carrier again
+ConnectWinMachine
+put "Test" & random(100, 999) into NewCarrier2
+HOSPortal.UpdateCarrierName NewCarrier,NewCarrier2
+
+//Update Logs
+ConnectUnit
+GoTo8DaysTab
+Click Translator(ImageName:"8DaysTab/LogRequestButton",waitFor:10)
+Click Translator(ImageName:"Login/OkLoginStatus",waitFor:10)
+
+ClearAlerts
+ELDTestCase.SendMessageToUpdateLogs
+
+//Go to Header page
+CertifyTestCase.GoForward 8
+DayLogTestCase.goTo
+if imagefound(5,Translator("DayLogTab/HeaderButton"))
+	click FoundImageLocation()
+else if imagefound(5, Translator("DayLogTab/Header/HeaderBanner"))
+	log "Header screen already displayed"
+else
+	logError "Failed to enter Header screen"
+end if
+
+//find new Carrier
+Repeat until ImageFound(2,Translator("DayLogTab/Header/Carrier_A"))
+	DoubleClick "ScrollButtons/ScrollDownButton"
+End Repeat
+DoubleClick "ScrollButtons/ScrollDownButton"
+
+put readText(Translator("DayLogTab/Header/Carrier_A"),Translator("DayLogTab/Header/Carrier_B"),DPI:150) into ThirdCarrier
+replace every occurrence of "Testl" in FirstCarrier with "Test1"
+replace every occurrence of "Testi" in FirstCarrier with "Test1"
+split ThirdCarrier by ", "
+If ThirdCarrier contains NewCarrier2
+	LogSuccess "Header contains new carrier"
+else
+	LogError "New carrier not found in header"
+End If
+If the Index of "Test1" in ThirdCarrier is less than the Index of NewCarrier in ThirdCarrier and the Index of NewCarrier in ThirdCarrier is less than the Index of NewCarrier2 in ThirdCarrier
+	LogSuccess "New carrier comes after the prior carrier"
+else
+	LogError "Carrier aren't in chronologic order"
+End If
+
+//Change carrier back to the original name
+ConnectWinMachine
+HOSPortal.UpdateCarrierName NewCarrier2,CarrierName

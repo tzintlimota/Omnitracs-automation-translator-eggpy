@@ -38,7 +38,7 @@ class IVG_Common(object):
         if total_x == -1:
             total_x, total_y = self.img_proc.click_image_by_max_key_points('IVG_Common/Home/KeyboardOpen/KeyboardOpen')
 
-        while not self.img_proc.expect_image('vnc_hos_main', 'ExpectedScreens', 3):
+        while not self.img_proc.expect_image('vnc-main-screen', 'ExpectedScreens', 3):
             total_x, total_y = self.img_proc.click_image_by_max_key_points('IVG_Common/Home/Return/Return')
             time.sleep(.5)
 
@@ -59,7 +59,7 @@ class IVG_Common(object):
         self.img_proc.expect_image('vnc-driver-input-2', 'ExpectedScreens', 2)
         # Type Password
         self.img_proc.click_image_by_max_key_points_offset('login_password_box', 250, 0)
-        self.img_proc.send_keys(str(username))
+        self.img_proc.send_keys(str(password))
 
         self.img_proc.expect_image('vnc-driver-input-2', 'ExpectedScreens', 3)
 
@@ -72,7 +72,7 @@ class IVG_Common(object):
         self.img_proc.expect_image('vnc-driver-credentials', 'ExpectedScreens', 3)
 
         # Set status
-        # self.img_proc.click_image_by_max_key_points('IVG_Common/Login/OkLoginStatus/OkLoginStatus')
+        self.img_proc.click_image_by_max_key_points('IVG_Common/Login/OkLoginStatus/OkLoginStatus')
 
         self.backToHome()
 
@@ -128,6 +128,7 @@ class IVG_Common(object):
 
         while True:
             time.sleep(5)
+
             found = self.img_proc.expect_image('vnc_login_no_drivers', 'ExpectedScreens', 5)
             if found:
                 break

@@ -1,0 +1,51 @@
+﻿(*OHOS-2791: Verify in "Day Log" tab that the driver remains in "Personal Conveyance" when selects "Yes" in the confirmation message.
+- Mobile has the latest build. 
+- DriverID and Pwd for at least one driver. 
+- A vSIM script that moves generates a Power Cycle. 
+- Personal Conveyance is checked as "Unlimited" in HOS Portal. 
+- Driver is logged in the mobile. 
+- Logs are updated. 
+- Driver is on "Personal Conveyance". 
+- Driver is in "HOS App" screen.*)
+
+log "***Script name OHOS2791***"
+put "JOSH0001" into DriverId
+
+//log one drivers in
+BeforeTest
+LoginDriver DriverId, DriverId, "OF", True
+ELDTestCase.SendMessageToUpdateLogs
+
+//select PC
+Status_ChangeTestCase.ChangeDriverStatus "OFF", "PC", "1234"
+Wait 1 minute
+
+//Cause a power cycle
+RunVsimScript "PowerCycle"
+ConnectUnit
+Wait 1 minute
+
+//Wait for Personal conveyance prompt, click yes
+If ImageFound(60,Translator("PopUps/PCSwitchPopUp"))
+	LogSuccess "Personal conveyance confirmation pop up found"
+	Click Translator("Messaging/YesButton")
+Else
+	LogError "No personal conveyance confirmation pop up found"
+End If
+
+//Check IMUI screen
+ELDTestCase.CloseVsimAndWaitForUnlock
+StatusTestCase.ValidateStatus Translator(Other:"Personal Conveyance")
+
+//Get the newest driver logs, inspector logs, and certify table
+GoTo.DayForward DayLog, 8
+
+DayLogTestCase.findDriverRecord Translator(Other:"PC"), "Status","Bottom", "Asc"
+Put DayLogTestCase.getDriverRecords(2,"","Asc") into DriverLogs
+
+//Checking Driver Mode records
+If item 1 of DriverLogs contains Translator(Other:"PC") and item 2 of DriverLogs contains Translator(Other:"OFF")
+	LogSuccess "Last status is still Personal Conveyance and no new records were found on Day Log Driver Mode screen"
+Else
+	LogError "Last status is not Personal Conveyance or another status was recorded while vehicle was in motion on Day Log Driver Mode screen"
+End If

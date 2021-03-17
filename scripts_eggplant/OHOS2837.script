@@ -1,0 +1,92 @@
+﻿(*OHOS-2837: Verify in the "Header" screen the"Co-Driver ID" is listed chronologically and separated by a comma when there are multiple Co-Drivers.
+- Mobile has latest build and configured as ELD. 
+- "Driver ID" and Password for at least four drivers of the same company. 
+- Two drivers are logged in (The status of the drivers doesn't matter). 
+- Logs are updated.  *)
+
+log "***Script name OHOS2837***"
+put "JOSH1" into DriverId
+put "JOSH0001" into DriverId2
+put "JOSH0002" into DriverId3
+put "JOSH0003" into DriverId4
+
+//log one drivers in
+BeforeTest
+LoginDriver DriverId, DriverId, "OF", True
+LoginDriver DriverId2, DriverId2, "OF", False
+ELDTestCase.SendMessageToUpdateLogs
+
+//Go to Header page
+GoTo.DayForward "DayLog",8
+if imagefound(5,Translator("DayLogTab/HeaderButton"))
+	click FoundImageLocation()
+else if imagefound(5, Translator("DayLogTab/Header/HeaderBanner"))
+	log "Header screen already displayed"
+else
+	logError "Failed to enter Header screen"
+end if
+
+//find Co-Driver ID
+Repeat until ImageFound(2,Translator("DayLogTab/Header/CoDriverID_A"))
+	DoubleClick "ScrollButtons/ScrollDownButton"
+End Repeat
+DoubleClick "ScrollButtons/ScrollDownButton"
+
+//Retrieves the values of the CoDriverID field
+Put ReadText(Translator("DayLogTab/Header/CoDriverID_A"),Translator("DayLogTab/Header/CoDriverID_B")) into CoDriver
+replace every occurrence of @"/n" in CoDriver with " "
+If CoDriver contains DriverId2
+	LogSuccess "Co-Driver Id contains the current Co-Driver"
+else
+	LogError "Current Co-Driver not found"
+End If
+
+//Logout current Co-Driver for another
+LogoutDriver "OF", DriverId2
+Wait 2 minutes
+LoginDriver DriverId3, DriverId3, "OF", False
+
+//Return to HOS application
+GoToELDPage
+
+//Go to Header page and locate CoDriverID Fieldy, should have current Co-Driver, and new Co-Driver is last
+Put DayLogTestCase.getHeaderCoDriverIDValues() into CoDriver2
+replace every occurrence of @"\n" in CoDriver2 with " "
+replace every occurrence of " " in CoDriver2 with ""
+If CoDriver2 contains DriverId3
+	LogSuccess "Co-Driver Id contains the current Co-Driver"
+else
+	LogError "Current Co-Driver not found"
+End If
+
+Split CoDriver2 by ","
+If the item number containing DriverId2 in CoDriver2 is less than the item number containing DriverId3 in CoDriver2
+	LogSuccess "Co-Drivers are seperated by a comma and that the new Co-Driver comes after the old Co-Driver"
+else
+	LogError "Co-Drivers are not in chronological order or seperated by a comma"
+End If
+
+//Logout current Co-Driver for another, one more time
+LogoutDriver "OF", DriverId3
+Wait 2 minutes
+LoginDriver DriverId4, DriverId4, "OF", False
+
+//Return to HOS application
+GoToELDPage
+
+//find Co-Driver ID, should have current Co-Driver, and new Co-Driver is last
+Put DayLogTestCase.getHeaderCoDriverIDValues()  into CoDriver3
+replace every occurrence of @"\n" in CoDriver3 with " "
+replace every occurrence of " " in CoDriver3 with ""
+If CoDriver3 contains DriverId4
+	LogSuccess "Co-Driver Id contains the current Co-Driver"
+else
+	LogError "Current Co-Driver not found"
+End If
+
+Split CoDriver3 by ","
+If the item number containing DriverId2 in CoDriver3 is less than the item number containing DriverId3 in CoDriver3 and the item number containing DriverId3 in CoDriver3 is less than the item number containing DriverId4 in CoDriver3
+	LogSuccess "Co-Drivers are seperated by a comma and that the new Co-Driver comes after the old Co-Driver"
+else
+	LogError "Co-Drivers are not in chronological order or seperated by a comma"
+End If

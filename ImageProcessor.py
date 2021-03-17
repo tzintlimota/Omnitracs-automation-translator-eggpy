@@ -346,7 +346,7 @@ class ImageProcessor:
                 total_x = total_x / len(list_kp1)
                 total_y = total_y / len(list_kp1)
             else:
-                print("Image not identified correctly, try resizing or using another image")
+                print(f"Image not identified correctly, try resizing or using another image: {image_name}")
                 total_x = -1
                 total_y = -1
         except:
@@ -572,7 +572,7 @@ class ImageProcessor:
         #src = cv2.imread(os.getcwd() + '/Images/Buttons/ELD_Core/LoadTab/EndDay/EndDay.png', cv2.IMREAD_UNCHANGED)
 
         #percent by which the image is resized
-        scale_percent = 300
+        scale_percent = 100
 
         #calculate the 50 percent of original dimensions
         width = int(image_name.shape[1] * scale_percent / 100)

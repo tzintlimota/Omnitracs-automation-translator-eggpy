@@ -1,0 +1,76 @@
+﻿(*OHOS-2804: Verify in "Day Log" tab "Driver" mode that a "Special Driving Event Cleared" with reduced location record is created when driver changes from "Personal Conveyance" to another status.
+- Mobile has the latest build. 
+- DriverID and Pwd for at least one driver. 
+- Access to the "Binary Payload". 
+- Yard Move is checked as "Allowed" in HOS Portal. 
+- Driver is logged in the mobile. 
+- Logs are updated. 
+- Driver is on special condition "Yard Move". 
+- Driver is in HOS App.*)
+
+log "***Script name OHOS2804***"
+put "JOSH0001" into DriverId
+Global UnitAddress
+
+//log one drivers in
+BeforeTest
+LoginDriver DriverId, DriverId, "OF", True
+ELDTestCase.SendMessageToUpdateLogs
+
+//driver switches to Personal Conveyance and than to another status
+Status_ChangeTestCase.ChangeDriverStatus "OFF", "PC", "1234"
+wait 5
+Status_ChangeTestCase.ChangeDriverStatus "OFF", "N", "Test"
+
+//Get the newest Inspector logs
+GoTo.DayForward DayLog, 8
+DayLogTestCase.findDriverRecord Translator(Other:"PC"), "Status","Bottom", "Asc"
+Put DayLogTestCase.getDriverRecords(2,"","Desc") into DriverLogs
+Put DayLogTestCase.getInspectorRecords(3, "Bottom") into InspectorLogs
+
+//Check inspector logs
+If item 2 of item 2 of InspectorLogs contains Translator(Other:"Special Driving")
+	LogSuccess "Special driving event found in Inspector Logs"
+	If item 2 of item 2 of InspectorLogs contains "3-0" and item 1 of item 2 of InspectorLogs contains Translator(Other:"Driver") and item 8 of item 2 of InspectorLogs equals ""
+		LogSuccess "Special driving event has the correct origin, event type/code, and no comments"
+	Else
+		LogError "Special driving event missing information"
+	End If
+Else
+	LogError "Special driving event not found in inspector logs"
+End If
+
+(*The following Part is temporary blocked for ODBC issues, logic works fine*)
+//Check DB
+wait 1 min
+Put 108087841 into UnitAddress
+put DBController.executeParametrizedQuery("select top 1 BINARY_PAYLOAD from RETURN_MSG where UNIFIED_ADDRESS = ? AND BINARY_PAYLOAD LIKE '8dfe6%' ORDER BY INSERT_TIME DESC", (UnitAddress)) into DBComment
+put DBComment.BINARY_PAYLOAD into DBResult
+
+//put into parser
+BinaryParser_Selenium.goToParser
+BinaryParser_Selenium.ParserReturnMessage DBResult
+Put BinaryParser_Selenium.getRtnMsgKeyValue("Latitude") into Latitude
+Put BinaryParser_Selenium.getRtnMsgKeyValue("Longitude") into Longitude
+
+//check to see if the found message is a Special Driving event clear message
+If ImageFound(15,Text:"ELD_Clear_Special_Driving_Event")
+	LogSuccess "Special driving event return message found"
+else
+	If DBResult is empty then LogError "Special Driving event message not found"
+End If
+
+//check latitude and longitude for reduced precision
+set ReducedPattern to <maybe a "-",1 or more digits,".",1 digit>
+
+If Latitude matches ReducedPattern
+	LogSuccess "Latitude's precision is reduced"
+else
+	LogError "Latitude's precision is not reduced"
+End If
+
+If Longitude matches ReducedPattern
+	LogSuccess "Longitude's precision is reduced"
+else
+	LogError "Longitude's precision is not reduced"
+End If

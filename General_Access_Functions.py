@@ -14,6 +14,7 @@ import connection_credentials as cfg
 import re
 import pytest
 import sys
+from subprocess import Popen, CalledProcessError, PIPE
 
 
 #import pyGPSFeed_IMR
@@ -27,57 +28,7 @@ class General_Access:
         if search != None:
             return True
         return False
-    
-    def goTo(self, page):
-        print(page)
-        #self.goToELD()
-        if page == 'Summary':
-            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/SummaryTab/SummaryTabInactive/SummaryTabInactive")
-            if total_x > 120 and total_x < 170:
-                self.img_proc.click_image_by_max_key_points("ELD_Core/SummaryTab/SummaryTabInactive/SummaryTabInactive")
-        elif page == 'Status':
-            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/StatusTab/StatusTabInactive/StatusTabInactive")
-            print(total_x, total_y)
-            if total_x > 0 and total_x < 100:
-                self.img_proc.click_image_by_max_key_points("ELD_Core/StatusTab/StatusTabInactive/StatusTabInactive")
-        elif page == 'Clocks':
-            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/ClocksTab/ClocksTabInactive/ClocksTabInactive")
-            print(total_x, total_y)
-            if total_x > 250 and total_x < 290:
-                self.img_proc.click_image_by_max_key_points("ELD_Core/ClocksTab/ClocksTabInactive/ClocksTabInactive")
-        elif page == 'Graph':
-            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/GraphTab/GraphTabInactive/GraphTabInactive")
-            print(total_x, total_y)
-            if total_x > 300 and total_x < 330:
-                self.img_proc.click_image_by_max_key_points("ELD_Core/GraphTab/GraphTabInactive/GraphTabInactive")
-        elif page == 'DayLog':
-            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/DayLogTab/DayLogTabInactive/DayLogTabInactive")
-            print(total_x, total_y)
-            if total_x > 400 and total_x < 430:
-                self.img_proc.click_image_by_max_key_points("ELD_Core/DayLogTab/DayLogTabInactive/DayLogTabInactive")
-        elif page == 'Days':
-            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/8DaysTab/7DaysTabInactive/7DaysTabInactive")
-            print(total_x, total_y)
-            if total_x > 500 and total_x < 550:
-                self.img_proc.click_image_by_max_key_points("ELD_Core/8DaysTab/7DaysTabInactive/7DaysTabInactive")
-            elif total_x > 400 and total_x < 430:
-                self.img_proc.click_image_by_max_key_points_offset("ELD_Core/DayLogTab/DayLogTabInactive/DayLogTabInactive", 130, 0)
-        elif page == 'Certify':
-            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/CertifyTab/CertifyTabInactive/CertifyTabInactive")
-            print(total_x, total_y)
-            if total_x > 590 and total_x < 620:
-                self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/CertifyTabInactive/CertifyTabInactive")
-        elif page == 'Load':
-            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/LoadTab/LoadTabInactive/LoadTabInactive")
-            print(total_x, total_y)
-            if total_x > 690 and total_x < 730:
-                self.img_proc.click_image_by_max_key_points("ELD_Core/LoadTab/LoadTabInactive/LoadTabInactive")
-        elif page == 'Carriers':
-            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points("ELD_Core/CarriersTab/CarriersTabInactive/CarriersTabInactive")
-            print(total_x, total_y)
-            if total_x > 740 and total_x < 780:
-                self.img_proc.click_image_by_max_key_points("ELD_Core/CarriersTab/CarriersTabInactive/CarriersTabInactive")
-        
+
     def retrieve_duration(self):
         string = ""
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
@@ -245,4 +196,22 @@ class General_Access:
         string = pytesseract.image_to_string(crop_img2, lang=lang_param, config=params)
         return string
 
+    def run_vehsim_script(self, ip_address, script_path, duration_min):
+        cmd = "ClientCommands\ClientCommands.exe"
+        input_data = os.linesep.join([ip_address, 'connect', f'open,{script_path}', 'run', os.linesep])
+        p = Popen(cmd, stdin=PIPE, bufsize=0)
+        p.communicate(input_data.encode('ascii'))
+        if p.returncode != 0:
+           raise CalledProcessError(p.returncode, cmd)
+
+        seconds = duration_min * 60
+        time.sleep(seconds)
+
+    def stop_vehsim_script(self, ip_address):
+        cmd = "ClientCommands\ClientCommands.exe"
+        input_data = os.linesep.join([ip_address, 'stop', os.linesep])
+        p = Popen(cmd, stdin=PIPE, bufsize=0)
+        p.communicate(input_data.encode('ascii'))
+        if p.returncode != 0:
+            raise CalledProcessError(p.returncode, cmd)
     

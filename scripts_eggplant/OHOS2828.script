@@ -1,0 +1,92 @@
+﻿(*OHOS-2828: Verify that when the driver selects PC status the record is created correctly in Day Log.
+- Mobile has latest build. 
+- At least one driver (to be at least 3 months old). 
+- "Driver ID" and Password for at least one driver. 
+- At least one depot (to be at least 3 months old). 
+- The driver should be an active driver. 
+- The driver should have configured "Allow Personal Conveyance" as "Yes" in HOS Portal. 
+- Driver is logged in to the mobile. *)
+
+log "***Script name OHOS2828***"
+put "JOSH1" into DriverId
+Global DeviceType
+
+//log driver in
+BeforeTest
+LoginDriver DriverId, DriverId, "OF", True
+ELDTestCase.SendMessageToUpdateLogs
+
+//Change to PC status
+Status_ChangeTestCase.ChangeDriverStatus "OFF","PC" ,"AUTOMATION"
+
+//Get recent Driver Mode and Inspector Logs
+GoTo.DayForward DayLog, 8
+Put DayLogTestCase.getDriverRecords(2,"Bottom","") into DriverLogs
+DayLogTestCase.findInspectorRecord "Personal Conveyance", "EventEventCode", "Bottom", "Asc"
+Put DayLogTestCase.getInspectorRecords(2,"","Asc") into InspectorLogs
+
+//Check Driver Mode Logs
+Put item 3 of item 1 of DriverLogs into PCtime
+Put item 3 of item 2 of DriverLogs into OFFtime
+Put item 8 of item 1 of DriverLogs into PCcomment
+Put item 8 of item 2 of DriverLogs into OFFcomment
+
+//Driver mode Validators
+If item 1 of DriverLogs contains Translator(Other:"PC") and item 2 of DriverLogs contains Translator(Other:"OFF")
+	LogSuccess "A PC status was created in driver mode logs"
+Else
+	LogError "A PC statuses was not created in driver mode logs"
+End If
+
+If the abbrev time(OFFtime) + 1 second is equal to the abbrev time(PCtime)
+	LogSuccess "The off duty was created 1 second before PC"
+Else
+	LogError "The off duty was not created 1 second before PC"
+End If
+
+If PCcomment contains OFFcomment and OFFcomment contains PCcomment
+	LogSuccess "Both records contain the same comment"
+Else
+	LogError "The records do not contain the same comment"
+End If
+
+
+//Check Inspector Logs
+put item 1 of item 1 of InspectorLogs into PCtime
+put item 1 of item 2 of InspectorLogs into OFFtime
+
+put item 2 of item 1 of InspectorLogs into PCeventcode
+put item 2 of item 2 of InspectorLogs into OFFeventcode
+
+Put item 8 of item 1 of InspectorLogs into PCcomment
+Put item 8 of item 2 of InspectorLogs into OFFcomment
+
+Split PCtime by " "
+Split OFFtime by " "
+Split PCeventcode by " "
+Split OFFeventcode by " "
+
+If item 1 of PCeventcode contains Translator(Other:"Personal") and item 3 of PCeventcode contains "3-1"
+	LogSuccess "A PC status was created in the Inspector logs with the correct Event Code/Type of 3-1"
+Else
+	LogError "A PC status was not created in the Inspector logs or does not contain the correct Event Code/Type of 3-1"
+End If
+
+If item 1 of OFFeventcode contains Translator(Other:"Off") and item 3 of OFFeventcode contains "1-1"
+	LogSuccess "A Off Duty status was created in the Inspector logs with the correct Event Code/Type of 1-1"
+Else
+	LogError "A Off Duty status was not created in the Inspector logs or does not contain the correct Event Code/Type of 1-1"
+End If
+
+If the abbrev time(item 1 of OFFtime) + 1 second is equal to the abbrev time(item 1 of PCtime)
+	LogSuccess "The off duty was created 1 second before PC"
+Else
+	LogError "The off duty was not created 1 second before PC"
+End If
+
+If PCcomment contains OFFcomment and OFFcomment contains PCcomment
+	LogSuccess "Both records contain the same comment"
+Else
+	LogError "The records do not contain the same comment"
+End If
+

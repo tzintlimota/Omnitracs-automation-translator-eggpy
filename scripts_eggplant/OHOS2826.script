@@ -1,0 +1,40 @@
+﻿(*OHOS-2826: Verify in "Status" tab that a driver is able to select Yard Move.
+- Mobile has the latest build. 
+- DriverID and Pwd for at least one driver. 
+- Yard Move is checked as "Allowed" in HOS Portal. 
+- Driver is logged in the mobile. 
+- Logs are updated. 
+- Driver is in HOS App.*)
+
+log "***Script name OHOS2826***"
+put "JOSH0004" into DriverId
+
+//log one drivers in
+BeforeTest
+LoginDriver DriverId, DriverId, "OF", True
+ELDTestCase.SendMessageToUpdateLogs
+
+//driver switches to Yard Move
+Status_ChangeTestCase.ChangeDriverStatus "ON", "YM", "Yard Move"
+StatusTestCase.ValidateStatus Translator(Other:"Yard Move")
+
+//Get the newest driver and inspector mode logs
+GoTo.DayForward DayLog, 8
+Put DayLogTestCase.getDriverRecords(2,"Bottom","") into DriverLogs
+
+//Check Driver Mode Logs
+Put item 3 of item 1 of DriverLogs into YMtime
+Put item 3 of item 2 of DriverLogs into ONtime
+
+//Driver mode Validators
+If item 1 of DriverLogs contains Translator(Other:"YM") and item 2 of DriverLogs contains Translator(Other:"ON")
+	LogSuccess "A YM status was created in driver mode logs"
+Else
+	LogError "A YM statuses was not created in driver mode logs"
+End If
+
+If the abbrev time(ONtime) + 1 second is equal to the abbrev time(YMtime)
+	LogSuccess "The ON duty was created 1 second before YM"
+Else
+	LogError "The ON duty was not created 1 second before YM"
+End If

@@ -1,0 +1,79 @@
+﻿(*OHOS-2824: Verify in "Day Log" tab that an "On Duty" status of 1 second is recorded just before the Yard Move status.
+- Mobile has the latest build. 
+- DriverID and Pwd for at least one driver. 
+- Yard Move is checked as "Allowed" in HOS Portal. 
+- Driver is logged in the mobile. 
+- Logs are updated. 
+- Driver is in HOS App.*)
+
+log "***Script name OHOS2824***"
+put "JOSH0003" into DriverId
+
+//log one drivers in
+BeforeTest
+LoginDriver DriverId, DriverId, "OF", True
+ELDTestCase.SendMessageToUpdateLogs
+
+//driver switches to Yard Move
+Status_ChangeTestCase.ChangeDriverStatus "ON", "YM", "1234"
+StatusTestCase.ValidateStatus Translator(Other:"Yard Move")
+
+//Get the newest driver logs, inspector logs, and certify table
+GoTo.DayForward DayLog, 8
+Put DayLogTestCase.getDriverRecords(2,"Bottom","") into DriverLogs
+DayLogTestCase.findInspectorRecord "Yard Move", "EventEventCode", "Bottom", "Asc"
+Put DayLogTestCase.getInspectorRecords(2,"","Asc") into InspectorLogs
+
+put CertifyTestCase.getTable(2) into CertifyLogs
+
+Put item 1 of item 1 of InspectorLogs into YMInspectorTime
+Put item 1 of item 2 of InspectorLogs into ONInspectorTime
+
+Split YMInspectorTime By " "
+Split ONInspectorTime By " "
+
+
+put seconds(item 1 of YMInspectorTime) - seconds(item 1 of ONInspectorTime) into OnDutyDuration
+
+//Checking Driver Mode records
+If item 1 of DriverLogs contains Translator(Other:"YM") and item 2 of DriverLogs contains Translator(Other:"ON")
+	LogSuccess "A Yard Move status was found in Driver mode Logs and was properly recorded"
+	If item 4 of item 2 of DriverLogs contains "01s" then
+		LogSuccess "One second On Duty status duration found before Yard Move on Driver mode records"
+	Else
+		LogError "On Duty status duration is not equals to 1 second before Yard Move record on Driver records"
+	End if
+Else
+	LogError "Yard Move status was poorly created on Driver mode records"
+End If
+
+
+//Check inspector logs
+If item 2 of item 1 of InspectorLogs contains Translator(Other:"Yard Move")
+	If item 2 of item 2 of InspectorLogs contains Translator(Other:"On Duty 1-4")
+		LogSuccess "An On Duty status found before the Yard Move on Inspector Mode Records"
+		If OnDutyDuration equals 1 and item 2 of ONInspectorTime contains "Driver"
+			LogSuccess "On Duty status is 1 seconds long and Origin is Driver"
+		Else
+			LogError "On Duty status poorly recorded"
+		End If
+	Else
+		LogError "On Duty status not found on Inspector Mode records or does not contain the correct Event Code/Type"
+	End If
+Else
+	LogError "Yard Move not found on Inspector Mode records"
+End If
+
+
+//Check Certify Tab
+If item 1 of CertifyLogs contains Translator(Other:"Yard Move") and item 2 of CertifyLogs contains Translator(Other:"On Duty")
+	LogSuccess "A Yard Move status was found on Certify Tab and was properly recorded"
+	If item 4 of item 2 of CertifyLogs contains "01s" then
+		LogSuccess "One second On Duty status duration found before Yard Move on Certify Tab"
+	Else
+		LogError "On Duty status duration is not equals to 1 second before Yard Move record on Certify Tab"
+	End if
+Else
+	LogError "Yard Move status was poorly created on Certify Tab records"
+End If
+

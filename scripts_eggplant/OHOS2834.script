@@ -1,0 +1,39 @@
+﻿(*OHOS-2834: Verify in "Day Log" tab "Header" that the field "Co-Driver Name" correctly displays a very long Co-Driver name.
+- Mobile has latest build and configured as ELD. 
+- 1 Active driver (to be at least 1 month old). 
+- 1 Active driver with a very long name (to be at least 1 month old) (See attached screenshot for reference) 
+- "Driver ID" and Password for the active driver´s*)
+
+log "***Script name OHOS2834***"
+put "JOSH0004" into DriverId
+put "VERYLONG" into DriverId2
+
+//log one drivers in
+BeforeTest
+LoginDriver DriverId, DriverId, "OF", True
+LoginDriver DriverId2, DriverId2, "OF", False
+ELDTestCase.SendMessageToUpdateLogs
+
+//Go to Header page
+CertifyTestCase.GoForward 8
+DayLogTestCase.goTo
+if imagefound(5,Translator("DayLogTab/HeaderButton"))
+	click FoundImageLocation()
+else if imagefound(5, Translator("DayLogTab/HeaderPage"))
+	log "Header screen already displayed"
+else
+	logError "Failed to enter Header screen"
+end if
+
+//find Co-Driver Name section of header
+Repeat until ImageFound(2,Translator("DayLogTab/CoDriverName_A"))
+	DoubleClick "ScrollButtons/ScrollDownButton"
+End Repeat
+DoubleClick "ScrollButtons/ScrollDownButton"
+
+put ReadText(Translator("DayLogTab/CoDriverName_A"), Translator("DayLogTab/CoDriverName_B"),DPI:120) into CoDrivers
+If CoDrivers contains "VERYLONGVERYLONGVERYLONGVERYLO" and CoDrivers contains "VERYLONGVERYLONGVERYLONGVERYLON"
+	LogSuccess "Long Co-Driver names are displayed correctly"
+else
+	LogError "Unable to find long Co-Driver Name"
+End If

@@ -28,10 +28,12 @@ class IVG_ELD_CORE(object):
     #Code to discard/accept Certify Day prompt
     def closeCertifyDayPrompt(self):
         print("Discarding/Accepting Certify Day Prompt...")
-        total_x, total_y = self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/NotReadyButton/NotReadyButton")
+
+        self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/AgreeButton/AgreeButton")
+        '''total_x, total_y = self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/NotReadyButton/NotReadyButton")
         if total_x == -1:
             print("'Agree' button is clicked because 'Not Ready' is not longer available")
-            self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/AgreeButton/AgreeButton")
+            self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/AgreeButton/AgreeButton")'''
 
         #Click on Agree button in case Certify Prompt "Duty Status Spans in more than 1 day"
         if self.img_proc.expect_image("vnc-certifyday-statusspans-pop-up", "ExpectedScreens", 1):
@@ -163,7 +165,7 @@ class IVG_ELD_CORE(object):
 
 
     def dayBack(self, page, reset, clicks):
-        self.general.goTo(page)
+        self.goTo(page)
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
         firstAddX, secondAddX, firstAddY, secondAddY = 0,0,0,0
         if page == 'Graph':
@@ -210,7 +212,14 @@ class IVG_ELD_CORE(object):
             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", x1, y1)
 
     def dayForward(self, page, clicks):
-        self.general.goTo(page)
+
+        found = self.img_proc.expect_image('vnc-hos-daylog-screen', 'ExpectedScreens', 3)
+
+        if found:
+            print('Already in DAYLOG screen')
+        else:
+            self.goTo(page)
+
         if page == 'Graph':
             x, y = 535, 150
         else:
@@ -224,7 +233,7 @@ class IVG_ELD_CORE(object):
     
     
     def createLoad(self, loadId, Trailer1, Trailer2, Trailer3, BL, StartDate, EndDate, Finish):
-        self.general.goTo("Load")
+        self.goTo("Load")
         self.img_proc.click_image_by_max_key_points("ELD_Core/LoadTab/NewLoadButton/NewLoadButton")
         self.img_proc.expect_image("vnc-load-create-new", "ExpectedScreens", 3)
         self.img_proc.expect_image("vnc-load-create-new-keyboardopen", "ExpectedScreens", 3)
@@ -277,7 +286,7 @@ class IVG_ELD_CORE(object):
         if found:
             print("'ERODS File Transfer' screen is being displayed")
         else:
-            self.general.goTo("DayLog")
+            self.goTo("DayLog")
 
             self.img_proc.click_image_by_max_key_points('ELD_Core/DayLogTab/DriverButton/DriverButton')
             time.sleep(1)
@@ -296,7 +305,7 @@ class IVG_ELD_CORE(object):
         self.img_proc.click_image_by_max_key_points('IVG_Common/Home/Return/Return')
         time.sleep(1)
         self.goToHOS()
-        self.general.goTo("Days")
+        self.goTo("Days")
         self.img_proc.click_image_by_max_key_points("LogRequestButton")
         while self.img_proc.expect_image("log-request-confirmation", "ExpectedScreens", 1):
             print("Waiting")
@@ -334,6 +343,7 @@ class IVG_ELD_CORE(object):
             search = re.search(r"Log Update|ELD Exempt", string)
             print(search)
         print("LOG UPDATE RECEIVED")
+        self.goToELD()
 
     def select_driver_from_dropdown(self, driver_id):
         driver_found = False
@@ -454,7 +464,7 @@ class IVG_ELD_CORE(object):
             print("Already in Summary page")
         else:
             self.goToHOS()
-            self.general.goTo('Summary')
+            self.goTo('Summary')
         
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
         img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
@@ -509,8 +519,66 @@ class IVG_ELD_CORE(object):
                 print("!!!!!!!!!!!!!!!!!!!!!!!!!\n Error: Carrier Edit alert not found. Be sure the Carrier has requested edits.")
                 sys.exit(1)
 
-    
-    
+    def goTo(self, page):
+        print(page)
+        self.goToELD()
+        if page == 'Summary':
+            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points(
+                "ELD_Core/SummaryTab/SummaryTabInactive/SummaryTabInactive")
+            if total_x > 120 and total_x < 170:
+                self.img_proc.click_image_by_max_key_points("ELD_Core/SummaryTab/SummaryTabInactive/SummaryTabInactive")
+        elif page == 'Status':
+            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points(
+                "ELD_Core/StatusTab/StatusTabInactive/StatusTabInactive")
+            print(total_x, total_y)
+            if total_x > 0 and total_x < 100:
+                self.img_proc.click_image_by_max_key_points("ELD_Core/StatusTab/StatusTabInactive/StatusTabInactive")
+        elif page == 'Clocks':
+            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points(
+                "ELD_Core/ClocksTab/ClocksTabInactive/ClocksTabInactive")
+            print(total_x, total_y)
+            if total_x > 250 and total_x < 290:
+                self.img_proc.click_image_by_max_key_points("ELD_Core/ClocksTab/ClocksTabInactive/ClocksTabInactive")
+        elif page == 'Graph':
+            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points(
+                "ELD_Core/GraphTab/GraphTabInactive/GraphTabInactive")
+            print(total_x, total_y)
+            if total_x > 300 and total_x < 330:
+                self.img_proc.click_image_by_max_key_points("ELD_Core/GraphTab/GraphTabInactive/GraphTabInactive")
+        elif page == 'DayLog':
+            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points(
+                "ELD_Core/DayLogTab/DayLogTabInactive/DayLogTabInactive")
+            print(total_x, total_y)
+            if total_x > 400 and total_x < 430:
+                self.img_proc.click_image_by_max_key_points("ELD_Core/DayLogTab/DayLogTabInactive/DayLogTabInactive")
+        elif page == 'Days':
+            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points(
+                "ELD_Core/8DaysTab/7DaysTabInactive/7DaysTabInactive")
+            print(total_x, total_y)
+            if total_x > 500 and total_x < 550:
+                self.img_proc.click_image_by_max_key_points("ELD_Core/8DaysTab/7DaysTabInactive/7DaysTabInactive")
+            elif total_x > 400 and total_x < 430:
+                self.img_proc.click_image_by_max_key_points_offset(
+                    "ELD_Core/DayLogTab/DayLogTabInactive/DayLogTabInactive", 130, 0)
+        elif page == 'Certify':
+            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points(
+                "ELD_Core/CertifyTab/CertifyTabInactive/CertifyTabInactive")
+            print(total_x, total_y)
+            if total_x > 590 and total_x < 620:
+                self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/CertifyTabInactive/CertifyTabInactive")
+        elif page == 'Load':
+            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points(
+                "ELD_Core/LoadTab/LoadTabInactive/LoadTabInactive")
+            print(total_x, total_y)
+            if total_x > 690 and total_x < 730:
+                self.img_proc.click_image_by_max_key_points("ELD_Core/LoadTab/LoadTabInactive/LoadTabInactive")
+        elif page == 'Carriers':
+            total_x, total_y = self.img_proc.get_image_coordinates_by_max_key_points(
+                "ELD_Core/CarriersTab/CarriersTabInactive/CarriersTabInactive")
+            print(total_x, total_y)
+            if total_x > 740 and total_x < 780:
+                self.img_proc.click_image_by_max_key_points(
+                    "ELD_Core/CarriersTab/CarriersTabInactive/CarriersTabInactive")
 
     def changeCarrier(self,Carrier, Send):
         pass

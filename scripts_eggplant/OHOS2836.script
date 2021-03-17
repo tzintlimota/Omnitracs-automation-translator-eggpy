@@ -1,0 +1,41 @@
+﻿(*OHOS-2836: Verify in the "Header" the "Co-Driver ID" field doesn't display duplicate values
+- Mobile has latest build and configured as ELD.
+- At least two drivers (to be at least 3 month old).
+- "Driver ID" and Password for at least two drivers
+- The driver's logs have arrived and are updated. *)
+
+log "***Script name OHOS2836***"
+put "JOSH1" into DriverId
+put "JOSH0001" into DriverId2
+
+//log one drivers in
+BeforeTest
+LoginDriver DriverId, DriverId, "OF", True
+LoginDriver DriverId2, DriverId2, "OF", False
+ELDTestCase.SendMessageToUpdateLogs
+
+//Go to Header page and retrieve CoDriverID Value
+Put DayLogTab.getHeaderCoDriverIDValues() into CoDriver
+
+//Logout CoDriver and wait 5 minutes before logging them back in
+LogoutDriver "OF", DriverId2
+Wait 2 minutes
+LoginDriver DriverId2, DriverId2, "OF", False
+ELDTestCase.SendMessageToUpdateLogs
+
+//find Co-Driver ID, should be no duplicates
+Put DayLogTab.getHeaderCoDriverIDValues() into CoDriver2
+
+Split CoDriver2 By " "
+Repeat for the number of items in CoDriver2
+	If item repeatIndex() of CoDriver2 contains DriverId2 then add 1 to Counter
+End Repeat
+
+If Counter is greater than 1
+	LogError "Duplicate CoDriver found"
+else
+	LogSuccess "No duplicates of CoDriver found"
+End If
+
+//Click on DONE to return to DayLog tab
+Click Translator("DayLogTab/DoneButton")
