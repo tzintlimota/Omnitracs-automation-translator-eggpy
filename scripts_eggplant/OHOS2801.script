@@ -1,0 +1,84 @@
+﻿(*OHOS-2801: Verify in "Day Log" tab that no new record is created when the driver is on "Personal Conveyance" and starts to move the vehicle.
+- Mobile has the latest build. 
+- DriverID and Pwd for at least one driver. 
+- A vSIM script that moves the vehicle 10 minutes at 60MPH. 
+- Personal Conveyance is checked as "Unlimited" in HOS Portal. 
+- Driver is logged in the mobile. 
+- Logs are updated. 
+- Driver is on special condition "Personal Conveyance". 
+- Driver is in "HOS App" screen.*)
+
+log "***Script name OHOS2801***"
+put "JOSH0060" into DriverId
+Global UnitAddress
+
+//log one drivers in
+BeforeTest
+LoginDriver DriverId, DriverId, "OF", True
+ELDTestCase.SendMessageToUpdateLogs
+
+//driver switches to Personal Convyance and than to another status
+Status_ChangeTestCase.ChangeDriverStatus "OFF", "PC", "1234"
+Wait 1 minute
+
+//put active driver into PC status and put vehicle in motion
+//SimpleDriving.xml script has 60mph Speed and 5 min duration
+RunVsimScript "SimpleDriving"
+ConnectUnit
+
+If ImageFound(60,Translator("PopUps/PCSwitchPopUp")) Then Click Translator("ClocksTab/YesButton")
+wait 10 seconds
+
+//Enter HOS App, should be on IMUI screen
+If ImageFound(120, Text: Translator("Personal Conveyance")) and ImageFound(Image:"DOT/DOT_BigLabel", WaitFor: 10)
+	LogSuccess "Personal Conveyance and remaining driving time displayed on IMUI screen"
+Else
+	
+	LogError "IMUI not properly displayed"
+End If
+
+Wait 3 minutes
+ELDTestCase.CloseVsimAndWaitForUnlock
+
+//Check to see if driver is still in Personal Conveyance
+StatusTestCase.ValidateStatus Translator(Other:"Personal Conveyance")
+
+//Get the newest driver logs, inspector logs, and certify table
+GoTo.DayForward DayLog, 8
+DayLogTestCase.findDriverRecord Translator(Other:"PC"), "Status","Bottom", "Asc"
+Put DayLogTestCase.getDriverRecords(2,"","Desc") into DriverLogs
+
+DayLogTestCase.findInspectorRecord Translator(Other:"Personal Conveyance"), "EventEventCode","Bottom", "Asc"
+Put DayLogTestCase.getInspectorRecords(2,"","Desc") into InspectorLogs
+
+put CertifyTestCase.getTable(2) into CertifyLogs
+
+Repeat for the number of items in InspectorLogs
+	If item repeatIndex() of InspectorLogs contains Translator(Other:"Personal Conveyance 3-1")
+		Put repeatIndex() into SpecialIndex
+		Exit repeat
+	End If
+End Repeat
+
+//Checking Driver Mode records
+If item 1 of DriverLogs contains Translator(Other:"PC") and item 2 of DriverLogs is empty
+	LogSuccess "Last status is still Personal Conveyance and no new records were found on Day Log Driver Mode screen"
+Else
+	LogError "Last status is not Personal Conveyance or another status was recorded while vehicle was in motion on Day Log Driver Mode screen"
+End If
+
+//Check inspector logs
+If item 2 of item (SpecialIndex) of InspectorLogs contains Translator(Other:"Personal Conveyance 3-1")
+	LogSuccess "Last status is still Personal Conveyance on Day Log Inspector Mode screen"
+Else If item 2 of item (SpecialIndex-1) of InspectorLogs contains Translator(Other:"Off Duty 1-1")
+	LogSuccess "No new records were found on Day Log Inspector Mode screen"
+Else
+	LogWarning "Last status is not Personal Conveyance or another status was recorded while vehicle was in motion on Day Log Inspector Mode screen"
+End If
+
+//Check Certify Tab
+If item 1 of CertifyLogs contains Translator(Other:"Personal Conveyance") and item 2 of CertifyLogs contains Translator(Other:"Off Duty")
+	LogSuccess "Last status is still Personal Conveyance and no new records are found on Certify screen"
+Else
+	LogError "Last status is not Personal Conveyance or another status was recorded while vehicle was in motion on Certify screen"
+End If

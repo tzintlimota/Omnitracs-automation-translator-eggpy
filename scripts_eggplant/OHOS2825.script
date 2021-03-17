@@ -1,0 +1,90 @@
+﻿(*OHOS-2825: Verify in "Change" screen that a driver is required to enter at least one remark of at least 4 characters when selects "Yard Move".
+- Mobile has the latest build. 
+- DriverID and Pwd for at least one driver. 
+- Yard Move is checked as "Allowed" in HOS Portal. 
+- Driver is logged in the mobile. 
+- Logs are updated. 
+- Driver is in HOS App.*)
+
+log "***Script name OHOS2825***"
+put "JOSH0003" into DriverId
+
+//log one drivers in
+BeforeTest
+LoginDriver DriverId, DriverId, "OF", True
+ELDTestCase.SendMessageToUpdateLogs
+
+//driver try to switch to Yard Move without a remark
+Status_ChangeTestCase.ChangeDriverStatus "ON", "YM","","",false
+If ImageFound(5,Translator("StatusTab/OkButtonDisabled"))
+	LogSuccess "Ok button is disabled with no remarks"
+Else
+	If ImageFound(5,Translator("StatusTab/OkButton"))
+		LogError"Ok button is not disabled with no remarks"
+	Else
+		LogError "Ok button not found"
+	End If
+End If
+
+Click Translator("StatusTab/CancelButton")
+WaitFor 5, Translator("StatusTab/StatusTabActive")
+
+//Try again but with a first remark of 3 characters
+Status_ChangeTestCase.ChangeDriverStatus "ON", "YM", "123","",false
+If ImageFound(5,Translator("StatusTab/OkButtonDisabled"))
+	LogSuccess "Ok button is disabled with a top remark that too short"
+Else
+	If ImageFound(5,Translator("StatusTab/OkButton"))
+		LogError "Ok button is not disabled with a remark that too short"
+	Else		
+		LogError "Ok button not found"
+	End If
+End If
+
+Click Translator("StatusTab/CancelButton")
+WaitFor 5, Translator("StatusTab/StatusTabActive")
+
+//Try again but with a first remark of 4 characters
+Status_ChangeTestCase.ChangeDriverStatus "ON", "YM", "OHOS","",false
+If ImageFound(5,Translator("StatusTab/OkButton"))
+	LogSuccess "Ok button is enabled with a top remark of 4 characters"
+else
+	If ImageFound(5,Translator("StatusTab/OkButtonDisabled"))
+		LogError "Ok button is disabled with a top remark of 4 characters"
+	else		
+		LogError "Ok button not found"
+	End If
+End If
+
+Click Translator("StatusTab/CancelButton")
+WaitFor 5, Translator("StatusTab/StatusTabActive")
+
+//Try again but with a second remark of 3 characters
+Status_ChangeTestCase.ChangeDriverStatus "ON", "YM", "", "123",false
+If ImageFound(5,Translator("StatusTab/OkButtonDisabled"))
+	LogSuccess "Ok button is disabled with a bottom remark that too short"
+else
+	If ImageFound(5,Translator("StatusTab/OkButton"))
+		LogError "Ok button is not disabled with a bottom remark that too short"
+	else		
+		LogError "Ok button not found"
+	End If
+End If
+
+Click Translator("StatusTab/CancelButton")
+WaitFor 5, Translator("StatusTab/StatusTabActive")
+
+//Try again but with a second remark of 4 characters
+Status_ChangeTestCase.ChangeDriverStatus "ON", "YM", "", "OHOS",false
+If ImageFound(5,Translator("StatusTab/OkButton"))
+	LogSuccess "Ok button is enabled with a bottom remark of 4 characters"
+else
+	If ImageFound(5,Translator("StatusTab/OkButtonDisabled"))
+		LogError "Ok button is disabled with a bottom remark of 4 characters"
+	else		
+		LogError "Ok button not found"
+	End If
+End If
+
+Click Translator("StatusTab/CancelButton")
+WaitFor 5, Translator("StatusTab/StatusTabActive")

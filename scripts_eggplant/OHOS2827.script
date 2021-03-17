@@ -1,0 +1,91 @@
+﻿(*OHOS-2827: Verify that when the driver selects YM status the record is created correctly in Day Log.
+- Mobile has latest build. 
+- At least one driver (to be at least 3 months old). 
+- "Driver ID" and Password for at least one driver. 
+- At least one depot (to be at least 3 months old). 
+- The driver should be an active driver. 
+- The driver should have configured "Allow Yard Move" as "Yes" in HOS Portal. 
+- Driver is logged in to the mobile. *)
+
+log "***Script name OHOS2827***"
+put "JOSH1" into DriverId
+Global DeviceType
+
+//log driver in
+BeforeTest
+LoginDriver DriverId, DriverId, "OF", True
+ELDTestCase.SendMessageToUpdateLogs
+
+//Change to YM status
+Status_ChangeTestCase.ChangeDriverStatus "ON","YM" ,"AUTOMATION"
+
+//Get recent Driver Mode and Inspector Logs
+GoTo.DayForward DayLog, 8
+Put DayLogTestCase.getDriverRecords(2,"Bottom","") into DriverLogs
+DayLogTestCase.findInspectorRecord "Yard Move", "EventEventCode", "Bottom", "Asc"
+Put DayLogTestCase.getInspectorRecords(2,"","Asc") into InspectorLogs
+
+//Check Driver Mode Logs
+Put item 3 of item 1 of DriverLogs into YMtime
+Put item 3 of item 2 of DriverLogs into ONtime
+Put item 8 of item 1 of DriverLogs into YMcomment
+Put item 8 of item 2 of DriverLogs into ONcomment
+
+//Driver mode Validators
+If item 1 of DriverLogs contains Translator(Other:"YM") and item 2 of DriverLogs contains Translator(Other:"ON")
+	LogSuccess "A YM status was created in driver mode logs"
+Else
+	LogError "A YM statuses was not created in driver mode logs"
+End If
+
+If the abbrev time(ONtime) + 1 second is equal to the abbrev time(YMtime)
+	LogSuccess "The ON duty was created 1 second before YM"
+Else
+	LogError "The ON duty was not created 1 second before YM"
+End If
+
+If YMcomment contains ONcomment and ONcomment contains YMcomment
+	LogSuccess "Both records contain the same comment"
+Else
+	LogError "The records do not contain the same comment"
+End If
+
+
+//Check Inspector Logs
+put item 1 of item 1 of InspectorLogs into YMtime
+put item 1 of item 2 of InspectorLogs into ONtime
+
+put item 2 of item 1 of InspectorLogs into YMeventcode
+put item 2 of item 2 of InspectorLogs into ONeventcode
+
+Put item 8 of item 1 of InspectorLogs into YMcomment
+Put item 8 of item 2 of InspectorLogs into ONcomment
+
+Split YMtime by " "
+Split ONtime by " "
+Split YMeventcode by " "
+Split ONeventcode by " "
+
+If item 1 of YMeventcode contains Translator(Other:"Yard") and item 3 of YMeventcode contains "3-2"
+	LogSuccess "A YM status was created in the Inspector logs with the correct Event Code/Type of 3-2"
+Else
+	LogError "A YM status was not created in the Inspector logs or does not contain the correct Event Code/Type of 3-2"
+End If
+
+If item 1 of ONeventcode contains Translator(Other:"ON") and item 3 of ONeventcode contains "1-4"
+	LogSuccess "A ON Duty status was created in the Inspector logs with the correct Event Code/Type of 1-4"
+Else
+	LogError "A ON Duty status was not created in the Inspector logs or does not contain the correct Event Code/Type of 1-4"
+End If
+
+If the abbrev time(item 1 of ONtime) + 1 second is equal to the abbrev time(item 1 of YMtime)
+	LogSuccess "The ON duty was created 1 second before YM"
+Else
+	LogError "The ON duty was not created 1 second before YM"
+End If
+
+If YMcomment contains ONcomment and ONcomment contains YMcomment
+	LogSuccess "Both records contain the same comment"
+Else
+	LogError "The records do not contain the same comment"
+End If

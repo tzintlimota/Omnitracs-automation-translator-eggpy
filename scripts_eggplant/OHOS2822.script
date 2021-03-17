@@ -1,0 +1,95 @@
+﻿(*OHOS-2822: Verify in "Day Log" tab "Inspector" mode that a "Special Driving Event Cleared" record is created when driver is on "Yard Move" and logs out from the vehicle.
+- Mobile has the latest build. 
+- DriverID and Pwd for at least one driver. 
+- Access to the "Binary Payload". 
+- Yard Move is checked as "Allowed" in HOS Portal. 
+- Driver is logged in the mobile. 
+- Logs are updated. 
+- Driver is on special condition "Yard Move". 
+- Driver is in HOS App.*)
+
+log "***Script name OHOS2822***"
+put "JOSH0010" into DriverId
+Global UnitAddress
+
+//log one drivers in
+BeforeTest
+LoginDriver DriverId, DriverId, "OF", True
+ELDTestCase.SendMessageToUpdateLogs
+
+//driver switches to Yard Move and than to another status
+Status_ChangeTestCase.ChangeDriverStatus "ON", "YM", "1234"
+Wait 1 minute
+
+//Logout Driver
+LogoutDriver "OF", DriverId
+
+//Log driver back in
+LoginDriver DriverId, DriverId, "OF", True
+ELDTestCase.SendMessageToUpdateLogs
+
+//Get the newest driver and inspector mode logs
+GoTo.DayForward DayLog, 8
+DayLogTestCase.findDriverRecord Translator(Other:"YM"), "Status","Bottom", "Asc"
+Put DayLogTestCase.getDriverRecords(3,"","Desc") into DriverLogs
+
+DayLogTestCase.findInspectorRecord Translator(Other:"Yard Move"), "EventEventCode", "Bottom", "Asc"
+Put DayLogTestCase.getInspectorRecords(3,"","Desc") into InspectorLogs
+
+Repeat for the number of items in InspectorLogs
+	If item repeatIndex() of InspectorLogs contains Translator(Other:"Special Driving Event Cleared 3-0")
+		put repeatIndex() into SpecialIndex
+		exit repeat
+	End If
+End Repeat
+
+//Check driver logs
+If item 1 of DriverLogs contains Translator(Other:"YM")
+	If item 2 of DriverLogs contains Translator(Other:"OFF")
+		LogSuccess "No speical driving event found between yard move and off duty status in driver log"
+	Else
+		LogError "Yard move not found"
+	End If
+Else
+	LogError "Off duty status not found"
+End If
+
+//Check inspector logs
+If item 2 of item SpecialIndex of InspectorLogs contains Translator(Other:"Special Driving")
+	LogSuccess "Special driving event found in Inspector Logs"
+	If item 2 of item SpecialIndex of InspectorLogs contains "3-0" and item 1 of item SpecialIndex of InspectorLogs contains Translator(Other:"Driver") and item 8 of item SpecialIndex of InspectorLogs equals ""
+		LogSuccess "Special driving event has the correct origin, event type/code, and no comments"
+	Else
+		LogError "Special driving event missing information"
+	End If
+Else
+	LogError "Special driving event not found in inspector logs"
+End If
+
+If item 2 of item (SpecialIndex+1) of InspectorLogs contains Translator(Other:"ELD Logout")
+	LogSuccess "ELD Logout Event happened after Special Driving Event Clear"
+	If item 2 of item (SpecialIndex+1) of InspectorLogs contains "5-2" and item 1 of item (SpecialIndex+1) of InspectorLogs contains Translator(Other:"Driver") and item 8 of item (SpecialIndex+1) of InspectorLogs equals ""
+		LogSuccess "ELD Logout Event has the correct origin, event type/code, and no comments"
+	Else
+		LogError "ELD Logout Event missing information"
+	End If
+Else
+	LogError "ELD Logout Event not found in inspector logs"
+End If
+
+(*The following Part is temporary blocked for ODBC issues, logic works fine*)
+//Check DB
+wait 1 min
+put DBController.executeParametrizedQuery("select top 1 BINARY_PAYLOAD from RETURN_MSG where UNIFIED_ADDRESS = ? AND BINARY_PAYLOAD LIKE '8dffe%' ORDER BY INSERT_TIME DESC", (UnitAddress)) into DBComment
+put DBComment.BINARY_PAYLOAD into DBResult
+
+//put into parser
+BinaryParser_Selenium.goToParser
+BinaryParser_Selenium.ParserReturnMessage DBResult
+
+//check to see if the found message is a Special Driving event clear message
+If ImageFound(15,Text:"ELD_Clear_Special_Driving_Event")
+	LogSuccess "Special driving event return message found"
+Else
+	If DBResult is empty then LogError "Special Driving event message not found"
+End If

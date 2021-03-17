@@ -1,0 +1,36 @@
+﻿(*OHOS-2736: Verify that you can perform a Clock In from the mobile
+- A SSO company ID. 
+- Mobile is provisioned on the selected SSO company. 
+- Mobile has the latest build installed. 
+- Mobile is configured as ELD Device. 
+- Driver ID and Password correspondent to SSO company selected. 
+- Driver must be logged in the mobile (OFF Duty or Slepper Berth status). 
+- Vehicle and Driver should not have any pending Carrier Edits, Certification Events, Unidentified Driving Events and Pending Loads Information. *)
+
+log "***Script name OHOS2736***"
+Put "JOSH0015" into DriverId
+
+//log one drivers in as Off Duty
+BeforeTest
+LoginDriver DriverId, DriverId, "OF", True
+ELDTestCase.SendMessageToUpdateLogs
+
+//Go to HOS App
+GoToELDPage
+
+//Clock In the driver and automatically switch to On Duty
+Status_ChangeTestCase.ClockIn 5,"Test1","Test2","TestReason"
+
+//Check if switch was successful
+StatusTestCase.ValidateStatus Translator(Other:"On Duty")
+
+//should show up as latest status in driver logs with remarks used
+GoTo.DayForward DayLog, 8
+Put DaylogTestCase.getDriverRecords(2,"Bottom","") into DriverLogs
+DaylogTestCase.VerifyDriverDayLogRecord Translator(Other:"ON"),1,DriverLogs
+
+If item 8 of item 1 of DriverLogs contains "Test1" and item 8 of item 1 of DriverLogs contains "Test2"
+	LogSuccess "Status created by clock in contains the remarks used"
+Else
+	LogError "Status created by clock in is missing the remarks used"
+End If

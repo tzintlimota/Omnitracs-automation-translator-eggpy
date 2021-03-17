@@ -1,0 +1,80 @@
+﻿(*OHOS-2805: Verify in "Day Log" tab that an "Off Duty" status of 1 second is recorded just before the Personal Conveyance status
+- Mobile has the latest build. 
+- DriverID and Pwd for at least one driver. 
+- Personal Conveyance is checked as "Unlimited" in HOS Portal. 
+- Driver is logged in the mobile. 
+- Logs are updated. 
+- Driver is in HOS App.*)
+
+log "***Script name OHOS2805***"
+put "JOSH0003" into DriverId
+
+//log one drivers in
+BeforeTest
+LoginDriver DriverId, DriverId, "OF", True
+ELDTestCase.SendMessageToUpdateLogs
+
+//driver switches to Personal Conveyance
+Status_ChangeTestCase.ChangeDriverStatus "OFF", "PC", "1234"
+StatusTestCase.ValidateStatus Translator(Other:"Personal Conveyance")
+
+//Get the newest driver logs, inspector logs, and certify table
+GoTo.DayForward DayLog, 8
+DayLogTestCase.findDriverRecord Translator(Other:"PC"), "Status","Bottom", "Asc"
+Put DayLogTestCase.getDriverRecords(2,"","Asc") into DriverLogs
+ConnectUnit
+DayLogTestCase.findInspectorRecord Translator(Other:"Personal Conveyance"), "EventEventCode", "Bottom", "Asc"
+Put DayLogTestCase.getInspectorRecords(2,"","Asc") into InspectorLogs
+
+put CertifyTestCase.getTable(2) into CertifyLogs
+
+Put item 1 of item 1 of InspectorLogs into PCInspectorTime
+Put item 1 of item 2 of InspectorLogs into OFFInspectorTime
+
+Split PCInspectorTime By " "
+Split OFFInspectorTime By " "
+
+
+put seconds(item 1 of PCInspectorTime) - seconds(item 1 of OFFInspectorTime) into OnDutyDuration
+
+//Checking Driver Mode records
+If item 1 of DriverLogs contains Translator(Other:"PC") and item 2 of DriverLogs contains Translator(Other:"OFF")
+	LogSuccess "A Personal Conveyance status was found in Driver mode Logs and was properly recorded"
+	If item 4 of item 2 of DriverLogs contains "01s" then
+		LogSuccess "One second Off Duty status duration found before Personal Conveyance on Driver mode records"
+	Else
+		LogError "Off Duty status duration is not equals to 1 second before Personal Conveyance record on Driver records"
+	End if
+Else
+	LogError "Personal Conveyance status was poorly created on Driver mode records"
+End If
+
+
+//Check inspector logs
+If item 2 of item 1 of InspectorLogs contains Translator(Other:"Personal Conveyance")
+	If item 2 of item 2 of InspectorLogs contains Translator(Other:"Off Duty") and item 2 of item 2 of InspectorLogs contains "1-1"
+		LogSuccess "An Off Duty status found before the Personal Conveyance on Inspector Mode Records"
+		If OnDutyDuration equals 1 and item 2 of OFFInspectorTime contains Translator(Other:"Driver")
+			LogSuccess "Off Duty status is 1 seconds long and Origin is Driver"
+		Else
+			LogError "Off Duty status poorly recorded"
+		End If
+	Else
+		LogError "Off Duty status not found on Inspector Mode records or does not contain the correct Event Code/Type"
+	End If
+Else
+	LogError "Personal Conveyance not found on Inspector Mode records"
+End If
+
+
+//Check Certify Tab
+If item 1 of CertifyLogs contains Translator(Other:"Personal Conveyance") and item 2 of CertifyLogs contains Translator(Other:"Off Duty")
+	LogSuccess "A Personal Conveyance status was found on Certify Tab and was properly recorded"
+	If item 4 of item 2 of CertifyLogs contains "01s" then
+		LogSuccess "One second Off Duty status duration found before Personal Conveyance on Certify Tab"
+	Else
+		LogError "Off Duty status duration is not equals to 1 second before Personal Conveyance record on Certify Tab"
+	End if
+Else
+	LogError "Personal Conveyance status was poorly created on Certify Tab records"
+End If

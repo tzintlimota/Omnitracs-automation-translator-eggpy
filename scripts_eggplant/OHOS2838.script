@@ -1,0 +1,98 @@
+﻿(*OHOS-2838: Verify in "Day Log" tab "Header" screen that the "Carrier" field keeps the record of all the Carriers assigned to the driver from the previous days.
+- Mobile has latest build. 
+- Mobile is in ELD Mode. 
+- At least one driver with "Driver ID" and Password. 
+- Driver is logged in the mobile. 
+- The driver's logs have arrived and are updated. 
+- The driver doesn't have pending UDT, Certify days, Edits nor Loads. 
+- Company, User and Password to enter to HOS Portal. 
+- At least three carriers. 
+- Driver is on "Home" screen.*)
+
+log "***Script name OHOS2838***"
+put "JOSH0017" into DriverId
+put "ChangeCarrier4Times.xlsx" into FileName
+
+//Change the drivers carrier
+LisaController.setCell FileName, 2, 2, 2 , DriverId
+LisaController.setExcelSheet FileName
+LisaController.launchMonitor 
+
+BeforeTest
+LoginDriver DriverId, DriverId, "OF", True
+ELDTestCase.SendMessageToUpdateLogs
+
+//Go to Header page
+CertifyTestCase.GoForward 8
+DayLogTestCase.goTo
+if imagefound(5,Translator("DayLogTab/HeaderButton"))
+	click FoundImageLocation()
+else if imagefound(5, Translator("DayLogTab/HeaderPage"))
+	log "Header screen already displayed"
+else
+	logError "Failed to enter Header screen"
+end if
+
+//find Carrier, day 4
+Repeat until ImageFound(2,Translator("DayLogTab/Carrier_A"))
+	DoubleClick "DayLogTab/ScrollDown"
+End Repeat
+DoubleClick "DayLogTab/ScrollDown"
+
+put readText(Translator("DayLogTab/Carrier_A"),Translator("DayLogTab/Carrier_B"),DPI:150) into Day4Carrier
+
+//find Carrier, day 3
+Click "CertifyTab/DayBack"
+Repeat until ImageFound(2,Translator("DayLogTab/Carrier_A"))
+	DoubleClick "DayLogTab/ScrollDown"
+End Repeat
+DoubleClick "DayLogTab/ScrollDown"
+
+put readText(Translator("DayLogTab/Carrier_A"),Translator("DayLogTab/Carrier_B"),DPI:150) into Day3Carrier
+
+//find Carrier, day 2
+Click "CertifyTab/DayBack"
+Repeat until ImageFound(2,Translator("DayLogTab/Carrier_A"))
+	DoubleClick "DayLogTab/ScrollDown"
+End Repeat
+DoubleClick "DayLogTab/ScrollDown"
+
+put readText(Translator("DayLogTab/Carrier_A"),Translator("DayLogTab/Carrier_B"),DPI:150) into Day2Carrier
+replace every occurrence of <"Testl"> in Day2Carrier with "Test1"
+
+//find Carrier, day 1
+Click "CertifyTab/DayBack"
+Repeat until ImageFound(2,Translator("DayLogTab/Carrier_A"))
+	DoubleClick "DayLogTab/ScrollDown"
+End Repeat
+DoubleClick "DayLogTab/ScrollDown"
+
+put readText(Translator("DayLogTab/Carrier_A"),Translator("DayLogTab/Carrier_B"),DPI:150) into Day1Carrier
+replace every occurrence of <"Testl"> in Day1Carrier with "Test1"
+
+Split Day4Carrier By ", "
+Split Day3Carrier By ", "
+Split Day2Carrier By ", "
+Split Day1Carrier By ", "
+
+//Check to see if all the carriers show up correctly amoung the 4 days
+if item 1 of Day4Carrier contains "Test3" and last item of Day4Carrier contains "Test4"
+	LogSuccess "Day 4 carriers have shown up correctly"
+else
+	LogError "Day 4 carriers are not shown correctly"
+end if
+if item 1 of Day3Carrier contains "Test2" and last item of Day3Carrier contains "Test3"
+	LogSuccess "Day 3 carriers have shown up correctly"
+else
+	LogError "Day 3 carriers are not shown correctly"
+end if
+if item 1 of Day2Carrier contains "Test1" and last item of Day2Carrier contains "Test2"
+	LogSuccess "Day 2 carriers have shown up correctly"
+else
+	LogError "Day 2 carriers are not shown correctly"
+end if
+if last item of Day1Carrier contains "Test1"
+	LogSuccess "Day 1 carrier has shown up correctly"
+else
+	LogError "Day 1 carrier is not shown correctly"
+end if

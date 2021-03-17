@@ -1,0 +1,63 @@
+﻿(*OHOS-2820: Verify in "Day Log" tab that no new record is created when the driver is on "Yard Move" and starts to move the vehicle up to 20MPH.
+- Mobile has the latest build. 
+- DriverID and Pwd for at least one driver. 
+- A vSIM script that moves the vehicle 10 minutes at 15MPH. 
+- Yard Move is checked as "Allowed" in HOS Portal. 
+- Driver is logged in the mobile. 
+- Logs are updated. 
+- Driver is on special condition "Yard Move". 
+- Driver is in "HOS App" screen.*)
+
+log "***Script name OHOS2820***"
+put "JOSH0005" into DriverId
+Global UnitAddress
+
+//log one drivers in
+BeforeTest
+LoginDriver DriverId, DriverId, "OF", True
+ELDTestCase.SendMessageToUpdateLogs
+
+//driver switches to Yard Move and than to another status
+Status_ChangeTestCase.ChangeDriverStatus "ON", "YM", "1234"
+Wait 1 minute
+BackToHome
+
+//have the driver start driving
+RunVsimScript "Moving10min15MPH"
+ConnectUnit
+
+
+assert ImageFound(imageName:Translator("DOT/YardMove"), waitFor:10) with error "Yard Move and remaining driving time displayed on IMUI screen"
+assert ImageFound(imageName:"DOT/DOT_BigLabel") with error "IMUI displays DOT label"
+
+Wait 10 minutes
+ELDTestCase.CloseVsimAndWaitForUnlock
+
+//Check to see if driver is still in Yard Move
+StatusTestCase.ValidateStatus Translator(Other:"Yard Move")
+
+//Get the newest driver logs, inspector logs, and certify table
+ConnectUnit
+GoTo.DayForward DayLog, 8
+
+//The last record on DayLog Driver screen is retrieved
+Put DayLogTestCase.getDriverRecords(1,"Bottom") into DriverLogs
+
+//The last record on DayLog Inspector screen is retrieved
+Put DayLogTestCase.getInspectorRecords(1,"Bottom") into InspectorLogs
+
+//The last record on Certify screen is retrieved
+put CertifyTestCase.getRecords(1,"Bottom")  into CertifyLogs
+
+
+//-------Validation that the last record that appears is Yard Move and no new record was generated after VSIM script
+//Checking Driver Mode records
+assert item 1 of DriverLogs contains Translator(Other:"YM") with error "Last status is still Yard Move and no new records were found on Day Log Driver Mode screen"
+
+//Check inspector logs
+assert item 2 of item 1 of InspectorLogs contains Translator(Other:"Yard Move") with error "Last status is still Yard Move and no new records were found on Day Log Inspector Mode screen"
+assert item 2 of item 1 of InspectorLogs contains "3-2" with error "Yard Move status displays correct event code"
+
+//Check Certify Tab
+assert item 1 of CertifyLogs contains Translator(Other:"Yard Move") with error "Last status is still Yard Move and no new records are found on Certify screen"
+

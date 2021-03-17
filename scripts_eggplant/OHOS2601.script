@@ -1,0 +1,29 @@
+﻿(*OHOS-2601: Verify when a co-driver is logged out in the mobile, a team split comment is generated in the day log of the active driver.
+- Two driver IDs and its passwords from a company. 
+- Mobile has been provisioned on the same company of both driver IDs. 
+- Mobile has the lastest build installed. 
+- Mobile is configured as ELD device. 
+- The Active driver must be previously logged in the mobile device. *)
+
+log "***Script name OHOS2601***"
+Global DeviceType
+put "JOSH1" into DriverId
+put "JOSH0011" into DriverId2
+
+//log drivers in
+BeforeTest
+LoginDriver DriverId, DriverId, "OF", True
+LoginDriver DriverId2, DriverId2, "OF", False
+ELDTestCase.SendMessageToUpdateLogs
+
+LogoutDriver "OF", DriverId2
+
+//Check active driver day logs, should be a Team Split for logging in and out a co-driver
+GoTo.DayForward "DayLog", 8
+
+put DayLogTestCase.getDriverRecords(1,"Bottom","") into logs
+If item 8 of item 1 of logs contains Translator(Other:"Team Split")
+	LogSuccess "Team split comment generated for active driver for co-driver logging out"
+Else
+	LogError "Team split comment wasn't generated for active driver for co-driver logging out"
+End If

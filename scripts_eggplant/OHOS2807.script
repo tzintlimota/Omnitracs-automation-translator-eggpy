@@ -1,0 +1,41 @@
+﻿(*OHOS-2807: Verify in "Status" tab that a driver is able to select Personal Conveyance
+- Mobile has the latest build. 
+- DriverID and Pwd for at least one driver. 
+- Personal Conveyance is checked as "Unlimited" in HOS Portal. 
+- Driver is logged in the mobile. 
+- Logs are updated. 
+- Driver is in HOS App.*)
+
+log "***Script name OHOS2807***"
+put "JOSH0004" into DriverId
+
+//log one drivers in
+BeforeTest
+LoginDriver DriverId, DriverId, "OF", True
+ELDTestCase.SendMessageToUpdateLogs
+
+//driver switches to Personal Conveyance
+Status_ChangeTestCase.ChangeDriverStatus "OF", "PC", "1234"
+StatusTestCase.ValidateStatus Translator(Other:"Personal Conveyance")
+
+//Get the newest driver logs
+GoTo.DayForward DayLog, 8
+DayLogTestCase.findDriverRecord Translator(Other:"PC"), "Status","Bottom", "Asc"
+Put DayLogTestCase.getDriverRecords(2,"","Asc") into DriverLogs
+
+//Check Driver Mode Logs
+Put item 3 of item 1 of DriverLogs into PCtime
+Put item 3 of item 2 of DriverLogs into OFFtime
+
+//Driver mode Validators
+If item 1 of DriverLogs contains Translator(Other:"PC") and item 2 of DriverLogs contains Translator(Other:"OFF")
+	LogSuccess "A PC status was created in Day Log Driver Mode logs"
+Else
+	LogError "A PC statuses was not created in Day Log Driver Mode logs"
+End If
+
+If the abbrev time(OFFtime) + 1 second is equal to the abbrev time(PCtime)
+	LogSuccess "The OFF duty was created 1 second before PC"
+Else
+	LogError "The OFF duty was not created 1 second before PC"
+End If
