@@ -446,4 +446,59 @@ class Daylog_Test_Case(object):
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
                         else:
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+                            
+    
+    def verify_driver_daylog(self,expectedStatus, logIndex, DayLogTable):
+        records = self.day_log_records_driver("Bottom", "Asc", logIndex)
+        print(records[logIndex-1])
+
+        status = records[logIndex-1][1]
+        start = records[logIndex-1][2]
+        duration = str(records[logIndex-1][3]).strip()
+
+        location = str(records[logIndex-1][4]).strip()
+        codriver = str(records[logIndex-1][5])
+        origin = str(records[logIndex-1][6])
+        comment = str(records[logIndex-1][7])
+
+        if start == "::":
+            start = "00:00:00"
+
+
+        duration = duration.replace(" ", "")
+        if status == expectedStatus:
+            print("Status " + str(expectedStatus))
+        
+        time_start_pattern = r'\d\d:\d\d:\d\d'
+        #print(duration)
+        duration_pattern = r'\d\dh\d\dm\d\ds'
+
+        location_pattern = r'^[A-Za-z0-9]+$'
+
+        location_found = re.match(location_pattern, location)
+
+        time_start_found = re.search(time_start_pattern, str(start))
+        if time_start_found != None:
+            print("Correct Format " + start)
+        duration_found = re.search(duration_pattern, duration)
+
+        if duration_found != None:
+            print("Correct Format " + duration)
+
+        if location_found != None:
+            print("Correct Format " + location)
+        print("Correct Format " + location)
+
+        if codriver == "No":
+            print("No Codriver")
+        else:
+            print("Codriver")
+
+        if origin != '':
+            print("Origin " + origin)
+        
+        if comment != '':
+            print("Comment " + comment)
+
+
 
