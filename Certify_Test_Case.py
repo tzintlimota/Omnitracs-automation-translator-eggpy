@@ -28,7 +28,7 @@ class Certify_Test_Case(object):
         self.ivg_common = IVG_Common(general)
 
     def certifyAllLogs(self):
-        self.general.goTo("Certify")
+        self.eld_core.goTo("Certify")
         f = open("IVG_var.txt", "w")
         f.write("Certify")
         f.close()
@@ -80,7 +80,7 @@ class Certify_Test_Case(object):
 
     def findTableRecord(self,RecordToFind,ColumnToSearch,StartPoint, FindOrder):
         #CertifyTestCase.findTableRecord
-        self.general.goTo("Certify")
+        self.eld_core.goTo("Certify")
         findOrder = ""
         if StartPoint =="Bottom":
             for i in range(10):
@@ -171,7 +171,7 @@ class Certify_Test_Case(object):
 
     def getTable(self, StartPoint, FindOrder, NumRecords):
         
-        self.general.goTo("Certify")
+        self.eld_core.goTo("Certify")
         findOrder = ""
         
         if StartPoint =="Bottom":
