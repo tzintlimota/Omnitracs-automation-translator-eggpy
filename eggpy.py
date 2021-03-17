@@ -30,6 +30,7 @@ from HOS_Unassigned_Driving_Test_Case import HOS_Unassigned_Driving_Test_Case
 from Certify_Test_Case import Certify_Test_Case
 import connection_credentials as cfg
 #import pyGPSFeed_IMR
+import pytest
 from ImageProcessor import ImageProcessor
 from General_Access_Functions import General_Access
 
@@ -402,6 +403,26 @@ def tokenization():
                 params[0] = 'False'
 
             toadd = f"\nuva_events.reject_unassigned_events('{params[0]}', '{params[1]}')"
+            file2.writelines(toadd)
+
+        elif (search_func('RunVsimScript', doc)):
+            params = []
+            stringToPass = ''
+
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            #new = new.replace('.RejectUnassignedEvents', '')
+            params = new.split()
+
+            print(params)
+            while len(params) < 2:
+                params.append(' ')
+
+            toadd = f"\ngral_access.run_vehsim_script('192.168.100.16', 'C:\\ELD_VSIM\\{params[1]}.xml', '1')"
             file2.writelines(toadd)
 
         else:
