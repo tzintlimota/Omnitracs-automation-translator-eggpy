@@ -227,7 +227,6 @@ class ImageProcessor:
 
         self.get_vnc_full_screen("last_screen", "ExpectedScreens")
         img2 = cv2.imread(os.getcwd() + '/Images/Buttons/' + image_name + '.png')
-        img2 = self.imageResizer(img2)
 
         try:
             img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
