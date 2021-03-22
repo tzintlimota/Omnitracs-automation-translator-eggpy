@@ -168,6 +168,8 @@ class Certify_Test_Case(object):
                         else:
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
 
+    def clickOnTableStatus(self, RecordToFind):
+        self.findTableRecord(RecordToFind, 'Status', 'Bottom', 'Asc')
 
     def getTable(self, StartPoint, FindOrder, NumRecords):
         

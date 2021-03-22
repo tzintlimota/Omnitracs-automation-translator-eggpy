@@ -359,6 +359,45 @@ def tokenization():
 
             toadd = "\neld_core.validate_status('" + clean_param + "') #Translator Removed"
             file2.writelines(toadd)
+        
+        elif (search_func('VerifyDriverDayLog', doc) or search_func('VerifyDriverDayLogRecord', doc)):
+            params = []
+            stringToPass = ''
+
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            new = new.replace('.RejectUnassignedEvents', '')
+            params = new.split()
+
+            print(params)
+            while len(params) < 4:
+                params.append(' ')
+
+            toadd = "\ncertify.verify_driver_daylog('" + params[0] + "', int(" + params[1] + "), '" + params[2] + "' )"
+            file2.writelines(toadd)
+        elif (search_func('clickOnTableStatus', doc)):
+            params = []
+            stringToPass = ''
+
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            new = new.replace('.RejectUnassignedEvents', '')
+            params = new.split()
+
+            print(params)
+            while len(params) < 2:
+                params.append(' ')
+
+            toadd = "\ncertify.clickOnTableStatus('" + params[0] + "')"
+            file2.writelines(toadd)
 
         elif (search_func('AcceptUnassignedEvents', doc)):
             params = []
