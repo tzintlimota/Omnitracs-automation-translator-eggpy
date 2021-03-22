@@ -403,7 +403,44 @@ def tokenization():
 
             toadd = f"\nuva_events.reject_unassigned_events('{params[0]}', '{params[1]}')"
             file2.writelines(toadd)
+        elif (search_func('VerifyDriverDayLog', doc) or search_func('VerifyDriverDayLogRecord', doc)):
+            params = []
+            stringToPass = ''
 
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            new = new.replace('.RejectUnassignedEvents', '')
+            params = new.split()
+
+            print(params)
+            while len(params) < 4:
+                params.append(' ')
+
+            toadd = "\ncertify.verify_driver_daylog('" + params[0] + "', int(" + params[1] + "), '" + params[2] + "' )"
+            file2.writelines(toadd)
+        elif (search_func('clickOnTableStatus', doc)):
+            params = []
+            stringToPass = ''
+
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            new = new.replace('.RejectUnassignedEvents', '')
+            params = new.split()
+
+            print(params)
+            while len(params) < 2:
+                params.append(' ')
+
+            toadd = "\ncertify.clickOnTableStatus('" + params[0] + "')"
+            file2.writelines(toadd)
         else:
             print('\n AUN NO CONOZCO ESTA FUNCION ' + line[0: len(line)-1] + '\n')
             #file2.writelines('\n')
@@ -411,7 +448,6 @@ def tokenization():
                 print(token.text, token.pos_, token.dep_)
         
         #file2.writelines(line)
-        #
         #daylog_get_records_driver (num_records, start_point, direction)
         #verify_driver_daylog(self,expectedStatus, logIndex, DayLogTable):
         #daylog_get_records_inspector (num_records, start_point, direction)

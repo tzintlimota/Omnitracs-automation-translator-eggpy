@@ -124,8 +124,8 @@ class Certify_Test_Case(object):
         #plt.show()
         string = pytesseract.image_to_string(crop_img2)
         recordToCompare = string.lower()   
-        print(recordToCompare)
-        print(RecordToFind.lower())
+        print(str(recordToCompare.strip()))
+        print(RecordToFind.lower().strip())
 
         if self.general.search_func(str(RecordToFind.lower().strip()), str(recordToCompare.strip())):
             print("Found " + str(RecordToFind))
@@ -168,6 +168,9 @@ class Certify_Test_Case(object):
                         else:
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
 
+
+    def clickOnTableStatus(self,RecordToFind):
+        self.findTableRecord(RecordToFind, 'Status', 'Bottom', 'Asc')
 
     def getTable(self, StartPoint, FindOrder, NumRecords):
         
