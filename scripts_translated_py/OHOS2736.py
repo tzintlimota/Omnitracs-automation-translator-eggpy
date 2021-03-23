@@ -10,6 +10,7 @@ from IVG_Common import IVG_Common
 from Daylog_Test_Case import Daylog_Test_Case
 from HOS_Unassigned_Driving_Test_Case import HOS_Unassigned_Driving_Test_Case
 from Certify_Test_Case import Certify_Test_Case
+from HOS_Status_Test_Case import HOS_Status_Test_Case
 import connection_credentials as cfg
 #import pyGPSFeed_IMR
 import pytest
@@ -22,14 +23,40 @@ ivg_common = IVG_Common(gral_access)
 certify = Certify_Test_Case(gral_access)
 daylog = Daylog_Test_Case(gral_access)
 uva_events = HOS_Unassigned_Driving_Test_Case(gral_access)
+status = HOS_Status_Test_Case(gral_access)
 
-print('log "***Script name OHOS2736***"') 
+
+print('log "***Script name OHOS2736***"')
+driver_id = 'JOSH0015'
+remark1 = 'test'
+remark2 = 'testing'
+clockin_reason = 'automation'
 
 # Before Test
 ivg_common.logOutAllDrivers()
 
-ivg_common.loginDriver('DriverId', 'DriverId', 'True', ' ')
-ivg_common.sendMessageToUpdateLogs()
-eld_core.general.goTo(' ')
-eld_core.validate_status('Other:OnDuty') #Translator Removed
+ivg_common.loginDriver(driver_id, driver_id, 'True', ' ')
+eld_core.update_logs()
+
+eld_core.goToELD()
+status.clock_in('1', remark1, remark2, clockin_reason)
+
 eld_core.dayForward('DayLog', 8)
+driver_records = daylog.day_log_records_driver('Bottom', 'Asc', 1)
+print(str(driver_records))
+
+assert 'on' in str(driver_records[0][1]).lower(), 'Record displays ON for Status column' \
+                                         f'\ncurrent value: ({str(driver_records[0][7]).lower().strip()})' \
+                                         f'\n expected value: ({remark1.lower()})'
+
+assert clockin_reason.lower() in str(driver_records[0][7]).lower(), 'Clock In Reason does not appear in the Comments'\
+                                         f'\ncurrent value: ({str(driver_records[0][7]).lower().strip()})' \
+                                         f'\nexpected value: ({clockin_reason})'
+
+assert remark1.lower() in str(driver_records[0][7]).lower(), 'Remark1 does not appear in the Comments' \
+                                         f'\ncurrent value: ({str(driver_records[0][7]).lower().strip()})' \
+                                         f'\n expected value: ({remark1.lower()})'
+
+assert remark2.lower() in str(driver_records[0][7]).lower(), 'Remark2 does not appear in the Comments'  \
+                                         f'\ncurrent value: ({str(driver_records[0][7]).lower().strip()})' \
+                                         f'\nexpected value: ({remark2.lower()})'
