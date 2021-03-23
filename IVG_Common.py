@@ -46,7 +46,7 @@ class IVG_Common(object):
         self.goToMainScreen()
         total_x, total_y = self.img_proc.click_image_by_max_key_points('IVG_Common/Home/DriverLogin/DriverLogin')
 
-    def loginDriver(self, username, password, p3, p4):
+    def loginDriver(self, username, password, driver_status, active):
         self.goToLoginPage()
 
         total_x, total_y = self.img_proc.click_image_by_max_key_points('login_add_active')
@@ -104,8 +104,10 @@ class IVG_Common(object):
             self.img_proc.click_image_by_max_key_points('IVG_Common/Login/LogoutDriver/LogoutDriver')
 
     def logOutAllDrivers(self):
-        # Logout All Drivers Function
-        self.goToLoginPage()
+        if self.img_proc.expect_image('vnc-login-active-driver-screen', 'ExpectedScreens', 4):
+            print('Currently in LOGIN screen')
+        else:
+            self.goToLoginPage()
         found = self.img_proc.expect_image('vnc_login_no_drivers', 'ExpectedScreens', 5)
         if found:
             print("No logged drivers, continue")
@@ -127,13 +129,20 @@ class IVG_Common(object):
                     'IVG_Common/Home/DriverLogin/DriverLogin')
 
         while True:
-            time.sleep(5)
+            time.sleep(4)
+            if self.img_proc.expect_image('vnc-login-active-driver-screen', 'ExpectedScreens', 2):
+                print('Currently in LOGIN screen')
+            else:
+                self.goToLoginPage()
 
             found = self.img_proc.expect_image('vnc_login_no_drivers', 'ExpectedScreens', 5)
-            if found:
+            found_login_keyboard = self.img_proc.expect_image('vnc-login-keyboard', 'ExpectedScreens', 1)
+            if found or found_login_keyboard:
+                print("All drivers logged out")
                 break
             self.logoutDriver('', 'OF')
-            print("All drivers logged out")
+
+        #print("All drivers logged out")
 
     def clearAlerts(self):
         total_x, total_y, color = self.img_proc.button_is_active("ivg_header_alert", 0, 0)
