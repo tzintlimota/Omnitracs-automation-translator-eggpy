@@ -110,8 +110,10 @@ class IVG_ELD_CORE(object):
 
     def goToHOS(self):
         print('***IVG_ELD_Core.goToHOS***')
-        self.ivg_common.goToMainScreen()
-        self.img_proc.click_image_by_max_key_points("HOS_ELD")
+        if not self.img_proc.expect_image('vnc_hos_main', 'ExpectedScreens', 2):
+            self.ivg_common.goToMainScreen()
+            self.img_proc.click_image_by_max_key_points("HOS_ELD")
+        print('Currently in HOS Main page')
 
     def goToELD(self):
         self.goToHOS()
@@ -154,7 +156,7 @@ class IVG_ELD_CORE(object):
         elif TimePoint == "End":
             x, y = self.img_proc.click_image_by_max_key_points_offset("ELD_Core/StatusTab/Start_A/Start_A", 450, -5)
             x += 355
-        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
         crop_img2 = img[int(y-20):int(y+20), int(x+70-30):int(x+60+100)]
 
         #plt.imshow(crop_img2)
@@ -184,7 +186,7 @@ class IVG_ELD_CORE(object):
             currentDay = parse(str(today))
             print("Today's date:", today)
             print(currentDay.day, currentDay.month)
-            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+            img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
             crop_img2 = img[int(y+firstAddY):int(y+secondAddY), int(x+firstAddX-17):int(x+secondAddX+105)]
 
             print(pytesseract.image_to_string(crop_img2))
@@ -196,7 +198,7 @@ class IVG_ELD_CORE(object):
             while dateDevice.day != currentDay.day:
                 time.sleep(0.5)
                 self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-                img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+                img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
                 crop_img2 = img[int(y+firstAddY):int(y+secondAddY), int(x+firstAddX-17):int(x+secondAddX+105)]
 
                 print(pytesseract.image_to_string(crop_img2))
@@ -306,6 +308,7 @@ class IVG_ELD_CORE(object):
         time.sleep(1)
         self.goToHOS()
         self.goTo("Days")
+        self.img_proc.expect_image('vnc-8days-screen', 'ExpectedScreens', 3)
         self.img_proc.click_image_by_max_key_points("LogRequestButton")
         while self.img_proc.expect_image("log-request-confirmation", "ExpectedScreens", 1):
             print("Waiting")
@@ -321,7 +324,7 @@ class IVG_ELD_CORE(object):
                 break
 
             self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+            img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
 
             crop_img2 = img[int(150):int(480), int(315):int(560)]
 
@@ -357,7 +360,7 @@ class IVG_ELD_CORE(object):
 
         #Capture of current screen in the IVG
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
 
         #Gets the current DriverID selected
         crop_img2 = img[int(95):int(126), int(42):int(327)]
@@ -379,7 +382,7 @@ class IVG_ELD_CORE(object):
                                                                -200, 45)
 
             self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+            img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
 
             #Selects 2nd option of dropdown
             self.img_proc.click_image_by_max_key_points_offset(
@@ -467,7 +470,7 @@ class IVG_ELD_CORE(object):
             self.goTo('Summary')
         
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
         crop_img2 = img[int(y):int(y1), int(x):int(x1)]
         width = int(crop_img2.shape[1] * 100 / 100)
         height = int(crop_img2.shape[0] * 100 / 100)
