@@ -48,8 +48,8 @@ class ImageProcessor:
     '''This will obtain a screenshot of the full screen. Default resolution 1024x600 for VNC'''
 
     def get_vnc_full_screen(self, name, images_folder):
-
-        target_folder = os.getcwd() + "/Images/" + images_folder + "/"
+        proj_root_path = self.get_project_root_directory()
+        target_folder = proj_root_path + "/Images/" + images_folder + "/"
         image = target_folder + name + ".png"
         self.client.captureScreen(image)
 
@@ -58,7 +58,7 @@ class ImageProcessor:
 
     def get_vnc_region_screen(self, name, images_folder, x, y, width, height):
 
-        target_folder = os.getcwd() + "/Images/" + images_folder + "/"
+        target_folder = self.get_project_root_directory() + "/Images/" + images_folder + "/"
         image = target_folder + name + ".png"
         #print(image)
         self.client.captureRegion(image, int(x), int(y), int(width), int(height))
@@ -103,9 +103,9 @@ class ImageProcessor:
     def expect_image(self, image_name, folder_name, wait_seconds):
 
         self.get_vnc_full_screen("last_screen", "ExpectedScreens")
-        target_folder = os.getcwd() + "/Images/"
+        target_folder = self.get_project_root_directory() + "/Images/"
         image = folder_name + "/" + image_name + ".png"
-        image_compare = Image.open(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        image_compare = Image.open(self.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
         image_source = Image.open(target_folder + image)
         max_time = datetime.now() + timedelta(seconds=float(wait_seconds))
         img_found = True
@@ -127,8 +127,9 @@ class ImageProcessor:
     def check_md_alert(self):
 
         self.get_vnc_full_screen('last_screen', 'ExpectedScreens')
-        image_compare = Image.open(os.getcwd() + '\\Images\\ExpectedScreens\\last_screen.png')
-        image_source = Image.open(os.getcwd() + '\\Images\\ExpectedScreens\\vnc_unknown_position_alert_1.png')
+        proj_root_path = self.get_project_root_directory()
+        image_compare = Image.open(proj_root_path + '\\Images\\ExpectedScreens\\last_screen.png')
+        image_source = Image.open(proj_root_path + '\\Images\\ExpectedScreens\\vnc_unknown_position_alert_1.png')
 
         while self.compare_image(image_compare, image_source):
             print("\n Alert pop-up on HOS app \n")
@@ -137,10 +138,10 @@ class ImageProcessor:
 
     def get_image_coordinates(self, screen_capture, image_name):
 
-        img2 = cv2.imread(os.getcwd() + '\\Images\\Buttons\\' + image_name + '.png')
+        img2 = cv2.imread(self.get_project_root_directory() + '\\Images\\Buttons\\' + image_name + '.png')
         img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
 
-        img1 = cv2.imread(os.getcwd() + '\\Images\\ExpectedScreens\\' + screen_capture + '.png')
+        img1 = cv2.imread(self.get_project_root_directory() + '\\Images\\ExpectedScreens\\' + screen_capture + '.png')
         
         img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
 
@@ -226,7 +227,7 @@ class ImageProcessor:
     def get_image_coordinates_by_max_key_points(self, image_name):
 
         self.get_vnc_full_screen("last_screen", "ExpectedScreens")
-        img2 = cv2.imread(os.getcwd() + '/Images/Buttons/' + image_name + '.png')
+        img2 = cv2.imread(self.get_project_root_directory() + '/Images/Buttons/' + image_name + '.png')
 
         try:
             img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2GRAY)
@@ -237,7 +238,7 @@ class ImageProcessor:
             sys.exit(1)
 
 
-        img1 = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        img1 = cv2.imread(self.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
         img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2GRAY)
 
         try:
@@ -467,12 +468,12 @@ class ImageProcessor:
     
     def button_is_active(self, image_name, tx, ty):
         self.get_vnc_full_screen("last_screen", "ExpectedScreens")
-        img2 = cv2.imread(os.getcwd() + '/Images/Buttons/' + image_name + '.png')
+        img2 = cv2.imread(self.get_project_root_directory() + '/Images/Buttons/' + image_name + '.png')
         #img2 = cv2.imread(os.getcwd() +'/' + image_name + '.png')
         #print(img2)
         img2 = cv2.cvtColor(img2, cv2.COLOR_BGR2RGB)
 
-        img1 = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        img1 = cv2.imread(self.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
         #img1 = cv2.imread(os.getcwd() + '/last_screen.png')
         img1 = cv2.cvtColor(img1, cv2.COLOR_BGR2RGB)
 
@@ -597,3 +598,19 @@ class ImageProcessor:
         else:
             print(f'Could NOT find Image {image_name}')
             return False
+
+    def get_project_root_directory(self):
+        proj_root_path = ''
+        file_path = os.getcwd()
+        proj_name = 'Omnitracs-automation-translator-eggpy'
+
+        dir_list = file_path.split('\\')
+
+        for i in range(len(dir_list)):
+            if dir_list[i] != proj_name:
+                proj_root_path += str(dir_list[i]) + '\\'
+            else:
+                break
+
+        proj_root_path += proj_name
+        return str(proj_root_path)
