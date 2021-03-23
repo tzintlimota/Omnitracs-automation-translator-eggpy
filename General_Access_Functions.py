@@ -32,7 +32,7 @@ class General_Access:
     def retrieve_duration(self):
         string = ""
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
 
         for i in range(3):
             '''This defines with region is being captured (hh:mm:ss)'''
@@ -85,7 +85,7 @@ class General_Access:
     def retrieve_start(self, screen):
         string = ""
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
 
         if screen.lower() == 'certify':
             y, y1 = 285, 310
@@ -159,7 +159,7 @@ class General_Access:
     def retrieve_text(self, y, y1, x, x1):
         self.img_proc.click_image_by_coordinates(150, 300)
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
         crop_img2 = img[int(y):int(y1), int(x):int(x1)]
         
         width = int(crop_img2.shape[1] * 800 / 100)
@@ -179,7 +179,7 @@ class General_Access:
 
     def retrieve_text_with_config(self, y, y1, x, x1, params=None, lang_param=None):
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
         crop_img2 = img[int(y):int(y1), int(x):int(x1)]
 
         width = int(crop_img2.shape[1] * 800 / 100)
