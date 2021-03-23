@@ -41,7 +41,7 @@ eld_core.dayForward('DayLog', 8)
 driver_records = daylog.day_log_records_driver('Bottom', 'Asc', 1)
 
 assert 'team split' in str(driver_records[0][7]).lower(), 'Team split comment was not generated for active driver' \
-                                         'for co-driver logging out'
+                                         ' for co-driver logging out'
 
 
 
