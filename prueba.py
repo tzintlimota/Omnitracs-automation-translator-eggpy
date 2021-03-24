@@ -25,6 +25,7 @@ uva_events = HOS_Unassigned_Driving_Test_Case(gral_access)
 print('log "***Script name OHOS2810***"') 
 
 #certify.getTable('Bottom', 'Asc', int(5))
-certify.verify_driver_daylog('VerifyDriverDayLogSB', int(2), 'DayLog' )
+#certify.verify_driver_daylog('VerifyDriverDayLogSB', int(2), 'DayLog' )
 #certify.verify_driver_daylog('VerifyDriverDayLogRecordSB', int(2), 'DayLog' )
-certify.clickOnTableStatus('Sleeper berth')
+
+daylog.request_ERODS('Web', 'Test')

@@ -499,6 +499,28 @@ class Daylog_Test_Case(object):
         
         if comment != '':
             print("Comment " + comment)
+    
+    def request_ERODS(self,method, comment):
+        #self.eld_core.goToHOS()
+        self.eld_core.goToERODS()
+
+        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+
+        #color = self.img_proc.color_check(950,550,img)
+        if self.general.search_func(method, 'Web Services'):
+            #color = self.img_proc.color_check(40,290,img)
+            self.img_proc.click_image_by_coordinates(40,290)
+        else:
+            #color = self.img_proc.color_check(40,350,img)
+            self.img_proc.click_image_by_coordinates(40,350)
+        
+        self.img_proc.click_image_by_coordinates(400,380)
+        self.img_proc.send_keys(comment)
+        self.img_proc.click_image_by_max_key_points('IVG_Common/Home/KeyboardOpen/KeyboardOpen')
+        self.img_proc.click_image_by_coordinates(950,550)
+
+        #search_func(self, search, space):
+
 
 
 

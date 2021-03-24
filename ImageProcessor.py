@@ -440,8 +440,8 @@ class ImageProcessor:
         avg_color = np.average(avg_color_per_row, axis=0)
         print(avg_color)
         #Crop_img2 is just for user convenience, no processing is being made with that image
-        #plt.imshow(crop_img2)
-        #plt.show()  
+        plt.imshow(crop_img2)
+        plt.show()  
         if(avg_color[0] == 255 and avg_color[1] == 255 and avg_color[2] == 255):
             color = 'white'
         elif(avg_color[0] == 0 and avg_color[1] == 0 and avg_color[2] == 0):
@@ -558,8 +558,8 @@ class ImageProcessor:
         total_y = total_y / len(list_kp1)
 
         self.img3 = cv2.drawMatches(img1, kp1, img2, kp2, cleaned_good_matches, img2, flags=2)
-        plt.imshow(self.img3)
-        plt.show()
+        #plt.imshow(self.img3)
+        #plt.show()
 
         total_x = total_x + tx
         total_y = total_y + ty

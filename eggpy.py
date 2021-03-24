@@ -489,11 +489,11 @@ def tokenization():
                 print(token.text, token.pos_, token.dep_)
         
         #file2.writelines(line)
-        #
+        #ADD
         #daylog_get_records_driver (num_records, start_point, direction)
-        #verify_driver_daylog(self,expectedStatus, logIndex, DayLogTable):
         #daylog_get_records_inspector (num_records, start_point, direction)
         #find_driver_record
+        #requestERODS request_ERODS(self,method, comment):
 tokenization()
 
 file2.close()
