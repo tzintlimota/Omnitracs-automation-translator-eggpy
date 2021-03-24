@@ -22,13 +22,20 @@ certify = Certify_Test_Case(gral_access)
 daylog = Daylog_Test_Case(gral_access)
 uva_events = HOS_Unassigned_Driving_Test_Case(gral_access)
 
-print('log "***Script name OHOS2791***"') 
+print('log "***Script name OHOS2791***"')
+driver_id = 'JOSH0015'
 
-ivg_common.logOutAllDrivers()
-ivg_common.loginDriver('DriverId', 'DriverId', 'True', ' ')
-ivg_common.sendMessageToUpdateLogs()
+'''ivg_common.logOutAllDrivers()
+ivg_common.loginDriver(driver_id, driver_id, 'True', '')
+eld_core.update_logs()'''
+
+eld_core.goToELD()
 eld_core.changeDriverStatus('OFF', 'PC', '1234', ' ', ' ')
-gral_access.run_vehsim_script('192.168.100.16', 'C:\ELD_VSIM\ .xml', '1')
-#ConnectUnit
+
+# Run PowerCycle xml vsim file
+gral_access.run_vehsim_script('192.168.100.16', 'C:\ELD_VSIM\PowerCycle.xml', '1')
+
+gral_access.stop_vehsim_script('192.168.100.16')
+
 eld_core.validate_status('Other:PersonalConveyance') #Translator Removed
 eld_core.dayForward('DayLog', 8)
