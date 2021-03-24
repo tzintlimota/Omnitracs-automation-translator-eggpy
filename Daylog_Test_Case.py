@@ -501,11 +501,10 @@ class Daylog_Test_Case(object):
 
         while record_regex:
             record_line = self.general.retrieve_text_with_config(y, y1, x, x1, None, 'eng')
-            print(record_line)
             record_regex = re.findall(r'[\d|\w]', record_line)
             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage",
                                                                550, 420)
-        print('-----The BOTTOM of the table has been reached-----')
+        print('>>>> The BOTTOM of the table has been reached')
 
 
 
