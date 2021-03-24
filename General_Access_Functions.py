@@ -215,7 +215,8 @@ class General_Access:
         return string
 
     def run_vehsim_script(self, ip_address, script_path, duration_min):
-        cmd = "ClientCommands\ClientCommands.exe"
+        print("*** General_Access_Functions.run_vehsim_script ***")
+        cmd = self.img_proc.get_project_root_directory() + "\ClientCommands\ClientCommands.exe"
         input_data = os.linesep.join([ip_address, 'connect', f'open,{script_path}', 'run', os.linesep])
         p = Popen(cmd, stdin=PIPE, bufsize=0)
         p.communicate(input_data.encode('ascii'))
@@ -224,11 +225,14 @@ class General_Access:
 
         seconds = duration_min * 60
         time.sleep(seconds)
+        print(f">>>> The Vehicle Simulator script {script_path} has been loaded and RUN")
 
     def stop_vehsim_script(self, ip_address):
-        cmd = "ClientCommands\ClientCommands.exe"
+        print("*** General_Access_Functions.stop_vehsim_script ***")
+        cmd = self.img_proc.get_project_root_directory() + "\ClientCommands\ClientCommands.exe"
         input_data = os.linesep.join([ip_address, 'stop', os.linesep])
         p = Popen(cmd, stdin=PIPE, bufsize=0)
         p.communicate(input_data.encode('ascii'))
         if p.returncode != 0:
             raise CalledProcessError(p.returncode, cmd)
+        print(f">>>> The Vehicle Simulator script has been STOPPED")
