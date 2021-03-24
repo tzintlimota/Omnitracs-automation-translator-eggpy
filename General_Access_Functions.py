@@ -214,7 +214,7 @@ class General_Access:
         string = pytesseract.image_to_string(crop_img2, lang=lang_param, config=params)
         return string
 
-    def run_vehsim_script(self, ip_address, script_path, duration_min):
+    def run_vehsim_script(self, ip_address, script_path, duration_min=0):
         print("*** General_Access_Functions.run_vehsim_script ***")
         cmd = self.img_proc.get_project_root_directory() + "\ClientCommands\ClientCommands.exe"
         input_data = os.linesep.join([ip_address, 'connect', f'open,{script_path}', 'run', os.linesep])
@@ -223,8 +223,9 @@ class General_Access:
         if p.returncode != 0:
            raise CalledProcessError(p.returncode, cmd)
 
-        seconds = duration_min * 60
-        time.sleep(seconds)
+        if duration_min > 0:
+            seconds = duration_min * 60
+            time.sleep(seconds)
         print(f">>>> The Vehicle Simulator script {script_path} has been loaded and RUN")
 
     def stop_vehsim_script(self, ip_address):
