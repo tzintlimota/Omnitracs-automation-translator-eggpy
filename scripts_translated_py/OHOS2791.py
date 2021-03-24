@@ -27,9 +27,7 @@ pc_ym =HOS_PC_YM(gral_access)
 print('log "***Script name OHOS2791***"')
 driver_id = 'JOSH0015'
 
-eld_core.changeDriverStatus('ON', 'YM', '1234', ' ', ' ')
-
-'''ivg_common.logOutAllDrivers()
+ivg_common.logOutAllDrivers()
 ivg_common.loginDriver(driver_id, driver_id, 'True', '')
 eld_core.update_logs()
 
@@ -49,6 +47,6 @@ print(">>>> Driver Records Retrieved: \n" + str(driver_records))
 
 assert 'PC' in str(driver_records[0][1])
 
-assert 'OFF' in str(driver_records[1][1])'''
+assert 'OFF' in str(driver_records[1][1])
 
 
