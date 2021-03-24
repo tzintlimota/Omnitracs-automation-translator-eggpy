@@ -45,17 +45,29 @@ while True:
             print("Handling Certify Days Outside of Cycle prompt ...")
             eld_core.closeCertifyDayPrompt()   
     elif img_proc.expect_image("vnc-certifyday-statusspans-pop-up", "ExpectedScreens", 1):
-        img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/AgreeButton/AgreeButton")
-    else:
-        total_x, total_y = img_proc.get_image_coordinates_by_max_key_points('alert-sign')
-        print( total_x, total_y)
-
-        if total_x == -1:
-            print("No alert sign found")
+        f = open("IVG_var.txt", "r")
+        if f.read() == "Certify":
+            print("Case Certify Alert Check Suspended")
         else:
-            if total_x > 170 and total_x < 300 and total_y < 350 and total_y > 200:
-                print("Alert sign found")
-                print("Closing Alert")
-                ivg_common.closeUnknownPositionAlert()
+            print("Handling Certify Day Status Span alert")
+            img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/AgreeButton/AgreeButton")
+            img_proc.click_image_by_max_key_points("ok_status_login_btn")
+    else:
+        f = open("IVG_var.txt", "r")
+        if f.read() == "Certify":
+            print("Alert Sign Check Suspended")
+        else:
+            total_x, total_y = img_proc.get_image_coordinates_by_max_key_points('alert-sign')
+            print( total_x, total_y)
+
+            if total_x == -1:
+                print("No alert sign found")
+            elif img_proc.expect_image("vnc_change_main", "ExpectedScreens", 1):
+                print("Case Certify Alert Check Suspended - On Status Change screen")
             else:
-                print("No alerts have been found")
+                if total_x > 170 and total_x < 300 and total_y < 350 and total_y > 200:
+                    print("Alert sign found")
+                    print("Closing Alert")
+                    ivg_common.closeUnknownPositionAlert()
+                else:
+                    print("No alerts have been found")
