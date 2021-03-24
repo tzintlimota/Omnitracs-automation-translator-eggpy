@@ -27,6 +27,7 @@ class IVG_ELD_CORE(object):
 
     #Code to discard/accept Certify Day prompt
     def closeCertifyDayPrompt(self):
+        print('*** IVG_ELD_Core.closeCertifyDayPrompt ***')
         print("Discarding/Accepting Certify Day Prompt...")
 
         self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/AgreeButton/AgreeButton")
@@ -43,7 +44,8 @@ class IVG_ELD_CORE(object):
 
     #Here add the code to close every alert as a function
     def closeLoadInfoAlert(self):
-        print("Closing LOAD INFO")
+        print('*** IVG_ELD_Core.closeLoadInfoAlert ***')
+        print(">>>> Closing LOAD INFO")
         self.img_proc.click_image_by_max_key_points("IVG_Common/Home/EnterLoadInfoButton/EnterLoadInfoButton")
         self.img_proc.expect_image("vnc-load-enter-info-popup", "ExpectedScreens", 5)
         self.img_proc.click_image_by_max_key_points_offset("please-enter-load-info-label", -40, 60 )
@@ -56,14 +58,15 @@ class IVG_ELD_CORE(object):
 
 
     def changeDriverStatus(self,newStatus, condition, remark1, remark2, complete):
-        #CHECAR CHANGE DRIVER STATUS
+        print("*** IVG_ELD_Core.changeDriverStatus ***")
+
         self.img_proc.expect_image('vnc_hos_main', 'ExpectedScreens', 3)
         self.img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/StatusTabActive/StatusTabActive')
 
         self.img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/ChangeButton/ChangeButton')
         self.img_proc.expect_image('vnc_change_main', 'ExpectedScreens', 3)
 
-        #Aqui hay que poner botones que solo digan OFF On sin Duty
+        print(f">>>> Selecting new status: {newStatus}")
         if newStatus == "OFF":
             self.img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/Change_Status/OFF_Status/OFF_Status')
         elif newStatus == "SB":
@@ -74,27 +77,29 @@ class IVG_ELD_CORE(object):
             self.img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/Change_Status/ON_Status/ON_Status')
 
         if condition != ' ':
-            print("Looking for condition: " + condition)
+            print(f">>>> Selecting condition: {condition}")
             if condition == 'N':
                 self.img_proc.click_image_by_max_key_points_offset('ELD_Core/StatusTab/Change_Status/SpecialConditions/None/None', -90, 0)
             elif condition == 'OW':
                 self.img_proc.click_image_by_max_key_points_offset('ELD_Core/StatusTab/Change_Status/SpecialConditions/OilWell/OilWell', -90, 0)
-            elif condition == 'PC':
-                self.img_proc.click_image_by_max_key_points_offset('ELD_Core/StatusTab/Change_Status/SpecialConditions/PersonalConveyance/PersonalConveyance', -90, 0)
+            elif condition == 'PC' or condition == 'YM':
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -235, 210)
             elif condition == 'RB':
                 self.img_proc.click_image_by_max_key_points_offset('ELD_Core/StatusTab/Change_Status/SpecialConditions/RestBreak/RestBreak', -90, 0)
-            elif condition == 'YM':
-                self.img_proc.click_image_by_max_key_points_offset('ELD_Core/StatusTab/Change_Status/SpecialConditions/YardMove/YardMove', -90, 0)
+            #elif condition == 'YM':
+                #self.img_proc.click_image_by_max_key_points_offset('ELD_Core/StatusTab/Change_Status/SpecialConditions/YardMove/YardMove', -90, 0)
             else:
-                print("The special condition is not valid")
+                print("The special condition is not valid !!!")
 
         if remark1 != ' ':
+            print(f">>>> Entering remark1: {remark1}")
             self.img_proc.click_image_by_max_key_points_offset('ELD_Core/StatusTab/Change_Status/Remarks1/Remarks1', 0, 50)
             self.img_proc.send_keys(str(remark1))
             self.img_proc.expect_image('vnc_remarks1_entered', 'ExpectedScreens', 5)
             self.img_proc.click_image_by_max_key_points('IVG_Common/Home/KeyboardOpen/KeyboardOpen')
 
         if remark2 != ' ':
+            print(f">>>> Entering remark2: {remark2}")
             self.img_proc.click_image_by_max_key_points_offset('ELD_Core/StatusTab/Change_Status/Remarks2/Remarks2', 0, 148)
             self.img_proc.send_keys(str(remark2))
 
@@ -103,25 +108,23 @@ class IVG_ELD_CORE(object):
 
         time.sleep(5)
         if complete != 'False' and complete != 'false':
+            print(f">>>> Confirm of Status Change")
             self.img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/OkButton/OkButton')
             time.sleep(10)
 
-            self.img_proc.check_md_alert()
-
     def goToHOS(self):
-        print('***IVG_ELD_Core.goToHOS***')
+        print('*** IVG_ELD_Core.goToHOS ***')
         if not self.img_proc.expect_image('vnc_hos_main', 'ExpectedScreens', 2):
             self.ivg_common.goToMainScreen()
             self.img_proc.click_image_by_max_key_points("HOS_ELD")
-        print('Currently in HOS Main page')
 
     def goToELD(self):
+        print('*** IVG_ELD_Core.goToELD ***')
         self.goToHOS()
 
         screen = 0
         sString = ""
-        #Cambiar las imageneeees para cada uno
-        while True :
+        while True:
             if self.img_proc.expect_image("vnc_hos_main", "ExpectedScreens", 0.5):
                 sString = "HOS MAIN"
                 break
@@ -134,12 +137,13 @@ class IVG_ELD_CORE(object):
             elif self.img_proc.expect_image("vnc-unidentified-profile-screen", "ExpectedScreens", 0.5):
                 sString = "UNIDENTIFIED"
                 break
+            else:
+                self.goToHOS()
 
         print(sString)
-        
-        #self.goToMainScreen()
-        #go to hours of service
+
     def goToHistory(self):
+        print('*** IVG_ELD_Core.goToHistory ***')
         self.general.goTo("Load")
         self.img_proc.click_image_by_max_key_points("ELD_Core/LoadTab/HistoryButton/HistoryButton")
         found = self.img_proc.expect_image("vnc-load-history-screen", "ExpectedScreens", 4)
@@ -147,9 +151,9 @@ class IVG_ELD_CORE(object):
             print("Load History Screen")
         else:
             print("Load History not found")
-        
 
     def getLoadDate(self, TimePoint):
+        print('*** IVG_ELD_Core.getLoadDate ***')
         self.general.goTo("Load")
         if TimePoint == "Start":
             x, y = self.img_proc.click_image_by_max_key_points_offset("ELD_Core/StatusTab/Start_A/Start_A", 60, -5)
@@ -165,8 +169,8 @@ class IVG_ELD_CORE(object):
         loadDate = pytesseract.image_to_string(crop_img2)
         return loadDate
 
-
     def dayBack(self, page, reset, clicks):
+        print('*** IVG_ELD_Core.dayBack ***')
         self.goTo(page)
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
         firstAddX, secondAddX, firstAddY, secondAddY = 0,0,0,0
@@ -214,7 +218,7 @@ class IVG_ELD_CORE(object):
             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", x1, y1)
 
     def dayForward(self, page, clicks):
-
+        print('*** IVG_ELD_Core.dayForward ***')
         found = self.img_proc.expect_image('vnc-hos-daylog-screen', 'ExpectedScreens', 3)
 
         if found:
@@ -235,6 +239,7 @@ class IVG_ELD_CORE(object):
     
     
     def createLoad(self, loadId, Trailer1, Trailer2, Trailer3, BL, StartDate, EndDate, Finish):
+        print('*** IVG_ELD_Core.createLoad ***')
         self.goTo("Load")
         self.img_proc.click_image_by_max_key_points("ELD_Core/LoadTab/NewLoadButton/NewLoadButton")
         self.img_proc.expect_image("vnc-load-create-new", "ExpectedScreens", 3)
@@ -281,7 +286,7 @@ class IVG_ELD_CORE(object):
             self.img_proc.click_image_by_max_key_points('cancel_btn_active')
 
     def goToERODS(self):
-        print("***Script name: IVG_ELD_CORE.goToERODS***")
+        print("*** IVG_ELD_CORE.goToERODS ***")
         '''This will navigate to the ERODS File Transfer screen'''
 
         found = self.img_proc.expect_image("vnc-erods-file-transfer-screen", "ExpectedScreens", 2)
@@ -301,6 +306,7 @@ class IVG_ELD_CORE(object):
     
 
     def update_logs(self):
+        print('*** IVG_ELD_Core.update_logs ***')
         string = ""
         self.ivg_common.clearAlerts()
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
@@ -349,6 +355,7 @@ class IVG_ELD_CORE(object):
         self.goToELD()
 
     def select_driver_from_dropdown(self, driver_id):
+        print('*** IVG_ELD_Core.select_driver_from_dropdown ***')
         driver_found = False
         unidentified_profile = False
 
@@ -455,6 +462,7 @@ class IVG_ELD_CORE(object):
                 print("The DriverID {" + str(slist[i]) + "} has NOT been selected.")
 
     def validate_status(self, string):
+        print('*** IVG_ELD_Core.validate_status ***')
         #self.goToHOS()
         actual_status = self.general.retrieve_text(245, 270, 132, 370)
         expected_status = string.lower()
@@ -462,7 +470,7 @@ class IVG_ELD_CORE(object):
             f"expected_status '{expected_status}' is no substring of '{actual_status}'"
 
     def get_clock(self, x, x1, y, y1):
-
+        print('*** IVG_ELD_Core.get_clock ***')
         if self.img_proc.expect_image('vnc-summary-screen','ExpectedScreens',1):
             print("Already in Summary page")
         else:
@@ -488,22 +496,27 @@ class IVG_ELD_CORE(object):
         return recordToCompare
 
     def get_driving_clock(self):
+        print('*** IVG_ELD_Core.get_driving_clock ***')
         clock_val = self.get_clock(840,940,245,280)
         return clock_val
 
     def get_on_duty_clock(self):
+        print('*** IVG_ELD_Core.get_on_duty_clock ***')
         clock_val = self.get_clock(840,940,275,315)
         return clock_val
      
     def get_duty_cycle_clock(self):
+        print('*** IVG_ELD_Core.get_duty_cycle_clock ***')
         clock_val = self.get_clock(840,940,315,355)
         return clock_val
 
     def get_rest_break_clock(self):
+        print('*** IVG_ELD_Core.get_rest_break_clock ***')
         clock_val = self.get_clock(835,925,365, 395)
         return clock_val
 
     def review_carrier_edits(self):
+        print('*** IVG_ELD_Core.review_carrier_edits ***')
         if self.img_proc.expect_image('vnc-edits-carrier-summary', 'ExpectedScreens', 2):
             print('Already in Carrier Edits Screen')
         elif self.img_proc.expect_image('vnc-edits-review-carrier-edits', 'ExpectedScreens', 2):
@@ -523,6 +536,7 @@ class IVG_ELD_CORE(object):
                 sys.exit(1)
 
     def goTo(self, page):
+        print('*** IVG_ELD_Core.goTo ***')
         print(page)
         self.goToELD()
         if page == 'Summary':
