@@ -45,18 +45,12 @@ eld_core.dayForward('DayLog', 8)
 driver_records = daylog.day_log_records_driver('Bottom', 'Asc', 1)
 print(str(driver_records))
 
-assert 'on' in str(driver_records[0][1]).lower(), 'Record displays ON for Status column' \
-                                         f'\ncurrent value: ({str(driver_records[0][7]).lower().strip()})' \
-                                         f'\n expected value: ({remark1.lower()})'
+# Validation of ON value in STATUS column
+assert 'on' in str(driver_records[0][1]).lower()
 
-assert clockin_reason.lower() in str(driver_records[0][7]).lower(), 'Clock In Reason does not appear in the Comments'\
-                                         f'\ncurrent value: ({str(driver_records[0][7]).lower().strip()})' \
-                                         f'\nexpected value: ({clockin_reason})'
+# Validation of the COMMENTS value
+assert clockin_reason.lower() in str(driver_records[0][7]).lower()
 
-assert remark1.lower() in str(driver_records[0][7]).lower(), 'Remark1 does not appear in the Comments' \
-                                         f'\ncurrent value: ({str(driver_records[0][7]).lower().strip()})' \
-                                         f'\n expected value: ({remark1.lower()})'
+assert remark1.lower() in str(driver_records[0][7]).lower()
 
-assert remark2.lower() in str(driver_records[0][7]).lower(), 'Remark2 does not appear in the Comments'  \
-                                         f'\ncurrent value: ({str(driver_records[0][7]).lower().strip()})' \
-                                         f'\nexpected value: ({remark2.lower()})'
+assert remark2.lower() in str(driver_records[0][7]).lower()
