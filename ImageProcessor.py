@@ -386,8 +386,8 @@ class ImageProcessor:
         total_x, total_y = self.get_image_coordinates_by_max_key_points(image_name)
         cv2.line(self.img3, (math.floor(total_x), math.floor(total_y)),
                  (math.floor(total_x + x_offset), math.floor(total_y + y_offset)), (0, 255, 0), 3)
-        #plt.imshow(self.img3)
-        #plt.show()
+        plt.imshow(self.img3)
+        plt.show()
         self.client.mouseMove(math.floor(total_x + float(x_offset)), math.floor(total_y + float(y_offset)))
         self.client.mousePress(1)
         time.sleep(0.5)

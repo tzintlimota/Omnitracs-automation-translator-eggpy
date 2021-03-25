@@ -293,3 +293,50 @@ class Certify_Test_Case(object):
         return records
 
     
+    def edit_log(self, certifyAfter, newStatus, firstRemark, secondRemark, Continue, Finish):
+        #self.eld_core.goToHOS()
+        self.eld_core.goTo('Certify')
+        for i in range(10):
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+        self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
+        self.img_proc.click_image_by_coordinates(150, 300)
+
+        self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/EditButton/Enabled/Enabled")
+
+        certifyAfter = certifyAfter.lower()
+
+        self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -325, 195)
+
+        if certifyAfter == 'off':
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -345, 205)
+        elif certifyAfter == 'on':
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -345, 235)
+        elif certifyAfter == 'sb':
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -350, 270)
+        elif certifyAfter == 'd':
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -350, 295)
+        
+
+        #OBTENER LA POSICION VACIA EN POSITION
+        
+        self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 0, 250)
+        self.img_proc.send_keys(firstRemark)
+        time.sleep(2)
+        self.img_proc.click_image_by_max_key_points('IVG_Common/Home/KeyboardOpen/KeyboardOpen')
+        self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 300, 270)
+        self.img_proc.send_keys(secondRemark)
+        time.sleep(2)
+        self.img_proc.click_image_by_max_key_points('IVG_Common/Home/KeyboardOpen/KeyboardOpen')
+        
+        if Continue:
+            self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/NextButton/NextButton")
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 0, 150)
+            self.img_proc.send_keys('Test')
+            self.img_proc.click_image_by_max_key_points('IVG_Common/Home/KeyboardOpen/KeyboardOpen')
+            if Finish:
+                #self.img_proc.click_image_by_max_key_points('ELD_Core/CertifyTab/SaveButton/SaveButton')
+                #self.img_proc.click_image_by_max_key_points('ELD_Core/CertifyTab/CertifyButton/CertifyButton')
+                if certifyAfter:
+                    self.img_proc.click_image_by_max_key_points('ELD_Core/CertifyTab/AgreeButton/AgreeButton')
+                else:
+                    self.img_proc.click_image_by_max_key_points('ELD_Core/CertifyTab/NotReadyButton/NotReadyButton')

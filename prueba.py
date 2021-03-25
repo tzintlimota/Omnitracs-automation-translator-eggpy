@@ -28,4 +28,6 @@ print('log "***Script name OHOS2810***"')
 #certify.verify_driver_daylog('VerifyDriverDayLogSB', int(2), 'DayLog' )
 #certify.verify_driver_daylog('VerifyDriverDayLogRecordSB', int(2), 'DayLog' )
 
-daylog.request_ERODS('Web', 'Test')
+#daylog.request_ERODS('Web', 'Test')
+
+certify.edit_log('certifyAfter', 'newStatus', 'firstRemark', 'secondRemark', 'Continue', 'Finish')
