@@ -12,6 +12,7 @@ from HOS_Unassigned_Driving_Test_Case import HOS_Unassigned_Driving_Test_Case
 from Certify_Test_Case import Certify_Test_Case
 import connection_credentials as cfg
 #import pyGPSFeed_IMR
+import pytest
 from ImageProcessor import ImageProcessor
 from General_Access_Functions import General_Access
 
@@ -24,10 +25,9 @@ uva_events = HOS_Unassigned_Driving_Test_Case(gral_access)
 
 print('log "***Script name OHOS2810***"') 
 
-#certify.getTable('Bottom', 'Asc', int(5))
-#certify.verify_driver_daylog('VerifyDriverDayLogSB', int(2), 'DayLog' )
-#certify.verify_driver_daylog('VerifyDriverDayLogRecordSB', int(2), 'DayLog' )
-
-#daylog.request_ERODS('Web', 'Test')
-
-certify.edit_log('certifyAfter', 'newStatus', 'firstRemark', 'secondRemark', 'Continue', 'Finish')
+certify.getTable('Bottom', 'Asc', int(5))
+certify.request_ERODS( 'method', 'comment')
+certify.edit_log( bool(True),'SB', 'HOLA','TEST', bool(True), bool(True))
+daylog.daylog_get_records_inspector(int(2),'Asc', 'Top' )
+daylog.day_log_records_driver(int(2),'start_point', 'direction' )
+daylog.find_driver_record('RecordToFind','ColumnToSearch', 'StartPoint','FindOrder' )
