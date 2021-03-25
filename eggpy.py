@@ -494,6 +494,7 @@ def tokenization():
         #daylog_get_records_inspector (num_records, start_point, direction)
         #find_driver_record
         #requestERODS request_ERODS(self,method, comment):
+        # EditLog  edit_log(self, certifyAfter, newStatus, firstRemark, secondRemark, Continue, Finish):
 tokenization()
 
 file2.close()

@@ -316,8 +316,11 @@ class Certify_Test_Case(object):
         elif certifyAfter == 'd':
             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -350, 295)
         
-
         #OBTENER LA POSICION VACIA EN POSITION
+        self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -350, 250)
+        self.img_proc.send_keys('Test')
+        self.img_proc.click_image_by_max_key_points('IVG_Common/Home/KeyboardOpen/KeyboardOpen')
+
         
         self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 0, 250)
         self.img_proc.send_keys(firstRemark)
