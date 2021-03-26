@@ -57,7 +57,7 @@ class IVG_ELD_CORE(object):
         self.img_proc.click_image_by_max_key_points('ELD_Core/CertifyTab/SaveButton/SaveButton')
 
 
-    def changeDriverStatus(self,newStatus, condition, remark1, remark2, complete):
+    def changeDriverStatus(self,newStatus, condition, remark1, remark2, complete=True):
         print("*** IVG_ELD_Core.changeDriverStatus ***")
 
         self.img_proc.expect_image('vnc_hos_main', 'ExpectedScreens', 3)
