@@ -103,6 +103,13 @@ class Daylog_Test_Case(object):
 
             records.append(new_rec)
 
+            if 'special driving event' in str(records[i][1]).lower() or 'malfunction' in str(records[i][1]).lower():
+                # EVENT 3 Lines of Text
+                print('>>>> Re-cappturing EVENT value with 3-lines of text')
+                y, y1, x, x1 = 305, 351, 103, 245
+                recordToCompare = self.general.retrieve_text_with_config(y, y1, x, x1)
+                records[i][1] = recordToCompare.strip()
+
             if findOrder == "Asc":
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
             else:
