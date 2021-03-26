@@ -23,17 +23,26 @@ certify = Certify_Test_Case(gral_access)
 daylog = Daylog_Test_Case(gral_access)
 uva_events = HOS_Unassigned_Driving_Test_Case(gral_access)
 
-print('"***Script name OHOS2601***"')
+'''OHOS-2601: Verify when a co-driver is logged out in the mobile, a team split comment is generated in the day log of the active driver.
+- Two driver IDs and its passwords from a company. 
+- Mobile has been provisioned on the same company of both driver IDs. 
+- Mobile has the lastest build installed. 
+- Mobile is configured as ELD device. 
+- The Active driver must be previously logged in the mobile device.'''
 
-driver_id = 'TMOTA03'
-driver_id_2 = 'TMOTA04'
+print('-------------------- OHOS2601 ----------------------')
+
+driver_id = 'JOSH1'
+driver_id_2 = 'JOSH0011'
 
 # Before Test
 ivg_common.logOutAllDrivers()
 
-ivg_common.loginDriver(driver_id, '123456', 'True', ' ')
-ivg_common.loginDriver(driver_id_2, '123456', 'False', ' ')
+ivg_common.loginDriver(driver_id, driver_id, 'OFF')
+ivg_common.loginDriver(driver_id_2, driver_id_2, 'OFF', False)
 eld_core.update_logs()
+
+ivg_common.logoutDriver('OF', )
 
 # Check active driver day logs, should be a Team Split for logging in and out a co-driver
 eld_core.dayForward('DayLog', 8)

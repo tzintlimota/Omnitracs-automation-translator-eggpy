@@ -24,11 +24,21 @@ daylog = Daylog_Test_Case(gral_access)
 uva_events = HOS_Unassigned_Driving_Test_Case(gral_access)
 pc_ym =HOS_PC_YM(gral_access)
 
-print('log "***Script name OHOS2791***"')
+'''OHOS-2791: Verify in "Day Log" tab that the driver remains in "Personal Conveyance" when selects "Yes" in the confirmation message.
+- Mobile has the latest build. 
+- DriverID and Pwd for at least one driver. 
+- A vSIM script that moves generates a Power Cycle. 
+- Personal Conveyance is checked as "Unlimited" in HOS Portal. 
+- Driver is logged in the mobile. 
+- Logs are updated. 
+- Driver is on "Personal Conveyance". 
+- Driver is in "HOS App" screen.'''
+
+print('-------------------- OHOS2791 --------------------')
 driver_id = 'JOSH0015'
 
 ivg_common.logOutAllDrivers()
-ivg_common.loginDriver(driver_id, driver_id, 'True', '')
+ivg_common.loginDriver(driver_id, driver_id, 'OFF')
 eld_core.update_logs()
 
 eld_core.goToELD()

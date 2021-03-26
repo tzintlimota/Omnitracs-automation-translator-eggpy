@@ -25,8 +25,17 @@ daylog = Daylog_Test_Case(gral_access)
 uva_events = HOS_Unassigned_Driving_Test_Case(gral_access)
 status = HOS_Status_Test_Case(gral_access)
 
+'''OHOS-2736: Verify that you can perform a Clock In from the mobile
+- A SSO company ID. 
+- Mobile is provisioned on the selected SSO company. 
+- Mobile has the latest build installed. 
+- Mobile is configured as ELD Device. 
+- Driver ID and Password correspondent to SSO company selected. 
+- Driver must be logged in the mobile (OFF Duty or Slepper Berth status). 
+- Vehicle and Driver should not have any pending Carrier Edits, Certification Events, Unidentified Driving Events and Pending Loads Information.'''
 
-print('log "***Script name OHOS2736***"')
+
+print('-------------------- OHOS2736 --------------------')
 driver_id = 'JOSH0015'
 remark1 = 'test'
 remark2 = 'testing'
@@ -35,7 +44,7 @@ clockin_reason = 'automation'
 # Before Test
 ivg_common.logOutAllDrivers()
 
-ivg_common.loginDriver(driver_id, driver_id, 'True', ' ')
+ivg_common.loginDriver(driver_id, driver_id, 'OFF')
 eld_core.update_logs()
 
 eld_core.goToELD()
