@@ -559,8 +559,8 @@ class ImageProcessor:
         total_y = total_y / len(list_kp1)
 
         self.img3 = cv2.drawMatches(img1, kp1, img2, kp2, cleaned_good_matches, img2, flags=2)
-        plt.imshow(self.img3)
-        plt.show()
+        #plt.imshow(self.img3)
+        #plt.show()
 
         total_x = total_x + tx
         total_y = total_y + ty
@@ -604,11 +604,14 @@ class ImageProcessor:
         file_path = os.getcwd()
         proj_name = 'Omnitracs-automation-translator-eggpy'
 
-        dir_list = file_path.split('\\')
+        if '/' in file_path:
+            dir_list = file_path.split('/')
+        else:
+            dir_list = file_path.split('\\')
 
         for i in range(len(dir_list)):
             if dir_list[i] != proj_name:
-                proj_root_path += str(dir_list[i]) + '\\'
+                proj_root_path += str(dir_list[i]) + '/'
             else:
                 break
 
