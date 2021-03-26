@@ -46,7 +46,7 @@ class IVG_Common(object):
         self.goToMainScreen()
         total_x, total_y = self.img_proc.click_image_by_max_key_points('IVG_Common/Home/DriverLogin/DriverLogin')
 
-    def loginDriver(self, username, password, driver_status, active):
+    def loginDriver(self, username, password, driver_status, active=True):
         self.goToLoginPage()
 
         total_x, total_y = self.img_proc.click_image_by_max_key_points('login_add_active')
@@ -67,11 +67,23 @@ class IVG_Common(object):
         self.img_proc.click_image_by_max_key_points('IVG_Common/Home/KeyboardOpen/KeyboardOpen')
         self.img_proc.expect_image('vnc-driver-credentials', 'ExpectedScreens', 3)
 
+        if active:
+            self.img_proc.click_image_by_max_key_points_offset('IVG_Common/Login/DriverLogin/DriverLogin', -90, 390)
+        else:
+            self.img_proc.click_image_by_max_key_points_offset('IVG_Common/Login/DriverLogin/DriverLogin', 90, 390)
+
         # Click OK to Login
         self.img_proc.click_image_by_max_key_points('ok_btn_active')
         self.img_proc.expect_image('vnc-driver-credentials', 'ExpectedScreens', 3)
 
         # Set status
+        if driver_status == 'ON':
+            self.img_proc.click_image_by_max_key_points_offset('IVG_Common/Login/DriverLogin/DriverLogin', 0, 300)
+        elif driver_status == 'OF' or driver_status == 'OFF':
+            self.img_proc.click_image_by_max_key_points('IVG_Common/Login/OffDutyStatus/OffDutyStatus')
+        elif driver_status == 'SL' or driver_status == 'SB' or driver_status == 'Sleeper':
+            self.img_proc.click_image_by_max_key_points('IVG_Common/Login/SleeperStatus/SleeperStatus')
+
         self.img_proc.click_image_by_max_key_points('IVG_Common/Login/OkLoginStatus/OkLoginStatus')
 
         self.backToHome()
