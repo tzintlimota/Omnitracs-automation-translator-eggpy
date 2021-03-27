@@ -37,7 +37,7 @@ class Certify_Test_Case(object):
         x, y  = 95,175
         firstAddX, secondAddX, firstAddY, secondAddY = 500, 500, 20, 70
    
-        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
         crop_img2 = img[int(y+firstAddY):int(y+secondAddY), int(x+firstAddX-17):int(x+secondAddX+100)]
         print(pytesseract.image_to_string(crop_img2))
         certifiedDays = str(pytesseract.image_to_string(crop_img2))
@@ -47,7 +47,7 @@ class Certify_Test_Case(object):
             self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/CertifyButton/CertifyButton")
             self.img_proc.click_image_by_max_key_points("AgreeButton")
             self.img_proc.expect_image("vnc_certify_tab_main", "ExpectedScreens", 10)
-            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+            img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
             crop_img2 = img[int(y+firstAddY):int(y+secondAddY), int(x+firstAddX-17):int(x+secondAddX+100)]
             print(pytesseract.image_to_string(crop_img2))
             certifiedDays = str(pytesseract.image_to_string(crop_img2))
@@ -111,7 +111,7 @@ class Certify_Test_Case(object):
         else:
             y, y1,x, x1 = 285, 310, 90, 115
 
-        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
         crop_img2 = img[int(y):int(y1), int(x):int(x1)]
         #calculate the 50 percent of original dimensions
         width = int(crop_img2.shape[1] * 600 / 100)
@@ -140,7 +140,7 @@ class Certify_Test_Case(object):
                     self.img_proc.click_image_by_coordinates(150, 300)
                     self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
                     #self.img_proc.click_image_by_coordinates(150,300)
-                    img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+                    img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
                     crop_img2 = img[int(y):int(y1), int(x):int(x1)]
                     #calculate the 50 percent of original dimensions
                     width = int(crop_img2.shape[1] * 600 / 100)
@@ -199,7 +199,7 @@ class Certify_Test_Case(object):
             self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
             new_rec = []
             #CERTIFIED
-            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+            img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
             crop_img2 = img[int(280):int(305), int(0):int(40)]
             
             string = pytesseract.image_to_string(crop_img2)
@@ -222,7 +222,7 @@ class Certify_Test_Case(object):
             y, y1,x, x1 = 285, 310, 115, 245
             self.img_proc.click_image_by_coordinates(150, 300)
             self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+            img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
             crop_img2 = img[int(y):int(y1), int(x):int(x1)]
             #calculate the 50 percent of original dimensions
             width = int(crop_img2.shape[1] * 1200 / 400)
@@ -244,7 +244,7 @@ class Certify_Test_Case(object):
 
             #LOCATION
             y, y1,x, x1 = 285, 310, 445, 600
-            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+            img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
             crop_img2 = img[int(y):int(y1), int(x):int(x1)]
             #calculate the 50 percent of original dimensions
             width = int(crop_img2.shape[1] * 800 / 100)
@@ -267,7 +267,7 @@ class Certify_Test_Case(object):
             self.img_proc.click_image_by_coordinates(150, 300)
             self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
 
-            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+            img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
             
             crop_img2 = img[int(y):int(y1), int(x):int(x1)]
             #calculate the 50 percent of original dimensions

@@ -32,7 +32,7 @@ class General_Access:
     def retrieve_duration(self):
         string = ""
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
 
         for i in range(3):
             '''This defines with region is being captured (hh:mm:ss)'''
@@ -85,7 +85,7 @@ class General_Access:
     def retrieve_start(self, screen):
         string = ""
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
 
         if screen.lower() == 'certify':
             y, y1 = 285, 310
@@ -159,7 +159,7 @@ class General_Access:
     def retrieve_text(self, y, y1, x, x1):
         self.img_proc.click_image_by_coordinates(150, 300)
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
         crop_img2 = img[int(y):int(y1), int(x):int(x1)]
         
         width = int(crop_img2.shape[1] * 800 / 100)
@@ -179,7 +179,7 @@ class General_Access:
 
     def retrieve_text_with_config(self, y, y1, x, x1, params=None, lang_param=None):
         self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
         crop_img2 = img[int(y):int(y1), int(x):int(x1)]
 
         width = int(crop_img2.shape[1] * 800 / 100)
@@ -214,21 +214,26 @@ class General_Access:
         string = pytesseract.image_to_string(crop_img2, lang=lang_param, config=params)
         return string
 
-    def run_vehsim_script(self, ip_address, script_path, duration_min):
-        cmd = "ClientCommands\ClientCommands.exe"
+    def run_vehsim_script(self, ip_address, script_path, duration_min=0):
+        print("*** General_Access_Functions.run_vehsim_script ***")
+        cmd = self.img_proc.get_project_root_directory() + "\ClientCommands\ClientCommands.exe"
         input_data = os.linesep.join([ip_address, 'connect', f'open,{script_path}', 'run', os.linesep])
         p = Popen(cmd, stdin=PIPE, bufsize=0)
         p.communicate(input_data.encode('ascii'))
         if p.returncode != 0:
            raise CalledProcessError(p.returncode, cmd)
 
-        seconds = duration_min * 60
-        time.sleep(seconds)
+        if duration_min > 0:
+            seconds = duration_min * 60
+            time.sleep(seconds)
+        print(f">>>> The Vehicle Simulator script {script_path} has been loaded and RUN")
 
     def stop_vehsim_script(self, ip_address):
-        cmd = "ClientCommands\ClientCommands.exe"
+        print("*** General_Access_Functions.stop_vehsim_script ***")
+        cmd = self.img_proc.get_project_root_directory() + "\ClientCommands\ClientCommands.exe"
         input_data = os.linesep.join([ip_address, 'stop', os.linesep])
         p = Popen(cmd, stdin=PIPE, bufsize=0)
         p.communicate(input_data.encode('ascii'))
         if p.returncode != 0:
             raise CalledProcessError(p.returncode, cmd)
+        print(f">>>> The Vehicle Simulator script has been STOPPED")

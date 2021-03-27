@@ -10,6 +10,7 @@ from IVG_Common import IVG_Common
 from Daylog_Test_Case import Daylog_Test_Case
 from HOS_Unassigned_Driving_Test_Case import HOS_Unassigned_Driving_Test_Case
 from Certify_Test_Case import Certify_Test_Case
+from HOS_PC_YM import HOS_PC_YM
 import connection_credentials as cfg
 #import pyGPSFeed_IMR
 from ImageProcessor import ImageProcessor
@@ -21,14 +22,41 @@ ivg_common = IVG_Common(gral_access)
 certify = Certify_Test_Case(gral_access)
 daylog = Daylog_Test_Case(gral_access)
 uva_events = HOS_Unassigned_Driving_Test_Case(gral_access)
+pc_ym =HOS_PC_YM(gral_access)
 
-print('log "***Script name OHOS2791***"') 
+'''OHOS-2791: Verify in "Day Log" tab that the driver remains in "Personal Conveyance" when selects "Yes" in the confirmation message.
+- Mobile has the latest build. 
+- DriverID and Pwd for at least one driver. 
+- A vSIM script that moves generates a Power Cycle. 
+- Personal Conveyance is checked as "Unlimited" in HOS Portal. 
+- Driver is logged in the mobile. 
+- Logs are updated. 
+- Driver is on "Personal Conveyance". 
+- Driver is in "HOS App" screen.'''
+
+print('-------------------- OHOS2791 --------------------')
+driver_id = 'JOSH0015'
 
 ivg_common.logOutAllDrivers()
-ivg_common.loginDriver('DriverId', 'DriverId', 'True', ' ')
-ivg_common.sendMessageToUpdateLogs()
+ivg_common.loginDriver(driver_id, driver_id, 'OFF')
+eld_core.update_logs()
+
+eld_core.goToELD()
 eld_core.changeDriverStatus('OFF', 'PC', '1234', ' ', ' ')
-gral_access.run_vehsim_script('192.168.100.16', 'C:\ELD_VSIM\ .xml', '1')
-#ConnectUnit
-eld_core.validate_status('Other:PersonalConveyance') #Translator Removed
+
+# Run PowerCycle xml vsim file
+gral_access.run_vehsim_script('192.168.100.16', 'C:\ELD_VSIM\powercycle1.xml', 1)
+pc_ym.handle_pc_confirm_prompt()
+gral_access.stop_vehsim_script('192.168.100.16')
+
+eld_core.validate_status('Personal Conveyance') #Translator Removed
 eld_core.dayForward('DayLog', 8)
+
+driver_records = daylog.day_log_records_driver('Bottom', 'Asc', 2)
+print(">>>> Driver Records Retrieved: \n" + str(driver_records))
+
+assert 'PC' in str(driver_records[0][1])
+
+assert 'OFF' in str(driver_records[1][1])
+
+

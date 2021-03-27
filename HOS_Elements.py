@@ -136,3 +136,11 @@ class webElem():
     HOS_SETUP_SAVE_BTN = (By.ID, 'cmdSave')
     HOS_SETUP_UPDATE_MSG = (By.ID, 'messageBar_lblMessage')
 
+    # ----- HOS Binary Parser -----
+    HOS_WEB_TOOLS_URL = "http://sdhosintevt10.devqes.omnitracs.com:8080/hos-web-tools/home"
+    HOS_WEB_TOOLS_TITLE = (By.TAG_NAME, "title")
+    HOS_WEB_TOOLS_RTN_MSG_PARSER_LINK = (By.CSS_SELECTOR, "a[href='rtnmsgparser']")
+    HOS_WEB_TOOLS_RTN_MSG_PARSER_FORM_ID = (By.ID, 'parserData')
+    HOS_WEB_TOOLS_RTN_MSG_PARSER_INPUT_BOX_ID = (By.ID, 'binaryPayload')
+    HOS_WEB_TOOLS_RTN_MSG_PARSER_PARSE_BTN = (By.CSS_SELECTOR, "input[value='PARSE']")
+    HOS_WEB_TOOLS_RTN_MSG_PARSER_TEXT_AREA = (By.CSS_SELECTOR, "textarea[name='parseMessage']")

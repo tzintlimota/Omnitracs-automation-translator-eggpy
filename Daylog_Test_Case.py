@@ -48,8 +48,7 @@ class Daylog_Test_Case(object):
         findOrder = ""
         
         if StartPoint =="Bottom":
-            for i in range(10):
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+            self.go_to_bottom()
         elif StartPoint =="Top":
             for i in range(10):
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
@@ -104,6 +103,13 @@ class Daylog_Test_Case(object):
 
             records.append(new_rec)
 
+            if 'special driving event' in str(records[i][1]).lower() or 'malfunction' in str(records[i][1]).lower():
+                # EVENT 3 Lines of Text
+                print('>>>> Re-cappturing EVENT value with 3-lines of text')
+                y, y1, x, x1 = 305, 351, 103, 245
+                recordToCompare = self.general.retrieve_text_with_config(y, y1, x, x1)
+                records[i][1] = recordToCompare.strip()
+
             if findOrder == "Asc":
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
             else:
@@ -132,8 +138,7 @@ class Daylog_Test_Case(object):
         findOrder = ""
         
         if StartPoint =="Bottom":
-            for i in range(2):
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+            self.go_to_bottom()
         elif StartPoint =="Top":
             for i in range(2):
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
@@ -155,7 +160,7 @@ class Daylog_Test_Case(object):
             new_rec = []
             
             #CERTIFIED
-            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+            img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
             crop_img2 = img[int(280):int(305), int(0):int(40)]
             
             string = pytesseract.image_to_string(crop_img2)
@@ -183,13 +188,13 @@ class Daylog_Test_Case(object):
        
             self.img_proc.click_image_by_coordinates(150, 300)
             self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+            img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
             
             #Duration
 
             string = ""
             self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-            img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+            img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
             #y, y1, x, x1 = 310, 330, 242, 320
             for i in range(3):
                 '''This defines with region is being captured (hh:mm:ss)'''
@@ -253,8 +258,8 @@ class Daylog_Test_Case(object):
             recordToCompare = self.general.retrieve_text_with_config(y,y1,x,x1)
             new_rec.append(recordToCompare.strip())
             #COMMENT
-            y, y1, x, x1 = 310, 330, 740, 960
-            recordToCompare = self.general.retrieve_text(y,y1,x,x1)
+            y, y1, x, x1 = 300, 335, 743, 960
+            recordToCompare = self.general.retrieve_text_with_config(y,y1,x,x1, None, 'eng')
             new_rec.append(recordToCompare.strip())
 
             
@@ -272,8 +277,7 @@ class Daylog_Test_Case(object):
         self.eld_core.goTo("DayLog")
         findOrder = ""
         if StartPoint =="Bottom":
-            for i in range(10):
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+            self.go_to_bottom()
         elif StartPoint =="Top":
             for i in range(10):
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
@@ -331,7 +335,7 @@ class Daylog_Test_Case(object):
                     self.img_proc.click_image_by_coordinates(150, 300)
                     self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
                     #self.img_proc.click_image_by_coordinates(150,300)
-                    img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+                    img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
                     
                     records = self.day_log_records_driver('', '', 1)
                     print(records)
@@ -363,9 +367,7 @@ class Daylog_Test_Case(object):
 
         findOrder = ""
         if StartPoint == "Bottom":
-            for i in range(10):
-                self.img_proc.click_image_by_max_key_points_offset(
-                    "IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+            self.go_to_bottom()
         elif StartPoint == "Top":
             for i in range(10):
                 self.img_proc.click_image_by_max_key_points_offset(
@@ -423,7 +425,7 @@ class Daylog_Test_Case(object):
                     self.img_proc.click_image_by_coordinates(150, 300)
                     self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
                     #self.img_proc.click_image_by_coordinates(150,300)
-                    img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+                    img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
                     
                     records = self.daylog_get_records_inspector('', '', 1)
                     print(records)
@@ -520,6 +522,18 @@ class Daylog_Test_Case(object):
         self.img_proc.click_image_by_coordinates(950,550)
 
         #search_func(self, search, space):
+
+
+    def go_to_bottom(self):
+        y, y1, x, x1 = 350, 380, 10, 500
+        record_regex = True
+
+        while record_regex:
+            record_line = self.general.retrieve_text_with_config(y, y1, x, x1, None, 'eng')
+            record_regex = re.findall(r'[\d|\w]', record_line)
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage",
+                                                               550, 420)
+        print('>>>> The BOTTOM of the table has been reached')
 
 
 

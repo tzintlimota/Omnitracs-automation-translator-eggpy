@@ -22,14 +22,30 @@ certify = Certify_Test_Case(gral_access)
 daylog = Daylog_Test_Case(gral_access)
 uva_events = HOS_Unassigned_Driving_Test_Case(gral_access)
 
-print('log "***Script name OHOS2805***"') 
+'''OHOS-2805: Verify in "Day Log" tab that an "Off Duty" status of 1 second is recorded just before the Personal Conveyance status
+- Mobile has the latest build. 
+- DriverID and Pwd for at least one driver. 
+- Personal Conveyance is checked as "Unlimited" in HOS Portal. 
+- Driver is logged in the mobile. 
+- Logs are updated. 
+- Driver is in HOS App'''
 
-ivg_common.loginDriver('JOSH0003', 'JOSH0003', '', '')
+print('-------------------- OHOS2805 ----------------------')
+driver_id = 'JOSH0003'
+
 ivg_common.logOutAllDrivers()
-ivg_common.loginDriver('DriverId', 'DriverId', 'True', ' ')
-ivg_common.sendMessageToUpdateLogs()
+ivg_common.loginDriver(driver_id, driver_id, 'OF')
+eld_core.update_logs()
+
 eld_core.changeDriverStatus('OFF', 'PC', '1234', ' ', ' ')
-eld_core.validate_status('Other:PersonalConveyance') #Translator Removed
+eld_core.validate_status('Personal Conveyance') #Translator Removed
+
 eld_core.dayForward('DayLog', 8)
+daylog.find_driver_record('PC', 'Status', 'Bottom', 'Asc')#Translator
+driver_log = daylog.day_log_records_driver('', 'Asc', 2)
+
+daylog.find_inspector_record('Personal Conveyance', 'Event', 'Bottom', 'Asc')#Translator
+inspector_log = daylog.daylog_get_records_inspector('', 'Asc', 2)
+
 #ConnectUnit
-certify.getTable('CertifyTestCase.getTable(2)intoCertifyLogs', ' ', int( ))
+certify_logs = certify.getTable('Bottom', 'Asc', 2)
