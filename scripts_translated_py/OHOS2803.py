@@ -38,7 +38,7 @@ driver_id = 'TMOTA03'
 
 #ivg_common.logOutAllDrivers()
 #ivg_common.loginDriver(driver_id, '123456', 'ON', True)
-#eld_core.update_logs()
+eld_core.update_logs()
 
 eld_core.changeDriverStatus('OFF', 'PC', '1234', ' ')
 time.sleep(60)
@@ -54,7 +54,7 @@ eld_core.dayForward('DayLog', 8)
 daylog.find_driver_record('PC', 'Status', 'Bottom', 'Asc')#Translator
 driver_log = daylog.day_log_records_driver('', 'Desc', 3)
 
-daylog.find_driver_record('Special Driving', 'Event', 'Bottom', 'Asc')#Translator
+daylog.find_inspector_record('Special Driving', 'Event', 'Bottom', 'Asc')#Translator
 inspector_log = daylog.daylog_get_records_inspector('', 'Desc', 2)
 
 print(">>>> Driver Records Retrieved: \n" + str(driver_log))
