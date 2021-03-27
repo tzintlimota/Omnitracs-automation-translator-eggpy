@@ -158,7 +158,7 @@ class IVG_Common(object):
 
     def clearAlerts(self):
         #total_x, total_y, color = self.img_proc.button_is_active("ivg_header_alert", 0, 0)
-        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
         color = self.img_proc.color_check(905,45,img)
         print(color)
         if color != 'gray inactive':

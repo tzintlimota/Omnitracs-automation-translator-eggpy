@@ -506,7 +506,7 @@ class Daylog_Test_Case(object):
         #self.eld_core.goToHOS()
         self.eld_core.goToERODS()
 
-        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        img = cv2.imread(self.img_proc.get_project_root_directory + '/Images/ExpectedScreens/last_screen.png')
 
         #color = self.img_proc.color_check(950,550,img)
         if self.general.search_func(method, 'Web Services'):
