@@ -10,6 +10,7 @@ from IVG_Common import IVG_Common
 from Daylog_Test_Case import Daylog_Test_Case
 from HOS_Unassigned_Driving_Test_Case import HOS_Unassigned_Driving_Test_Case
 from Certify_Test_Case import Certify_Test_Case
+import pyodbc
 import connection_credentials as cfg
 #import pyGPSFeed_IMR
 from ImageProcessor import ImageProcessor
@@ -65,7 +66,7 @@ assert 'driver' in str(inspector_logs[0][0]).lower()
 
 #DB Validation penging
 #credentials = mysql.connector.connect(type='odbc', dns_srv='HOS_DB', user='itko_lisa', password='S8Jxj3LY', host='DEVQESSQLST201e,31205')
-'''server = 'DEVQESSQLST201e,31205'
+server = 'DEVQESSQLST201e,31205'
 dsn = 'HOS_DB'
 user = 'itko_lisa'
 password = 'S8Jxj3LY'
@@ -86,4 +87,4 @@ for (BINARY_PAYLOAD) in db:
 db.close()
 cnxn.close()
 
-binary_payload = response[0]'''
+binary_payload = response[0]
