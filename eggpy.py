@@ -359,6 +359,45 @@ def tokenization():
 
             toadd = "\neld_core.validate_status('" + clean_param + "') #Translator Removed"
             file2.writelines(toadd)
+        
+        elif (search_func('VerifyDriverDayLog', doc) or search_func('VerifyDriverDayLogRecord', doc)):
+            params = []
+            stringToPass = ''
+
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            new = new.replace('.RejectUnassignedEvents', '')
+            params = new.split()
+
+            print(params)
+            while len(params) < 4:
+                params.append(' ')
+
+            toadd = "\ncertify.verify_driver_daylog('" + params[0] + "', int(" + params[1] + "), '" + params[2] + "' )"
+            file2.writelines(toadd)
+        elif (search_func('clickOnTableStatus', doc)):
+            params = []
+            stringToPass = ''
+
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            new = new.replace('.RejectUnassignedEvents', '')
+            params = new.split()
+
+            print(params)
+            while len(params) < 2:
+                params.append(' ')
+
+            toadd = "\ncertify.clickOnTableStatus('" + params[0] + "')"
+            file2.writelines(toadd)
 
         elif (search_func('AcceptUnassignedEvents', doc)):
             params = []
@@ -443,18 +482,112 @@ def tokenization():
             toadd = f"\ngral_access.stop_vehsim_script()"
             file2.writelines(toadd)
 
+        elif (search_func('requestERODS', doc)):
+            params = []
+            stringToPass = ''
+
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            params = new.split()
+
+            print(params)
+            while len(params) < 3:
+                params.append(' ')
+
+            toadd = f"\ncertify.request_ERODS( '" + params[0] + "', '" + params[1] + "')"
+            
+            file2.writelines(toadd)
+        elif (search_func('EditLog', doc)):
+            params = []
+            stringToPass = ''
+
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            params = new.split()
+
+            print(params)
+            while len(params) < 7:
+                params.append(' ')
+
+            toadd = f"\ncertify.edit_log( bool(" + params[0] + "),'" + params[1] + "', '" + params[2] + "','" + params[3] + "', bool(" + params[4] + "), bool(" + params[5] + "))"
+            file2.writelines(toadd)
+        elif (search_func('getInspectorLogs', doc) or search_func('getInspectorRecords', doc)):
+            params = []
+            stringToPass = ''
+
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            new = new.replace('.RejectUnassignedEvents', '')
+            params = new.split()
+
+            print(params)
+            while len(params) < 4:
+                params.append(' ')
+
+            toadd = "\ndaylog.daylog_get_records_inspector(int(" + params[0] + "),'" + params[1] + "', '" + params[2] + "' )"
+            file2.writelines(toadd)
+        elif (search_func('getDriverLogs', doc) or search_func('getDriverRecords', doc)):
+            params = []
+            stringToPass = ''
+
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            new = new.replace('.RejectUnassignedEvents', '')
+            params = new.split()
+
+            print(params)
+            while len(params) < 4:
+                params.append(' ')
+
+            toadd = "\ndaylog.day_log_records_driver(int(" + params[0] + "),'" + params[1] + "', '" + params[2] + "' )"
+            file2.writelines(toadd)
+        elif (search_func('findDriverRecord', doc)):
+            params = []
+            stringToPass = ''
+
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            new = new.replace('.RejectUnassignedEvents', '')
+            params = new.split()
+
+            print(params)
+            while len(params) < 4:
+                params.append(' ')
+
+            toadd = "\ndaylog.find_driver_record('" + params[0] + "','" + params[1] + "', '" + params[2] + "','" + params[3] + "' )"
+            file2.writelines(toadd)
         else:
             print('\n AUN NO CONOZCO ESTA FUNCION ' + line[0: len(line)-1] + '\n')
             #file2.writelines('\n')
             for token in doc:
                 print(token.text, token.pos_, token.dep_)
         
-        #file2.writelines(line)
-        #
-        #daylog_get_records_driver (num_records, start_point, direction)
-        #verify_driver_daylog(self,expectedStatus, logIndex, DayLogTable):
-        #daylog_get_records_inspector (num_records, start_point, direction)
-        #find_driver_record
+        
+    ''' 
+    #find_driver_record
+    find_driver_record(self,RecordToFind,ColumnToSearch,StartPoint, FindOrder):
+    DayLogTestCase.findDriverRecord RecordToFind, ColumnToSearch, StartPoint, FindOrder'''
+
 tokenization()
 
 file2.close()

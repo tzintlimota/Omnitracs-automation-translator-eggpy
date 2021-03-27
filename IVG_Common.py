@@ -157,10 +157,13 @@ class IVG_Common(object):
         #print("All drivers logged out")
 
     def clearAlerts(self):
-        total_x, total_y, color = self.img_proc.button_is_active("ivg_header_alert", 0, 0)
+        #total_x, total_y, color = self.img_proc.button_is_active("ivg_header_alert", 0, 0)
+        img = cv2.imread(os.getcwd() + '/Images/ExpectedScreens/last_screen.png')
+        color = self.img_proc.color_check(905,45,img)
         print(color)
         if color != 'gray inactive':
-            self.img_proc.click_image_by_max_key_points("ivg_header_alert")
+            #self.img_proc.click_image_by_max_key_points("ivg_header_alert")
+            self.img_proc.click_image_by_coordinates(905,45)
             self.img_proc.expect_image("vnc_alert_hos_update", 'ExpectedScreens', 8)
             self.img_proc.click_image_by_max_key_points("IVG_Common/Alerts/DeleteAllButton/DeleteAllButton")
             print("Alerts Cleared")
