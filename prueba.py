@@ -25,9 +25,5 @@ uva_events = HOS_Unassigned_Driving_Test_Case(gral_access)
 
 print('log "***Script name OHOS2810***"') 
 
-certify.getTable('Bottom', 'Asc', int(5))
-certify.request_ERODS( 'method', 'comment')
-certify.edit_log( bool(True),'SB', 'HOLA','TEST', bool(True), bool(True))
-daylog.daylog_get_records_inspector(int(2),'Asc', 'Top' )
-daylog.day_log_records_driver(int(2),'start_point', 'direction' )
-daylog.find_driver_record('RecordToFind','ColumnToSearch', 'StartPoint','FindOrder' )
+
+certify.select_new_status('off','bottom','ow')

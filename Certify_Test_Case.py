@@ -303,19 +303,20 @@ class Certify_Test_Case(object):
 
         self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/EditButton/Enabled/Enabled")
 
-        certifyAfter = certifyAfter.lower()
+        newStatus = newStatus.lower()
 
         self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -325, 195)
 
-        if certifyAfter == 'off':
+        if newStatus == 'off':
             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -345, 205)
-        elif certifyAfter == 'on':
-            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -345, 235)
-        elif certifyAfter == 'sb':
+        elif newStatus == 'on':
             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -350, 270)
-        elif certifyAfter == 'd':
+        elif newStatus == 'sb':
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -345, 235)
+            
+        elif newStatus == 'd':
             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -350, 295)
-        
+    
         #OBTENER LA POSICION VACIA EN POSITION
         self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -350, 250)
         self.img_proc.send_keys('Test')
@@ -343,3 +344,59 @@ class Certify_Test_Case(object):
                     self.img_proc.click_image_by_max_key_points('ELD_Core/CertifyTab/AgreeButton/AgreeButton')
                 else:
                     self.img_proc.click_image_by_max_key_points('ELD_Core/CertifyTab/NotReadyButton/NotReadyButton')
+
+    
+    def select_new_status(self, newStatus, DropdownLocation, exception):
+        newStatus = newStatus.lower()
+       
+        exception = exception.lower()
+        DropdownLocation = DropdownLocation.lower()
+
+
+        if DropdownLocation == 'top':
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -325, 195)
+            if newStatus == 'off':
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -345, 205)
+            elif newStatus == 'on':
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -350, 270)
+            elif newStatus == 'sb':
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -345, 235)
+            elif newStatus == 'd':
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -350, 295)
+            
+            if exception == 'ow':
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 250, 195)
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 250, 235)
+            elif exception == 'pc':
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 250, 195)
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 250, 265)
+            elif exception == 'ym':  
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 250, 195)
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 250, 235)
+        else:
+            
+            self.img_proc.click_image_by_max_key_points('ELD_Core/CertifyTab/SplitButton/SplitButton')
+
+            time.sleep(2)
+            
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -325, 315)
+            if newStatus == 'off':
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -345, 350)
+            elif newStatus == 'on':
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -350, 400)
+            elif newStatus == 'sb':
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -345, 375)
+            elif newStatus == 'd':
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -350, 440)
+            
+            if exception == 'ow':
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 250, 315)
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 250, 375)
+            elif exception == 'pc':
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 250, 315)
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 250, 410)
+            elif exception == 'ym':  
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 350, 315)
+                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 250, 375)
+        
+        

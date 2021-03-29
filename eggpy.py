@@ -584,9 +584,9 @@ def tokenization():
         
         
     ''' 
-    #find_driver_record
-    find_driver_record(self,RecordToFind,ColumnToSearch,StartPoint, FindOrder):
-    DayLogTestCase.findDriverRecord RecordToFind, ColumnToSearch, StartPoint, FindOrder'''
+    # select_new_status(self, newStatus, DropdownLocation, exception):
+    selectNewStatus newStatus, DropdownLocation, exception
+    '''
 
 tokenization()
 
