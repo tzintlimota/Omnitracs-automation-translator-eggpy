@@ -1,13 +1,5 @@
-from selenium import webdriver
-import pyodbc
-from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.support import expected_conditions as EC
-from HOS_Elements import webElem
-import time
 
-globalDriver = webdriver.Chrome()
-globalDriver.implicitly_wait(10)
+import pyodbc
 
 class HOS_DB_Coontroller:
 
