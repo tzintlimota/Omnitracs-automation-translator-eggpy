@@ -77,6 +77,11 @@ bin_payload = query_response[0]
 
 # Parsing of the BINARY_PAYLOAD
 rtn_msg = bin_parser.parser_return_message(bin_payload)
+
+# Validation of Return Message Title
+assert 'ELD_Clear_Special_Driving_Event' in rtn_msg
+
+# Get value of the keys in the Return Message
 latitude = bin_parser.get_key_value(rtn_msg, 'latitude')
 longitude = bin_parser.get_key_value(rtn_msg, 'longitude')
 
