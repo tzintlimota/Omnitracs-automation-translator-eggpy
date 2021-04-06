@@ -405,11 +405,11 @@ class Certify_Test_Case(object):
         f.close()
         
         #Click edit
-        #self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/EditButton/Enabled/Enabled")
+        self.img_proc.click_image_by_max_key_points("ELD_Core/CertifyTab/EditButton/Enabled/Enabled")
 
         newStatus = splitStatus.lower()
 
-        #self.img_proc.click_image_by_max_key_points('ELD_Core/CertifyTab/SplitButton/SplitButton')
+        self.img_proc.click_image_by_max_key_points('ELD_Core/CertifyTab/SplitButton/SplitButton')
 
         time.sleep(2)
         
