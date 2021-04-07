@@ -11,6 +11,7 @@ import numpy as np
 import pytesseract
 from IVG_ELD_CORE import IVG_ELD_CORE
 from IVG_Common import IVG_Common
+from Daylog_Test_Case import Daylog_Test_Case
 from dateutil.parser import parse
 import connection_credentials as cfg
 import re
@@ -26,6 +27,7 @@ class Certify_Test_Case(object):
         self.general = general
         self.img_proc = self.general.img_proc
         self.ivg_common = IVG_Common(general)
+        self.daylog = Daylog_Test_Case(general)
 
     def certifyAllLogs(self):
         self.eld_core.goTo("Certify")
@@ -172,13 +174,18 @@ class Certify_Test_Case(object):
         self.findTableRecord(RecordToFind, 'Status', 'Bottom', 'Asc')
 
     def getTable(self, StartPoint, FindOrder, NumRecords):
-        
-        self.eld_core.goTo("Certify")
+        print('*** Certify_Test_Case.getTable ***')
+        found = self.img_proc.expect_image('vnc-hos-certify-screen', 'ExpectedScreens', 3)
+
+        if found:
+            print('Already in CERTIFY screen')
+        else:
+            self.eld_core.goTo("Certify")
+
         findOrder = ""
         
         if StartPoint =="Bottom":
-            for i in range(2):
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+            self.daylog.go_to_bottom()
         elif StartPoint =="Top":
             for i in range(2):
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
@@ -219,24 +226,10 @@ class Certify_Test_Case(object):
             new_rec.append(recordToCompare.strip())   
        
             #STATUS
-            y, y1,x, x1 = 285, 310, 115, 245
+            y, y1,x, x1 = 285, 310, 115, 300
             self.img_proc.click_image_by_coordinates(150, 300)
-            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
-            img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
-            crop_img2 = img[int(y):int(y1), int(x):int(x1)]
-            #calculate the 50 percent of original dimensions
-            width = int(crop_img2.shape[1] * 1200 / 400)
-            height = int(crop_img2.shape[0] * 1200 / 400)
-            # dsize
-            dsize = (width, height)
-            # resize image
-            #crop_img2 = cv2.resize(crop_img2, dsize)
-            crop_img2 = cv2.resize(crop_img2, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
-
-            string = pytesseract.image_to_string(crop_img2, lang='eng', config="--psm 6")
-            #string2 = ''.join(i for i in string if i.isalnum())
-            recordToCompare = string.lower()
-            new_rec.append(recordToCompare.strip())    
+            recordToCompare = self.general.retrieve_text_with_config(y,y1,x,x1)
+            new_rec.append(recordToCompare.strip())
 
             #Duration
             recordToCompare = self.general.retrieve_duration()

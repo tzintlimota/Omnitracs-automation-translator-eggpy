@@ -63,17 +63,20 @@ class IVG_ELD_CORE(object):
         self.img_proc.expect_image('vnc_hos_main', 'ExpectedScreens', 3)
         self.img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/StatusTabActive/StatusTabActive')
 
+        actual_status = self.general.retrieve_text_with_config(245, 270, 132, 370)
+        print(f">>>> Current Status: {actual_status}")
+
         self.img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/ChangeButton/ChangeButton')
         self.img_proc.expect_image('vnc_change_main', 'ExpectedScreens', 3)
 
         print(f">>>> Selecting new status: {newStatus}")
-        if newStatus == "OFF":
-            self.img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/Change_Status/OFF_Status/OFF_Status')
-        elif newStatus == "SB":
+        if newStatus == "OFF" and str(actual_status.strip()).lower() != 'off duty':
+            self.img_proc.click_image_by_max_key_points_offset('IVG_Common/Home/HoursofServicePage/HoursofServicePage', -330, 180)
+        elif newStatus == "SB" and actual_status.strip().lower() != 'sleeper berth':
             self.img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/Change_Status/SB_Status/SB_Status')
-        elif newStatus == "D":
+        elif newStatus == "D" and actual_status.strip().lower() != 'driving':
             self.img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/Change_Status/DR_Status/DR_Status')
-        else:
+        elif newStatus == '':
             self.img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/Change_Status/ON_Status/ON_Status')
 
         if condition != ' ':
