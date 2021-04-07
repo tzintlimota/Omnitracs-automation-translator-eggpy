@@ -64,7 +64,7 @@ class IVG_ELD_CORE(object):
         self.img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/StatusTabActive/StatusTabActive')
 
         actual_status = self.general.retrieve_text_with_config(245, 270, 132, 370)
-        print(actual_status)
+        print(f">>>> Current Status: {actual_status}")
 
         self.img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/ChangeButton/ChangeButton')
         self.img_proc.expect_image('vnc_change_main', 'ExpectedScreens', 3)
