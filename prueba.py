@@ -26,5 +26,5 @@ uva_events = HOS_Unassigned_Driving_Test_Case(gral_access)
 print('log "***Script name OHOS2810***"')
 
 
-certify.split_log(True, 'SB', 'Hello', 'J','A','N', 'Unknown', True, True)
+certify.getExceptionDropdownValues('Bottom')
 #split_log(certifyAfter, splitStatus, originalFirstRemark, splitFirstRemark,originalSecondRemark,splitSecondRemark, Location, Continue, Finish)

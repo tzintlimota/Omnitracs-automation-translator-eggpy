@@ -476,3 +476,138 @@ class Certify_Test_Case(object):
         f = open("IVG_var.txt", "w")
         f.write("None")
         f.close()
+    
+    #GetStatusDropdownValues
+    #GetExceptionDropdownValues
+
+    def getStatusDropdownValues(self, DropdownLocation):
+
+        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+        img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
+        crop_img2 = img[int(420):int(445), int(15):int(250)]
+
+        crop_img2 = cv2.resize(crop_img2, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+        #plt.imshow(crop_img2)
+        #plt.show()
+        string = pytesseract.image_to_string(crop_img2)
+        print(string)
+
+        
+        if DropdownLocation == 'Bottom' and len(string) < 3:
+            self.img_proc.click_image_by_max_key_points('ELD_Core/CertifyTab/SplitButton/SplitButton')
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -325, 315)
+
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -350, 440)
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -325, 315)
+        
+            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+            img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
+            crop_img2 = img[int(410):int(520), int(15):int(100)]
+
+        elif DropdownLocation == 'Bottom' and len(string) > 3:
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -325, 315)
+
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -350, 440)
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -325, 315)
+        
+            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+            img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
+            crop_img2 = img[int(410):int(520), int(15):int(100)]
+
+            
+        elif DropdownLocation != 'Bottom' and len(string) > 3:
+            self.img_proc.click_image_by_max_key_points('ELD_Core/CertifyTab/SplitButton/SplitButton')
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -325, 195)
+
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -350, 295)
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -325, 195)
+            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+            img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
+            crop_img2 = img[int(270):int(380), int(19):int(100)]
+
+            
+        else:
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -325, 195)
+
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -350, 295)
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -325, 195)
+            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+            img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
+            crop_img2 = img[int(270):int(380), int(19):int(100)]
+
+
+        string = pytesseract.image_to_string(crop_img2)
+        string += 'D'
+        print(string)
+        return string
+
+
+    def getExceptionDropdownValues(self, DropdownLocation):
+        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+        img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
+        crop_img2 = img[int(420):int(445), int(15):int(250)]
+
+        crop_img2 = cv2.resize(crop_img2, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+        #plt.imshow(crop_img2)
+        #plt.show()
+        string = pytesseract.image_to_string(crop_img2)
+        print(string)
+
+        
+        if DropdownLocation == 'Bottom' and len(string) < 3:
+            self.img_proc.click_image_by_max_key_points('ELD_Core/CertifyTab/SplitButton/SplitButton')
+
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 250, 315)
+        
+            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+            img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
+            crop_img2 = img[int(410):int(470), int(625):int(668)]
+            string = pytesseract.image_to_string(crop_img2)
+            
+            crop_img2 = img[int(410):int(495), int(625):int(668)]
+            string += pytesseract.image_to_string(crop_img2)
+
+        elif DropdownLocation == 'Bottom' and len(string) > 3:
+
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 250, 315)
+        
+            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+            img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
+       
+            crop_img2 = img[int(410):int(470), int(625):int(668)]
+            string = pytesseract.image_to_string(crop_img2)
+
+            crop_img2 = img[int(410):int(495), int(625):int(668)]
+            string += pytesseract.image_to_string(crop_img2)
+
+            
+        elif DropdownLocation != 'Bottom' and len(string) > 3:
+            self.img_proc.click_image_by_max_key_points('ELD_Core/CertifyTab/SplitButton/SplitButton')
+            
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 250, 195)
+
+            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+            img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
+            crop_img2 = img[int(270):int(330), int(625):int(668)]
+            string = pytesseract.image_to_string(crop_img2)
+            crop_img2 = img[int(270):int(355), int(625):int(668)]
+            string += pytesseract.image_to_string(crop_img2)
+
+            
+        else:
+            
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 250, 195)
+            
+            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+            img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
+            crop_img2 = img[int(270):int(330), int(625):int(668)]
+            string = pytesseract.image_to_string(crop_img2)
+            crop_img2 = img[int(270):int(355), int(625):int(668)]
+            string += pytesseract.image_to_string(crop_img2)
+
+        plt.imshow(crop_img2)
+        plt.show()
+
+        #string = pytesseract.image_to_string(crop_img2)
+        print(string)
+        return string
