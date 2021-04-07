@@ -28,6 +28,7 @@ class Daylog_Test_Case(object):
         self.ivg_common = IVG_Common(general)
 
     def daylog_get_records_inspector(self,StartPoint, FindOrder, NumRecords):
+        print('*** Daylog_Test_Case.daylog_get_records_inspector ***')
         found = self.img_proc.expect_image('vnc-hos-daylog-screen', 'ExpectedScreens', 3)
 
         if found:
@@ -63,9 +64,10 @@ class Daylog_Test_Case(object):
             findOrder = "Asc"
         
         records = []
+        cont = 0
         for i in range(NumRecords):
             time.sleep(1)
-
+            cont += 1
             self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
             new_rec = []
             #TIME
@@ -110,14 +112,14 @@ class Daylog_Test_Case(object):
                 recordToCompare = self.general.retrieve_text_with_config(y, y1, x, x1)
                 records[i][1] = recordToCompare.strip()
 
-            if findOrder == "Asc":
+            if findOrder == "Asc" and cont < NumRecords:
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
-            else:
+            if findOrder == "Desc" and cont < NumRecords:
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
         return records
 
     def day_log_records_driver(self,StartPoint, FindOrder, NumRecords):
-
+        print('*** Daylog_Test_Case.day_log_records_driver ***')
         found = self.img_proc.expect_image('vnc-hos-daylog-screen', 'ExpectedScreens', 3)
 
         if found:
@@ -143,7 +145,7 @@ class Daylog_Test_Case(object):
             for i in range(2):
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
         else:
-            print("In the middle of the table")
+            print(">>>> In the middle of the table")
 
         if FindOrder == "Asc":
             findOrder = "Asc"
@@ -153,7 +155,9 @@ class Daylog_Test_Case(object):
             findOrder = "Asc"
         
         records = []
+        cont = 0
         for i in range(NumRecords):
+            cont += 1
             time.sleep(1)
             self.img_proc.click_image_by_coordinates(150, 300)
             self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
@@ -264,17 +268,33 @@ class Daylog_Test_Case(object):
 
             
             records.append(new_rec)
-            if findOrder == "Asc":
+            if findOrder == "Asc" and cont < NumRecords:
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
-            else:
+            if findOrder == "Desc" and cont < NumRecords:
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
         return records
 
 
 
     def find_driver_record(self,RecordToFind,ColumnToSearch,StartPoint, FindOrder):
-        #CertifyTestCase.findTableRecord
-        self.eld_core.goTo("DayLog")
+        print('*** Daylog_Test_Case.find_driver_record ***')
+        found = self.img_proc.expect_image('vnc-hos-daylog-screen', 'ExpectedScreens', 3)
+
+        if found:
+            print('Already in DAYLOG screen')
+        else:
+            self.eld_core.goTo("DayLog")
+
+        y, y1, x, x1 = 540, 565, 460, 565
+        btn_txt = self.general.retrieve_text_with_config(y, y1, x, x1)
+        print(btn_txt)
+
+        if 'inspector' in btn_txt.lower():
+            print("Currently in DRIVER profile")
+        else:
+            print("Switching to DRIVER profile")
+            self.img_proc.click_image_by_max_key_points('ELD_Core/DayLogTab/DriverButton/DriverButton')
+
         findOrder = ""
         if StartPoint =="Bottom":
             self.go_to_bottom()
@@ -339,8 +359,7 @@ class Daylog_Test_Case(object):
                     
                     records = self.day_log_records_driver('', '', 1)
                     print(records)
-                
-                    print(records[0][x].lower())
+
                     recordToCompare = records[0][x].lower()
                  
                     records = None
@@ -360,10 +379,27 @@ class Daylog_Test_Case(object):
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
 
 
-    def find_inspector_record(self,RecordToFind,ColumnToSearch,StartPoint, FindOrder):
-        #CertifyTestCase.findTableRecord
 
-        self.eld_core.goTo("DayLog")
+
+    def find_inspector_record(self,RecordToFind,ColumnToSearch,StartPoint, FindOrder):
+        print('*** Daylog_Test_Case.find_inspector_record ***')
+
+        found = self.img_proc.expect_image('vnc-hos-daylog-screen', 'ExpectedScreens', 3)
+
+        if found:
+            print('Already in DAYLOG screen')
+        else:
+            self.eld_core.goTo("DayLog")
+
+        y, y1, x, x1 = 540, 565, 460, 565
+        btn_txt = self.general.retrieve_text_with_config(y, y1, x, x1)
+        print(btn_txt)
+
+        if 'driver' in btn_txt.lower():
+            print("Currently in INSPECTOR profile")
+        else:
+            print("Switching to INSPECTOR profile")
+            self.img_proc.click_image_by_max_key_points('ELD_Core/DayLogTab/InspectorButton/InspectorButton')
 
         findOrder = ""
         if StartPoint == "Bottom":
@@ -437,13 +473,14 @@ class Daylog_Test_Case(object):
                     
                     if self.general.search_func(str(RecordToFind.lower().strip()), str(recordToCompare.strip())):
                         found = True
-                        print("Found " + str(RecordToFind))
+                        print(f">>>> Record Found {RecordToFind}")
                         '''if findOrder == 'Asc':
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
                         else:
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
                         self.img_proc.click_image_by_coordinates(150,300)'''
                     else:
+                        print(f'>>>> Continue searching for record {RecordToFind}')
                         if findOrder == "Asc":
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
                         else:
@@ -525,6 +562,9 @@ class Daylog_Test_Case(object):
 
 
     def go_to_bottom(self):
+        print('*** Daylog_Test_Case.go_to_bottom ***')
+        time.sleep(1)
+
         y, y1, x, x1 = 350, 380, 10, 500
         record_regex = True
 
