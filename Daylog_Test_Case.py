@@ -509,7 +509,7 @@ class Daylog_Test_Case(object):
             print("Status " + str(expectedStatus))
         
         time_start_pattern = r'\d\d:\d\d:\d\d'
-        #print(duration)
+        #print(duration)      
         duration_pattern = r'\d\dh\d\dm\d\ds'
 
         location_pattern = r'^[A-Za-z0-9]+$'
