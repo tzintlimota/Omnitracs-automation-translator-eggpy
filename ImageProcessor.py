@@ -434,7 +434,7 @@ class ImageProcessor:
     def color_check(self, x,y ,im):
         img = im
         crop_img = img[int(y-5):int(y+5), int(x-5):int(x+5)]
-        crop_img2 = img[int(y-10):int(y+10), int(x-10):int(x+10)]
+        crop_img2 = img[int(y-20):int(y+20), int(x-20):int(x+20)]
         #Space color conversion
         #crop_img = cv2.cvtColor(crop_img, cv2.COLOR_RGB2BGR)
         avg_color_per_row = np.average(crop_img, axis=0)

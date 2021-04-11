@@ -594,7 +594,7 @@ class Certify_Test_Case(object):
             self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
             img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
             crop_img2 = img[int(270):int(330), int(625):int(668)]
-            string = pytesseract.image_to_string(crop_img2)
+            string = pytesseract.image_to_string(crop_img2) 
             crop_img2 = img[int(270):int(355), int(625):int(668)]
             string += pytesseract.image_to_string(crop_img2)
 
@@ -604,3 +604,30 @@ class Certify_Test_Case(object):
         #string = pytesseract.image_to_string(crop_img2)
         print(string)
         return string
+
+    def getCertifyDateScreenDate(self):
+        print ('***Certify_Test_Case.getCertifyDateScreenDate***')
+        #self.eld_core.goTo("Certify")
+        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+        img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
+        crop_img2 = img[int(200):int(240), int(850):int(975)]
+        plt.imshow(crop_img2)
+        plt.show()
+        string = pytesseract.image_to_string(crop_img2)
+        print(string)
+        return string
+
+    def verifyCertifyButtonStatus(self):
+
+        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+        img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
+        crop_img2 = img[int(510):int(590), int(870):int(1000)]
+        plt.imshow(crop_img2)
+        plt.show()
+        color = self.img_proc.color_check(50,45, crop_img2)
+        print(color)
+        if color == 'gray active':
+            print('Certify Button is enabled')
+        else:
+            print('Certify Button is disabled')
+     
