@@ -630,4 +630,22 @@ class Certify_Test_Case(object):
             print('Certify Button is enabled')
         else:
             print('Certify Button is disabled')
+    
+    def editTimeField(self, section, value):
+        print ('***Certify_Test_Case.editTimeField***')
+        #self.eld_core.goTo("Certify")
+        section = section.lower()
+
+        if section == 'hrs':
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -210, 180)
+        elif section == 'min':
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -180, 180)
+        elif section == 'sec':
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -140, 180)
+        
+        self.img_proc.send_keys(value)
+        
+        time.sleep(3)
+        self.img_proc.click_image_by_max_key_points('IVG_Common/Home/KeyboardOpen/KeyboardOpen')
+        
      

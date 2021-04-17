@@ -10,6 +10,7 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import numpy as np
 import pytesseract
+pytesseract.pytesseract.tesseract_cmd = 'C:/OCR/Tesseract-OCR/tesseract.exe'
 from IVG_ELD_CORE import IVG_ELD_CORE
 from IVG_Common import IVG_Common
 from dateutil.parser import parse
@@ -575,6 +576,17 @@ class Daylog_Test_Case(object):
                                                                550, 420)
         print('>>>> The BOTTOM of the table has been reached')
 
+    def getDayLogDate(self):
+        print ('***Daylog_Test_Case.getDayLogDate***')
+        #self.eld_core.goTo("Certify")
+        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+        img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
+        crop_img2 = img[int(200):int(240), int(850):int(975)]
+        plt.imshow(crop_img2)
+        plt.show()
+        string = pytesseract.image_to_string(crop_img2)
+        print(string)
+        return string
 
 
 
