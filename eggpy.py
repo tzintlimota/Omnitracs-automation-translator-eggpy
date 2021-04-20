@@ -612,7 +612,7 @@ def tokenization():
     getcCertifyScreenDate
     getStatusDropdownValues
     getExceptionDropdownValues
-    +GetDayLogDate
+    GetDayLogDate
     EditTimeField
     '''
 

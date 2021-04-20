@@ -10,7 +10,6 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import numpy as np
 import pytesseract
-pytesseract.pytesseract.tesseract_cmd = 'C:/OCR/Tesseract-OCR/tesseract.exe'
 from IVG_ELD_CORE import IVG_ELD_CORE
 from IVG_Common import IVG_Common
 from dateutil.parser import parse
@@ -588,5 +587,37 @@ class Daylog_Test_Case(object):
         print(string)
         return string
 
+    def getCoDriver(self, screen):
+        print ('***Daylog_Test_Case.getCoDriver***')
+        #self.eld_core.goTo("Certify")
+        found = self.img_proc.expect_image('vnc-hos-daylog-screen', 'ExpectedScreens', 3)
+
+        if found:
+            print('Already in DAYLOG screen')
+        else:
+            self.eld_core.goTo("DayLog")
+
+        y, y1, x, x1 = 540, 565, 460, 565
+        btn_txt = self.general.retrieve_text_with_config(y, y1, x, x1)
+        print(btn_txt)
+
+        
+        if screen == 'Driver':
+            if 'inspector' in btn_txt.lower():
+                print("Currently in DRIVER profile")
+            else:
+                print("Switching to DRIVER profile")
+                self.img_proc.click_image_by_max_key_points('ELD_Core/DayLogTab/DriverButton/DriverButton')
+            #Irse hasta abajo, si dice yes picarle, sacar el nombre del codriver
+            #si dice no, print no codriver
+        else:
+            if 'inspector' in btn_txt.lower():
+                print("Switching to INSPECTOR profile")
+                self.img_proc.click_image_by_max_key_points('ELD_Core/DayLogTab/InspectorButton/InspectorButton')
+            else:
+                print("Currently in INSPECTOR profile")
+            #ir al fondo de la tabla
+            #recuperar el registro
+            #recuperar codriver igual
 
 
