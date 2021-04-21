@@ -276,7 +276,7 @@ class Daylog_Test_Case(object):
 
 
 
-    def find_driver_record(self,RecordToFind,ColumnToSearch,StartPoint, FindOrder):
+    def find_driver_record(self,RecordToFind,ColumnToSearch,StartPoint, FindOrder, numMax):
         print('*** Daylog_Test_Case.find_driver_record ***')
         found = self.img_proc.expect_image('vnc-hos-daylog-screen', 'ExpectedScreens', 3)
 
@@ -338,6 +338,7 @@ class Daylog_Test_Case(object):
         print(records)
         print(records[0][x].lower())
         recordToCompare = records[0][x].lower()
+        recordsCopy = records[0]
         records = None
 
         if self.general.search_func(str(RecordToFind.lower().strip()), str(recordToCompare.strip())):
@@ -346,7 +347,7 @@ class Daylog_Test_Case(object):
         else:
             print("Searching")
             found = False
-            for i in range(10):
+            for i in range(numMax):
                 if found:
                     print("Record Found")
                     print(records)
@@ -377,11 +378,11 @@ class Daylog_Test_Case(object):
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
                         else:
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+        return recordsCopy
 
 
 
-
-    def find_inspector_record(self,RecordToFind,ColumnToSearch,StartPoint, FindOrder):
+    def find_inspector_record(self,RecordToFind,ColumnToSearch,StartPoint, FindOrder, numMax):
         print('*** Daylog_Test_Case.find_inspector_record ***')
 
         found = self.img_proc.expect_image('vnc-hos-daylog-screen', 'ExpectedScreens', 3)
@@ -442,6 +443,7 @@ class Daylog_Test_Case(object):
         print(records)
         print(records[0][x].lower())
         recordToCompare = records[0][x].lower()
+        recordCopy = records[0]
         records = None
         
         #Certified Status Start Duration Location CoDriver Origin Comment
@@ -452,7 +454,7 @@ class Daylog_Test_Case(object):
         else:
             print("Searching")
             found = False
-            for i in range(10):
+            for i in range(numMax):
                 if found:
                     print("Record Found")
                     print(records)
@@ -485,7 +487,7 @@ class Daylog_Test_Case(object):
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
                         else:
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
-                            
+        return recordCopy                     
     
     def verify_driver_daylog(self,expectedStatus, logIndex, DayLogTable):
         records = self.day_log_records_driver("Bottom", "Asc", logIndex)
@@ -600,24 +602,35 @@ class Daylog_Test_Case(object):
         y, y1, x, x1 = 540, 565, 460, 565
         btn_txt = self.general.retrieve_text_with_config(y, y1, x, x1)
         print(btn_txt)
-
+        
         
         if screen == 'Driver':
-            if 'inspector' in btn_txt.lower():
-                print("Currently in DRIVER profile")
+            
+            records = self.find_driver_record('Yes','CoDriver','Bottom', 'Desc', 0)
+            print(records)
+            if records[5] == 'No':
+                print("No CoDriver")
+                CoDriver = 'Empty'
             else:
-                print("Switching to DRIVER profile")
-                self.img_proc.click_image_by_max_key_points('ELD_Core/DayLogTab/DriverButton/DriverButton')
-            #Irse hasta abajo, si dice yes picarle, sacar el nombre del codriver
-            #si dice no, print no codriver
+                self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+                img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
+                crop_img2 = img[int(220):int(240), int(0):int(240)]
+                plt.imshow(crop_img2)
+                plt.show()
+                string = pytesseract.image_to_string(crop_img2)
+                print(string)
+                CoDriver = string
         else:
-            if 'inspector' in btn_txt.lower():
-                print("Switching to INSPECTOR profile")
-                self.img_proc.click_image_by_max_key_points('ELD_Core/DayLogTab/InspectorButton/InspectorButton')
-            else:
-                print("Currently in INSPECTOR profile")
-            #ir al fondo de la tabla
-            #recuperar el registro
-            #recuperar codriver igual
-
+            record = self.find_inspector_record('','','Bottom', 'Desc', 0)
+            print(record)
+           
+            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+            img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
+            crop_img2 = img[int(220):int(240), int(0):int(240)]
+            plt.imshow(crop_img2)
+            plt.show()
+            string = pytesseract.image_to_string(crop_img2)
+            print(string)
+            CoDriver = string
+        return CoDriver
 

@@ -21,7 +21,7 @@ from subprocess import Popen, CalledProcessError, PIPE
 
 class General_Access:
     def __init__(self):
-        self.img_proc = ImageProcessor('192.168.1.118', 'None', .15)
+        self.img_proc = ImageProcessor('192.168.68.104', 'None', .15)
     
     def search_func(self, search, space):
         search = re.search(r"" + search + "", str(space))

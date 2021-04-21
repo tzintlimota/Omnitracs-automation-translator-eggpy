@@ -29,4 +29,4 @@ uva_events = HOS_Unassigned_Driving_Test_Case(gral_access)
 
 
 # Simple image to string
-print(pytesseract.image_to_string(Image.open('test.png')))
+daylog.getCoDriver('Driver')
