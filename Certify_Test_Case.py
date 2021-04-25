@@ -682,3 +682,88 @@ class Certify_Test_Case(object):
         else:
             print("The button is displayed")
  
+
+    def getTableRecord(self, recordIndex):
+        print ('***Certify_Test_Case.getTableRecord***')
+        
+        found = self.img_proc.expect_image('vnc-hos-certify-screen', 'ExpectedScreens', 3)
+
+        if found:
+            print('Already in CERTIFY screen')
+        else:
+            self.eld_core.goTo("Certify")
+
+
+        for i in range(10):
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
+        
+        records = []
+        for i in range(recordIndex):
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+
+        time.sleep(1)
+        self.img_proc.click_image_by_coordinates(150, 300)
+        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+        new_rec = []
+        
+        #START
+        self.img_proc.click_image_by_coordinates(150, 300)
+        recordToCompare = self.general.retrieve_start('certify')
+        new_rec.append(recordToCompare.strip())   
+    
+        #STATUS
+        y, y1,x, x1 = 285, 310, 115, 300
+        self.img_proc.click_image_by_coordinates(150, 300)
+        recordToCompare = self.general.retrieve_text_with_config(y,y1,x,x1)
+        new_rec.append(recordToCompare.strip())
+
+        #Duration
+        recordToCompare = self.general.retrieve_duration()
+        new_rec.append(recordToCompare.strip())
+
+        #LOCATION
+        y, y1,x, x1 = 285, 310, 445, 600
+        img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
+        crop_img2 = img[int(y):int(y1), int(x):int(x1)]
+        #calculate the 50 percent of original dimensions
+        width = int(crop_img2.shape[1] * 800 / 100)
+        height = int(crop_img2.shape[0] * 800 / 100)
+        # dsize
+        dsize = (width, height)
+        # resize image
+        #crop_img2 = cv2.resize(crop_img2, dsize)
+        crop_img2 = cv2.resize(crop_img2, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
+        '''plt.imshow(crop_img2)
+        plt.show()'''
+        
+        custom_oem_psm_config = r'--oem 1 --psm 13'
+        string = pytesseract.image_to_string(crop_img2, lang='eng', config=custom_oem_psm_config)
+        recordToCompare = string.lower()
+        new_rec.append(recordToCompare.strip())    
+        
+        #ORIGIN
+        y, y1,x, x1 = 285, 310, 850, 960
+        self.img_proc.click_image_by_coordinates(150, 300)
+        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+
+        img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
+        
+        crop_img2 = img[int(y):int(y1), int(x):int(x1)]
+        #calculate the 50 percent of original dimensions
+        width = int(crop_img2.shape[1] * 600 / 100)
+        height = int(crop_img2.shape[0] * 600 / 100)
+        # dsize
+        dsize = (width, height)
+        # resize image
+        crop_img2 = cv2.resize(crop_img2, dsize)
+        #plt.imshow(crop_img2)
+        #plt.show()
+        
+        string = pytesseract.image_to_string(crop_img2, lang='eng', config="--psm 8")
+        #string = pytesseract.image_to_string(crop_img2)
+        recordToCompare = string.lower() 
+        new_rec.append(recordToCompare.strip()) 
+
+        records.append(new_rec)
+
+        return records

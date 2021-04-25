@@ -304,7 +304,7 @@ def tokenization():
             toadd = "\ncertify.findTableRecord('" + params[0] + "', '" + params[1] + "','" + params[2] + "','" + params[3] + "')"
             file2.writelines(toadd)
         
-        elif (search_func('getTable', doc)):
+        elif (search_func('getTable', doc) and not search_func('getTableRecord', doc)):
             params = []
             stringToPass = ''
             for i in range(1, len(doc)):
@@ -595,6 +595,43 @@ def tokenization():
                 params.append(' ')
 
             toadd = "\ncertify.editTimeField('" + params[0] + "','" + params[1] + "')"
+            file2.writelines(toadd)
+        elif (search_func('VerifyEditButtonExist', doc)):
+            params = []
+            stringToPass = ''
+
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            new = new.replace('.RejectUnassignedEvents', '')
+            params = new.split()
+
+            print(params)
+            while len(params) < 3:
+                params.append(' ')
+
+            toadd = "\ncertify.verifyEditButtonExist(bool(" + params[0] + "))"
+            file2.writelines(toadd)
+
+        elif (search_func('getTableRecord', doc)):
+            params = []
+            stringToPass = ''
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            params = new.split()
+
+            print(params)
+            while len(params) < 2:
+                params.append(' ')
+            # "ON","N" ,"AUTOMATION"
+            toadd = "\ncertify.getTableRecord(int(" + params[0] + "))"
             file2.writelines(toadd)
         else:
             print('\n AUN NO CONOZCO ESTA FUNCION ' + line[0: len(line)-1] + '\n')

@@ -13,9 +13,6 @@ from Certify_Test_Case import Certify_Test_Case
 import connection_credentials as cfg
 #import pyGPSFeed_IMR
 import pytest
-
-
-import pytesseract
 from ImageProcessor import ImageProcessor
 from General_Access_Functions import General_Access
 
@@ -26,8 +23,8 @@ certify = Certify_Test_Case(gral_access)
 daylog = Daylog_Test_Case(gral_access)
 uva_events = HOS_Unassigned_Driving_Test_Case(gral_access)
 
+print('log "***Script name OHOS2810***"') 
 
-
-# Simple image to string
-
-certify.verifyEditButtonExist(True)
+certify.editTimeField('Hrs','12')
+certify.verifyEditButtonExist(bool(False))
+certify.getTableRecord(int(3))

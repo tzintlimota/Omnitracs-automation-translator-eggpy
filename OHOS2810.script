@@ -13,3 +13,6 @@ If Remarks are empty and only the Location is edited, NEXT button will not appea
 log "***Script name OHOS2810***"
 
 EditTimeField Hrs, 12
+
+VerifyEditButtonExists False
+getTableRecord 3
