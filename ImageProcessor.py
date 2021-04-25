@@ -441,7 +441,7 @@ class ImageProcessor:
         avg_color = np.average(avg_color_per_row, axis=0)
         print(avg_color)
         #Crop_img2 is just for user convenience, no processing is being made with that image
-        plt.imshow(crop_img2)
+        plt.imshow(crop_img)
         plt.show()  
         if(avg_color[0] == 255 and avg_color[1] == 255 and avg_color[2] == 255):
             color = 'white'

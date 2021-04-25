@@ -609,11 +609,13 @@ def tokenization():
 
 
     checar nombres
-    getcCertifyScreenDate
+    getCertifyScreenDate
     getStatusDropdownValues
     getExceptionDropdownValues
     GetDayLogDate
     EditTimeField
+    VerifyEditButtonExists (enabled)
+
     '''
 
 tokenization()

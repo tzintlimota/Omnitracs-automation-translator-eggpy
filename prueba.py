@@ -29,4 +29,5 @@ uva_events = HOS_Unassigned_Driving_Test_Case(gral_access)
 
 
 # Simple image to string
-daylog.getCoDriver('Driver')
+
+certify.verifyEditButtonExist(True)

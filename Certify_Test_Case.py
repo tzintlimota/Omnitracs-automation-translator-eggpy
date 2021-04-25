@@ -649,3 +649,36 @@ class Certify_Test_Case(object):
         self.img_proc.click_image_by_max_key_points('IVG_Common/Home/KeyboardOpen/KeyboardOpen')
         
      
+    def verifyEditButtonExist(self, enabled):
+        print ('***Certify_Test_Case.verifyEditButtonExist***')
+        #self.eld_core.goTo("Certify")
+        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+        img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
+        crop_img2 = img[int(500):int(650), int(720):int(850)]
+        plt.imshow(crop_img2)
+        plt.show()
+        string = pytesseract.image_to_string(crop_img2)
+        print(string)
+        color = self.img_proc.color_check(795,550 ,img)
+        print(color)
+        
+        if enabled:
+            if color == 'gray active':
+                print("The button is displayed and enabled")
+                return True
+            else:
+                print("The button is displayed and disabled")
+                return False
+        elif not enabled:
+            if color == 'gray active':
+                print("The button is displayed and enabled")
+                return False
+            else:
+                print("The button is displayed and disabled")
+                return True
+        
+        if len(string) < 3:
+            print("The button is not displayed")
+        else:
+            print("The button is displayed")
+ 
