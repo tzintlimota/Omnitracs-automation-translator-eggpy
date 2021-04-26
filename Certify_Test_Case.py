@@ -766,4 +766,17 @@ class Certify_Test_Case(object):
 
         records.append(new_rec)
 
-        return records
+        return records[0]
+
+    def verifyRecordStatusOrigin(self, recordIndex, columnStatus, columnOrigin):
+        record = self.getTableRecord(recordIndex)
+        print(record)
+        if self.general.search_func(columnStatus.lower(), record[1].lower()):
+            print("Column Status is a match " + str(record[1]))
+        else:
+            print("Column Status is NOT a match ")
+        if self.general.search_func(columnOrigin.lower(), record[4].lower()):
+            print("Column Origin is a match " + str(record[4]))
+        else:
+            print("Column Origin is NOT a match ")
+

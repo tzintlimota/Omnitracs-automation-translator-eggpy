@@ -25,6 +25,4 @@ uva_events = HOS_Unassigned_Driving_Test_Case(gral_access)
 
 print('log "***Script name OHOS2810***"') 
 
-certify.editTimeField('Hrs','12')
-certify.verifyEditButtonExist(bool(False))
-certify.getTableRecord(int(3))
+daylog.verify_inspector_daylog('Certified', 1, '')

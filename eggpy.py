@@ -633,6 +633,42 @@ def tokenization():
             # "ON","N" ,"AUTOMATION"
             toadd = "\ncertify.getTableRecord(int(" + params[0] + "))"
             file2.writelines(toadd)
+        elif (search_func('VerifyEditButtonExists', doc)):
+            params = []
+            stringToPass = ''
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            params = new.split()
+
+            print(params)
+            while len(params) < 2:
+                params.append(' ')
+            # "ON","N" ,"AUTOMATION"
+            toadd = "\ncertify.verifyEditButtonExist(bool(" + params[0] + "))"
+            file2.writelines(toadd)
+        elif (search_func('verifyRecordStatusOrigin', doc)):
+            params = []
+            stringToPass = ''
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            params = new.split()
+
+            print(params)
+            while len(params) < 4:
+                params.append(' ')
+            # "ON","N" ,"AUTOMATION"
+            toadd = "\ncertify.verifyRecordStatusOrigin(int(" + params[0] + "),'" + params[1] + "','" + params[2] + "')"
+            file2.writelines(toadd)
+        
+        
         else:
             print('\n AUN NO CONOZCO ESTA FUNCION ' + line[0: len(line)-1] + '\n')
             #file2.writelines('\n')
@@ -644,14 +680,15 @@ def tokenization():
     # select_new_status(self, newStatus, DropdownLocation, exception):
     selectNewStatus newStatus, DropdownLocation, exception
 
-
     checar nombres
+
     getCertifyScreenDate
     getStatusDropdownValues
     getExceptionDropdownValues
     GetDayLogDate
     EditTimeField
-    VerifyEditButtonExists (enabled)
+    verifyInspectorDayLog expectedEvent, logIndex, DayLogTable
+    
 
     '''
 

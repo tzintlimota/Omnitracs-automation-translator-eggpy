@@ -634,3 +634,68 @@ class Daylog_Test_Case(object):
             CoDriver = string
         return CoDriver
 
+    
+    def verify_inspector_daylog(self,expectedEvent, logIndex, DayLogTable):
+        records = self.daylog_get_records_inspector("Bottom", "Asc", logIndex)
+        print(records[logIndex-1])
+
+        time = records[logIndex-1][0]
+        event = records[logIndex-1][1]
+        location = str(records[logIndex-1][2]).strip()
+
+        accum = str(records[logIndex-1][3]).strip()
+        eng = str(records[logIndex-1][4])
+        rec_stat = str(records[logIndex-1][5])
+        seq_id = str(records[logIndex-1][6])
+        comment = str(records[logIndex-1][7])
+
+        if time == "::":
+            time = "00:00:00"
+
+    
+        if self.general.search_func(expectedEvent.lower(), event.lower()):
+            print("Event Found " + str(expectedEvent))
+        
+        time_start_pattern = r'\d\d:\d\d:\d\d'
+        
+        event_pattern = r'^[A-Za-z0-9]+$'
+        location_pattern = r'^[A-Za-z0-9]+$'
+        seq_pattern = r'^[0-9]+$'
+
+        location_found = re.match(location_pattern, location)
+
+        time_start_found = re.search(time_start_pattern, str(time))
+
+        if time_start_found != None:
+            print("Correct Format " + time)
+        
+        event_found = re.search(event_pattern, event)
+        seq_found = re.match(seq_pattern, seq_id)
+        
+        if event_found != None:
+            print("Correct Format " + event)
+
+        if location_found != None:
+            print("Correct Format " + location)
+        
+        if seq_found != None:
+            print("Correct Format " + seq_id)
+       
+        if eng != " ":
+            print("Correct Format " + eng)
+
+        if rec_stat != " ":
+            print("Correct Format " + rec_stat)
+        else:
+            print("No Record Status")
+
+        if accum != '':
+            print("Accum " + accum)
+        
+        if comment != '':
+            print("Comment " + comment)
+        else:
+            print("No Comment")
+    
+
+
