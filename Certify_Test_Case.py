@@ -283,6 +283,7 @@ class Certify_Test_Case(object):
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
             else:
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+        print(">>>> Certify Records Retrieved: \n" + str(records))
         return records
 
     
@@ -422,8 +423,8 @@ class Certify_Test_Case(object):
         crop_img2 = img[int(450):int(480), int(20):int(250)]
 
         crop_img2 = cv2.resize(crop_img2, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
-        plt.imshow(crop_img2)
-        plt.show()
+        #plt.imshow(crop_img2)
+        #plt.show()
         string = pytesseract.image_to_string(crop_img2)
         print(len(string))
         
@@ -528,10 +529,8 @@ class Certify_Test_Case(object):
             img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
             crop_img2 = img[int(270):int(380), int(19):int(100)]
 
-
         string = pytesseract.image_to_string(crop_img2)
         string += 'D'
-        print(string)
         return string
 
 
@@ -543,11 +542,11 @@ class Certify_Test_Case(object):
         crop_img2 = cv2.resize(crop_img2, None, fx=2, fy=2, interpolation=cv2.INTER_CUBIC)
         #plt.imshow(crop_img2)
         #plt.show()
-        string = pytesseract.image_to_string(crop_img2)
-        print(string)
-
-        
+        string = self.general.retrieve_text(int(420), int(445), int(15), int(250))
+        self.img_proc.click_image_by_max_key_points("IVG_Common/Home/HoursofServicePage/HoursofServicePage")
+        print('click should have happened')
         if DropdownLocation == 'Bottom' and len(string) < 3:
+            print('bOTTOM')
             self.img_proc.click_image_by_max_key_points('ELD_Core/CertifyTab/SplitButton/SplitButton')
 
             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 250, 315)
@@ -555,26 +554,34 @@ class Certify_Test_Case(object):
             self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
             img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
             crop_img2 = img[int(410):int(470), int(625):int(668)]
-            string = pytesseract.image_to_string(crop_img2)
+            #string = pytesseract.image_to_string(crop_img2)
+            string = self.general.retrieve_text_with_config(int(410), int(470), int(625), int(668), '--psm 6 --oem 3 -c tessedit_char_whitelist=PCYM', 'eng')
+
             
             crop_img2 = img[int(410):int(495), int(625):int(668)]
-            string += pytesseract.image_to_string(crop_img2)
+            #string += pytesseract.image_to_string(crop_img2)
+            string += self.general.retrieve_text_with_config(int(410), int(495), int(625), int(668), '--psm 6 --oem 3 -c tessedit_char_whitelist=PCYM' , 'eng')
+
 
         elif DropdownLocation == 'Bottom' and len(string) > 3:
-
+            print('More than 1 special condition')
             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 250, 315)
         
             self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
             img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
        
             crop_img2 = img[int(410):int(470), int(625):int(668)]
-            string = pytesseract.image_to_string(crop_img2)
+            #string = pytesseract.image_to_string(crop_img2)
+            string = self.general.retrieve_text(int(410), int(470), int(625), int(668))
 
             crop_img2 = img[int(410):int(495), int(625):int(668)]
-            string += pytesseract.image_to_string(crop_img2)
+            #string += pytesseract.image_to_string(crop_img2)
+            string += self.general.retrieve_text(int(410), int(495), int(625), int(668))
+
 
             
         elif DropdownLocation != 'Bottom' and len(string) > 3:
+            print('TOP')
             self.img_proc.click_image_by_max_key_points('ELD_Core/CertifyTab/SplitButton/SplitButton')
             
             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 250, 195)
@@ -582,24 +589,30 @@ class Certify_Test_Case(object):
             self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
             img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
             crop_img2 = img[int(270):int(330), int(625):int(668)]
-            string = pytesseract.image_to_string(crop_img2)
-            crop_img2 = img[int(270):int(355), int(625):int(668)]
-            string += pytesseract.image_to_string(crop_img2)
+            #string = pytesseract.image_to_string(crop_img2)
+            string = self.general.retrieve_text(int(270),int(330), int(625),int(668))
+            #crop_img2 = img[int(270):int(355), int(625):int(668)]
+            #string += pytesseract.image_to_string(crop_img2)
+            string += self.general.retrieve_text(int(270),int(355), int(625),int(668))
+
 
             
         else:
-            
+            print('ELSE')
             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 250, 195)
             
             self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
             img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
-            crop_img2 = img[int(270):int(330), int(625):int(668)]
-            string = pytesseract.image_to_string(crop_img2)
-            crop_img2 = img[int(270):int(355), int(625):int(668)]
-            string += pytesseract.image_to_string(crop_img2)
+            #crop_img2 = img[int(270):int(330), int(625):int(668)]
+            #string = pytesseract.image_to_string(crop_img2)
+            string = self.general.retrieve_text(int(270),int(330), int(625),int(668))
+            #crop_img2 = img[int(270):int(355), int(625):int(668)]
+            #string += pytesseract.image_to_string(crop_img2)
+            string += self.general.retrieve_text(int(270),int(355), int(625),int(668))
 
-        plt.imshow(crop_img2)
-        plt.show()
+
+        #plt.imshow(crop_img2)
+        #plt.show()
 
         #string = pytesseract.image_to_string(crop_img2)
         print(string)

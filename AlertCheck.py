@@ -24,8 +24,8 @@ f.close()
 
 while True:
     f = open("IVG_var.txt", "r")
-    
-    if img_proc.expect_image("vnc-load-info-required-popup", "ExpectedScreens",1):
+
+    if img_proc.expect_image("vnc-load-info-required-popup", "ExpectedScreens",1) or img_proc.expect_image("vnc-load-info-required-popup2", "ExpectedScreens",1):
         print("Close load info required popup")
         #total_x, total_y = img_proc.click_image_by_max_key_points("IVG_Common/Login/OkLoginStatus/OkLoginStatus")
         #if total_y == -1:

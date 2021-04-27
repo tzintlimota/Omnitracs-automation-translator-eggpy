@@ -76,17 +76,23 @@ class IVG_ELD_CORE(object):
             self.img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/Change_Status/SB_Status/SB_Status')
         elif newStatus == "D" and actual_status.strip().lower() != 'driving':
             self.img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/Change_Status/DR_Status/DR_Status')
-        elif newStatus == '':
+        elif newStatus == '' or actual_status.strip().lower() != 'on- duty' and newStatus == 'ON':
             self.img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/Change_Status/ON_Status/ON_Status')
 
         if condition != ' ':
             print(f">>>> Selecting condition: {condition}")
             if condition == 'N':
-                self.img_proc.click_image_by_max_key_points_offset('ELD_Core/StatusTab/Change_Status/SpecialConditions/None/None', -90, 0)
+                self.img_proc.click_image_by_max_key_points_offset('ELD_Core/StatusTab/Change_Status/SpecialConditions/None/None', -75, 0)
             elif condition == 'OW':
-                self.img_proc.click_image_by_max_key_points_offset('ELD_Core/StatusTab/Change_Status/SpecialConditions/OilWell/OilWell', -90, 0)
+                self.img_proc.click_image_by_max_key_points_offset('ELD_Core/StatusTab/Change_Status/SpecialConditions/OilWell/OilWell', -235, 210)
             elif condition == 'PC' or condition == 'YM':
-                self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -235, 210)
+                special_cond = self.general.retrieve_text_with_config(260, 300, 250, 330)
+                if 'oil well' in special_cond.lower():
+                    print('>>> OW special condition is active so PC is in 3rd position')
+                    self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", -235, 250)
+                else:
+                    self.img_proc.click_image_by_max_key_points_offset(
+                        "IVG_Common/Home/HoursofServicePage/HoursofServicePage", -235, 210)
             elif condition == 'RB':
                 self.img_proc.click_image_by_max_key_points_offset('ELD_Core/StatusTab/Change_Status/SpecialConditions/RestBreak/RestBreak', -90, 0)
             #elif condition == 'YM':
@@ -112,7 +118,9 @@ class IVG_ELD_CORE(object):
         time.sleep(5)
         if complete != 'False' and complete != 'false':
             print(f">>>> Confirm of Status Change")
-            self.img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/OkButton/OkButton')
+            #self.img_proc.click_image_by_max_key_points('ELD_Core/StatusTab/OkButton/OkButton')
+            self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage",
+                                                               440, 500)
             time.sleep(10)
 
     def goToHOS(self):
@@ -233,7 +241,8 @@ class IVG_ELD_CORE(object):
             x, y = 535, 150
         else:
             x, y  = 550, 150
-        
+
+        print(f'>>>> Clicking Day Forward arrow: {clicks} times')
         for i in range(clicks):
             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", x, y)
 
@@ -319,10 +328,12 @@ class IVG_ELD_CORE(object):
         self.goTo("Days")
         self.img_proc.expect_image('vnc-8days-screen', 'ExpectedScreens', 3)
         self.img_proc.click_image_by_max_key_points("LogRequestButton")
-        while self.img_proc.expect_image("log-request-confirmation", "ExpectedScreens", 1):
+        if self.img_proc.expect_image('vnc_7DaysTab_main', 'ExpectedScreens', 2):
+            self.img_proc.click_image_by_coordinates(905, 45)
+        while self.img_proc.expect_image("log-request-confirmation", "ExpectedScreens", 5):
             print("Waiting")
-            time.sleep(1)
-        self.img_proc.click_image_by_max_key_points("ivg_header_alert")
+        time.sleep(1)
+        self.img_proc.click_image_by_max_key_points_offset('IVG_Common/Home/HoursofServicePage/HoursofServicePage', 460, -30)
         
         max_time = datetime.now() + timedelta(seconds=float(300))
         search = None
@@ -337,16 +348,16 @@ class IVG_ELD_CORE(object):
 
             crop_img2 = img[int(150):int(480), int(315):int(560)]
 
-            '''calculate the 50 percent of original dimensions'''
+            # calculate the 50 percent of original dimensions
             width = int(crop_img2.shape[1] * 600 / 100)
             height = int(crop_img2.shape[0] * 600 / 100)
             # dsize
             dsize = (width, height)
-            '''resize image'''
+            # resize image
             crop_img2 = cv2.resize(crop_img2, dsize)
 
-            plt.imshow(crop_img2)
-            plt.show()
+            #plt.imshow(crop_img2)
+            #plt.show()
 
             string += pytesseract.image_to_string(crop_img2)
             string = string.strip()
@@ -355,6 +366,8 @@ class IVG_ELD_CORE(object):
             search = re.search(r"Log Update|ELD Exempt", string)
             print(search)
         print("LOG UPDATE RECEIVED")
+        self.img_proc.click_image_by_max_key_points('IVG_Common/Home/Return/Return')
+        time.sleep(2)
         self.goToELD()
 
     def select_driver_from_dropdown(self, driver_id):
@@ -466,7 +479,10 @@ class IVG_ELD_CORE(object):
 
     def validate_status(self, string):
         print('*** IVG_ELD_Core.validate_status ***')
-        #self.goToHOS()
+        if self.img_proc.expect_image('vnc_hos_main', 'ExpectedScreens', 1):
+            print("Already in Status screen")
+        else:
+            self.goToHOS()
         actual_status = self.general.retrieve_text(245, 270, 132, 370)
         expected_status = string.lower()
         assert expected_status in actual_status, \

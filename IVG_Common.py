@@ -26,8 +26,12 @@ class IVG_Common(object):
         self.img_proc.click_image_by_max_key_points("IVG_Common/Login/OkLoginStatus/OkLoginStatus")
 
     def goToMainScreen(self):
-        print('***IVG_Common.goToMainScreen***')
+        print('*** IVG_Common.goToMainScreen ***')
         while not self.img_proc.expect_image('vnc-main-screen', 'ExpectedScreens', 3):
+
+            if self.img_proc.expect_image('vnc-login-keyboard', 'ExpectedScreens', 2):
+                # In case the current state is in LOGIN screen with keyboard open
+                self.img_proc.click_image_by_max_key_points('keyword_icon')
             print('Clicking RETURN button to go to IVG MAIN SCREEN')
             total_x, total_y = self.img_proc.click_image_by_max_key_points('IVG_Common/Home/Return/Return')
             time.sleep(.5)
@@ -43,18 +47,27 @@ class IVG_Common(object):
             time.sleep(.5)
 
     def goToLoginPage(self):
+        found = self.img_proc.expect_image('vnc-hos-daylog-screen', 'ExpectedScreens', 3)
+
+        if found:
+            print('Already in DAYLOG screen')
+        else:
+            self.eld_core.goTo("DayLog")
+
         self.goToMainScreen()
         total_x, total_y = self.img_proc.click_image_by_max_key_points('IVG_Common/Home/DriverLogin/DriverLogin')
 
     def loginDriver(self, username, password, driver_status, active=True):
+        print('**** class IVG_Common.loginDriver ****')
         self.goToLoginPage()
 
         total_x, total_y = self.img_proc.click_image_by_max_key_points('login_add_active')
 
-        self.img_proc.expect_image('vnc-driver-input', 'ExpectedScreens', 2)
+        self.img_proc.expect_image('vnc-driver-input', 'ExpectedScreens', 5)
 
         # Type DriverID
         self.img_proc.click_image_by_max_key_points_offset('login_driver_box', 250, 0)
+        self.img_proc.clear_keys(10)
         self.img_proc.send_keys(str(username))
         self.img_proc.expect_image('vnc-driver-input-2', 'ExpectedScreens', 2)
         # Type Password
@@ -74,7 +87,8 @@ class IVG_Common(object):
 
         # Click OK to Login
         self.img_proc.click_image_by_max_key_points('ok_btn_active')
-        self.img_proc.expect_image('vnc-driver-credentials', 'ExpectedScreens', 3)
+        self.img_proc.expect_image('vnc-login-status', 'ExpectedScreens', 5)
+
 
         # Set status
         if driver_status == 'ON':
@@ -85,6 +99,7 @@ class IVG_Common(object):
             self.img_proc.click_image_by_max_key_points('IVG_Common/Login/SleeperStatus/SleeperStatus')
 
         self.img_proc.click_image_by_max_key_points('IVG_Common/Login/OkLoginStatus/OkLoginStatus')
+        self.img_proc.expect_image('vnc-login-add-driver', 'ExpectedScreens',5)
 
         self.backToHome()
 
@@ -107,7 +122,7 @@ class IVG_Common(object):
 
             if status == 'ON':
                 self.img_proc.click_image_by_max_key_points('IVG_Common/Login/OnDutyStatus/OnDutyStatus')
-            elif status == 'OF':
+            elif status == 'OF' or status == 'OFF':
                 self.img_proc.click_image_by_max_key_points('IVG_Common/Login/OffDutyStatus/OffDutyStatus')
             elif status == 'SL':
                 self.img_proc.click_image_by_max_key_points('IVG_Common/Login/SleeperStatus/SleeperStatus')
@@ -116,6 +131,7 @@ class IVG_Common(object):
             self.img_proc.click_image_by_max_key_points('IVG_Common/Login/LogoutDriver/LogoutDriver')
 
     def logOutAllDrivers(self):
+        print('**** IVG_Common.logOutAllDrivers ****')
         if self.img_proc.expect_image('vnc-login-active-driver-screen', 'ExpectedScreens', 4):
             print('Currently in LOGIN screen')
         else:

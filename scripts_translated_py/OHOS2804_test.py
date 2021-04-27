@@ -27,9 +27,9 @@ db = HOS_DB_Coontroller()
 - Driver is in HOS App.'''
 
 print('-------------------- OHOS2804 ----------------------')
-driver_id = 'JOSH0001'
+driver_id = 'TMOTA002'
 
-ivg_common.logOutAllDrivers()
+'''ivg_common.logOutAllDrivers()
 ivg_common.loginDriver(driver_id, driver_id, 'OF')
 eld_core.update_logs()
 
@@ -41,16 +41,16 @@ eld_core.changeDriverStatus('OFF', 'N', 'Test', ' ', ' ')
 # Get the newest Inspector logs
 eld_core.dayForward('DayLog', 8)
 daylog.find_driver_record('PC', 'Status', 'Bottom', 'Asc')#Translator
-driver_logs = daylog.day_log_records_driver('', 'Desc', 2)
+driver_logs = daylog.day_log_records_driver('', 'Desc', 2)'''
 
-daylog.find_driver_record('Special Driving', 'Event', 'Bottom', 'Asc')#Translator
-inspector_logs = daylog.day_log_records_driver('Bottom', 'Asc', 3)
+daylog.find_inspector_record('Special Driving', 'Event', 'Bottom', 'Asc')#Translator
+inspector_logs = daylog.daylog_get_records_inspector('', 'Asc', 1)
 
-print(">>>> Driver Records Retrieved: \n" + str(driver_logs))
+#print(">>>> Driver Records Retrieved: \n" + str(driver_logs))
 print(">>>> Inspector Records Retrieved: \n" + str(inspector_logs))
 
 # Check driver logs
-assert 'PC' in str(driver_logs[0][1])
+#assert 'PC' in str(driver_logs[0][1])
 
 # Validation of Special Driving Event Record - Inspector
 assert 'special driving' in str(inspector_logs[0][1]).lower()

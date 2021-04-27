@@ -32,8 +32,8 @@ uva_events = HOS_Unassigned_Driving_Test_Case(gral_access)
 
 print('-------------------- OHOS2601 ----------------------')
 
-driver_id = 'JOSH1'
-driver_id_2 = 'JOSH0011'
+driver_id = 'TMOTA002'
+driver_id_2 = 'TMOTA003'
 
 # Before Test
 ivg_common.logOutAllDrivers()
@@ -42,7 +42,7 @@ ivg_common.loginDriver(driver_id, driver_id, 'OFF')
 ivg_common.loginDriver(driver_id_2, driver_id_2, 'OFF', False)
 eld_core.update_logs()
 
-ivg_common.logoutDriver('OF', )
+ivg_common.logoutDriver('', 'OF')
 
 # Check active driver day logs, should be a Team Split for logging in and out a co-driver
 eld_core.dayForward('DayLog', 8)
@@ -50,7 +50,9 @@ eld_core.dayForward('DayLog', 8)
 driver_records = daylog.day_log_records_driver('Bottom', 'Asc', 1)
 
 # Validation that (team split) appears in the COMMENTS
-assert 'team split' in str(driver_records[0][7]).lower()
+new_str = str(driver_records[0][7]).lower()
+new_str = str(driver_records[0][7]).replace('oplit', 'split')
+assert 'team split' in new_str
 
 
 

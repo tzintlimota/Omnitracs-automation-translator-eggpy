@@ -116,6 +116,7 @@ class Daylog_Test_Case(object):
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
             if findOrder == "Desc" and cont < NumRecords:
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+        print(">>>> Inspector Records Retrieved: \n" + str(records))
         return records
 
     def day_log_records_driver(self,StartPoint, FindOrder, NumRecords):
@@ -182,8 +183,8 @@ class Daylog_Test_Case(object):
 
             y, y1, x, x1 = 310, 325, 85, 115
             recordToCompare = self.general.retrieve_text_with_config(y,y1,x,x1, '--psm 6 --oem 3 -c tessedit_char_whitelist=PCONSBYMDF')
-            print(recordToCompare)
-            new_rec.append(recordToCompare.strip())   
+            recordToCompare = str(recordToCompare).replace('¥M','YM')
+            new_rec.append(recordToCompare.strip())
        
             #START
             
@@ -269,9 +270,12 @@ class Daylog_Test_Case(object):
             
             records.append(new_rec)
             if findOrder == "Asc" and cont < NumRecords:
+                ('>>>> Click Scroll Up arrow')
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
             if findOrder == "Desc" and cont < NumRecords:
+                ('>>>> Click Scroll Down arrow')
                 self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+        print(">>>> Driver Records Retrieved: \n" + str(records))
         return records
 
 
