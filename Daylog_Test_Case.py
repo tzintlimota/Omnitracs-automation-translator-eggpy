@@ -280,7 +280,7 @@ class Daylog_Test_Case(object):
 
 
 
-    def find_driver_record(self,RecordToFind,ColumnToSearch,StartPoint, FindOrder):
+    def find_driver_record(self,RecordToFind,ColumnToSearch,StartPoint, FindOrder, numMax):
         print('*** Daylog_Test_Case.find_driver_record ***')
         found = self.img_proc.expect_image('vnc-hos-daylog-screen', 'ExpectedScreens', 3)
 
@@ -342,6 +342,7 @@ class Daylog_Test_Case(object):
         print(records)
         print(records[0][x].lower())
         recordToCompare = records[0][x].lower()
+        recordsCopy = records[0]
         records = None
 
         if self.general.search_func(str(RecordToFind.lower().strip()), str(recordToCompare.strip())):
@@ -350,7 +351,7 @@ class Daylog_Test_Case(object):
         else:
             print("Searching")
             found = False
-            for i in range(10):
+            for i in range(numMax):
                 if found:
                     print("Record Found")
                     print(records)
@@ -381,11 +382,11 @@ class Daylog_Test_Case(object):
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
                         else:
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
+        return recordsCopy
 
 
 
-
-    def find_inspector_record(self,RecordToFind,ColumnToSearch,StartPoint, FindOrder):
+    def find_inspector_record(self,RecordToFind,ColumnToSearch,StartPoint, FindOrder, numMax):
         print('*** Daylog_Test_Case.find_inspector_record ***')
 
         found = self.img_proc.expect_image('vnc-hos-daylog-screen', 'ExpectedScreens', 3)
@@ -446,6 +447,7 @@ class Daylog_Test_Case(object):
         print(records)
         print(records[0][x].lower())
         recordToCompare = records[0][x].lower()
+        recordCopy = records[0]
         records = None
         
         #Certified Status Start Duration Location CoDriver Origin Comment
@@ -456,7 +458,7 @@ class Daylog_Test_Case(object):
         else:
             print("Searching")
             found = False
-            for i in range(10):
+            for i in range(numMax):
                 if found:
                     print("Record Found")
                     print(records)
@@ -489,7 +491,7 @@ class Daylog_Test_Case(object):
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 200)
                         else:
                             self.img_proc.click_image_by_max_key_points_offset("IVG_Common/Home/HoursofServicePage/HoursofServicePage", 550, 420)
-                            
+        return recordCopy                     
     
     def verify_driver_daylog(self,expectedStatus, logIndex, DayLogTable):
         records = self.day_log_records_driver("Bottom", "Asc", logIndex)
@@ -579,6 +581,125 @@ class Daylog_Test_Case(object):
                                                                550, 420)
         print('>>>> The BOTTOM of the table has been reached')
 
+    def getDayLogDate(self):
+        print ('***Daylog_Test_Case.getDayLogDate***')
+        #self.eld_core.goTo("Certify")
+        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+        img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
+        crop_img2 = img[int(200):int(240), int(850):int(975)]
+        plt.imshow(crop_img2)
+        plt.show()
+        string = pytesseract.image_to_string(crop_img2)
+        print(string)
+        return string
 
+    def getCoDriver(self, screen):
+        print ('***Daylog_Test_Case.getCoDriver***')
+        #self.eld_core.goTo("Certify")
+        found = self.img_proc.expect_image('vnc-hos-daylog-screen', 'ExpectedScreens', 3)
+
+        if found:
+            print('Already in DAYLOG screen')
+        else:
+            self.eld_core.goTo("DayLog")
+
+        y, y1, x, x1 = 540, 565, 460, 565
+        btn_txt = self.general.retrieve_text_with_config(y, y1, x, x1)
+        print(btn_txt)
+        
+        
+        if screen == 'Driver':
+            
+            records = self.find_driver_record('Yes','CoDriver','Bottom', 'Desc', 0)
+            print(records)
+            if records[5] == 'No':
+                print("No CoDriver")
+                CoDriver = 'Empty'
+            else:
+                self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+                img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
+                crop_img2 = img[int(220):int(240), int(0):int(240)]
+                plt.imshow(crop_img2)
+                plt.show()
+                string = pytesseract.image_to_string(crop_img2)
+                print(string)
+                CoDriver = string
+        else:
+            record = self.find_inspector_record('','','Bottom', 'Desc', 0)
+            print(record)
+           
+            self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+            img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
+            crop_img2 = img[int(220):int(240), int(0):int(240)]
+            plt.imshow(crop_img2)
+            plt.show()
+            string = pytesseract.image_to_string(crop_img2)
+            print(string)
+            CoDriver = string
+        return CoDriver
+
+    
+    def verify_inspector_daylog(self,expectedEvent, logIndex, DayLogTable):
+        records = self.daylog_get_records_inspector("Bottom", "Asc", logIndex)
+        print(records[logIndex-1])
+
+        time = records[logIndex-1][0]
+        event = records[logIndex-1][1]
+        location = str(records[logIndex-1][2]).strip()
+
+        accum = str(records[logIndex-1][3]).strip()
+        eng = str(records[logIndex-1][4])
+        rec_stat = str(records[logIndex-1][5])
+        seq_id = str(records[logIndex-1][6])
+        comment = str(records[logIndex-1][7])
+
+        if time == "::":
+            time = "00:00:00"
+
+    
+        if self.general.search_func(expectedEvent.lower(), event.lower()):
+            print("Event Found " + str(expectedEvent))
+        
+        time_start_pattern = r'\d\d:\d\d:\d\d'
+        
+        event_pattern = r'^[A-Za-z0-9]+$'
+        location_pattern = r'^[A-Za-z0-9]+$'
+        seq_pattern = r'^[0-9]+$'
+
+        location_found = re.match(location_pattern, location)
+
+        time_start_found = re.search(time_start_pattern, str(time))
+
+        if time_start_found != None:
+            print("Correct Format " + time)
+        
+        event_found = re.search(event_pattern, event)
+        seq_found = re.match(seq_pattern, seq_id)
+        
+        if event_found != None:
+            print("Correct Format " + event)
+
+        if location_found != None:
+            print("Correct Format " + location)
+        
+        if seq_found != None:
+            print("Correct Format " + seq_id)
+       
+        if eng != " ":
+            print("Correct Format " + eng)
+
+        if rec_stat != " ":
+            print("Correct Format " + rec_stat)
+        else:
+            print("No Record Status")
+
+        if accum != '':
+            print("Accum " + accum)
+        
+        if comment != '':
+            print("Comment " + comment)
+        else:
+            print("No Comment")
+    
 
 

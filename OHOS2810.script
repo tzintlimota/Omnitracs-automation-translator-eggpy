@@ -12,18 +12,4 @@ If Remarks are empty and only the Location is edited, NEXT button will not appea
 
 log "***Script name OHOS2810***"
 
-getTable Bottom, Asc, 5
-
-
-requestERODS method, comment
-
-EditLog True, SB, HOLA, TEST, True, True
-
-D.getInspectorLogs 2, Asc, Top
-
-DayLogTestCase.getDriverLogs 2, start_point, direction
-
-DayLogTestCase.findDriverRecord RecordToFind, ColumnToSearch, StartPoint, FindOrder
-
-
-HOLA ESTA FUNCION NO TIENE TRADUCCION, porfavor ayudame a conocerla #mkms
+VerifyEditButtonExists True

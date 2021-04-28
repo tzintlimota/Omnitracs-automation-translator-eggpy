@@ -6,6 +6,7 @@ import re
 
 nlp = spacy.load('en_core_web_sm')
 
+
 #Read Content of file to translate
 file1 = open('OHOS2810.script', 'r') 
 Lines = file1.readlines() 
@@ -303,7 +304,7 @@ def tokenization():
             toadd = "\ncertify.findTableRecord('" + params[0] + "', '" + params[1] + "','" + params[2] + "','" + params[3] + "')"
             file2.writelines(toadd)
         
-        elif (search_func('getTable', doc)):
+        elif (search_func('getTable', doc) and not search_func('getTableRecord', doc)):
             params = []
             stringToPass = ''
             for i in range(1, len(doc)):
@@ -576,6 +577,98 @@ def tokenization():
 
             toadd = "\ndaylog.find_driver_record('" + params[0] + "','" + params[1] + "', '" + params[2] + "','" + params[3] + "' )"
             file2.writelines(toadd)
+        elif (search_func('EditTimeField', doc)):
+            params = []
+            stringToPass = ''
+
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            new = new.replace('.RejectUnassignedEvents', '')
+            params = new.split()
+
+            print(params)
+            while len(params) < 3:
+                params.append(' ')
+
+            toadd = "\ncertify.editTimeField('" + params[0] + "','" + params[1] + "')"
+            file2.writelines(toadd)
+        elif (search_func('VerifyEditButtonExist', doc)):
+            params = []
+            stringToPass = ''
+
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            new = new.replace('.RejectUnassignedEvents', '')
+            params = new.split()
+
+            print(params)
+            while len(params) < 3:
+                params.append(' ')
+
+            toadd = "\ncertify.verifyEditButtonExist(bool(" + params[0] + "))"
+            file2.writelines(toadd)
+
+        elif (search_func('getTableRecord', doc)):
+            params = []
+            stringToPass = ''
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            params = new.split()
+
+            print(params)
+            while len(params) < 2:
+                params.append(' ')
+            # "ON","N" ,"AUTOMATION"
+            toadd = "\ncertify.getTableRecord(int(" + params[0] + "))"
+            file2.writelines(toadd)
+        elif (search_func('VerifyEditButtonExists', doc)):
+            params = []
+            stringToPass = ''
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            params = new.split()
+
+            print(params)
+            while len(params) < 2:
+                params.append(' ')
+            # "ON","N" ,"AUTOMATION"
+            toadd = "\ncertify.verifyEditButtonExist(bool(" + params[0] + "))"
+            file2.writelines(toadd)
+        elif (search_func('verifyRecordStatusOrigin', doc)):
+            params = []
+            stringToPass = ''
+            for i in range(1, len(doc)):
+                stringToPass += str(doc[i].text)
+            print(stringToPass)
+
+            new = stringToPass.replace('"', '')
+            new = new.replace(',', ' ')
+            params = new.split()
+
+            print(params)
+            while len(params) < 4:
+                params.append(' ')
+            # "ON","N" ,"AUTOMATION"
+            toadd = "\ncertify.verifyRecordStatusOrigin(int(" + params[0] + "),'" + params[1] + "','" + params[2] + "')"
+            file2.writelines(toadd)
+        
+        
         else:
             print('\n AUN NO CONOZCO ESTA FUNCION ' + line[0: len(line)-1] + '\n')
             #file2.writelines('\n')
@@ -586,6 +679,17 @@ def tokenization():
     ''' 
     # select_new_status(self, newStatus, DropdownLocation, exception):
     selectNewStatus newStatus, DropdownLocation, exception
+
+    checar nombres
+
+    getCertifyScreenDate
+    getStatusDropdownValues
+    getExceptionDropdownValues
+    GetDayLogDate
+    EditTimeField
+    verifyInspectorDayLog expectedEvent, logIndex, DayLogTable
+    
+
     '''
 
 tokenization()

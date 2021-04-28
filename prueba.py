@@ -23,8 +23,6 @@ certify = Certify_Test_Case(gral_access)
 daylog = Daylog_Test_Case(gral_access)
 uva_events = HOS_Unassigned_Driving_Test_Case(gral_access)
 
-print('log "***Script name OHOS2810***"')
+print('log "***Script name OHOS2810***"') 
 
-
-certify.getExceptionDropdownValues('Bottom')
-#split_log(certifyAfter, splitStatus, originalFirstRemark, splitFirstRemark,originalSecondRemark,splitSecondRemark, Location, Continue, Finish)
+daylog.verify_inspector_daylog('Certified', 1, '')
