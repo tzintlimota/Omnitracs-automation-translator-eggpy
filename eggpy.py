@@ -687,9 +687,10 @@ def tokenization():
     getExceptionDropdownValues
     GetDayLogDate
     EditTimeField
-    verifyInspectorDayLog expectedEvent, logIndex, DayLogTable
+    VerifyInspectorDayLogRecord expectedEvent, logIndex, DayLogTable
     
-
+    TimeFormat RecordTime
+    DateFormat RecordDate
     '''
 
 tokenization()

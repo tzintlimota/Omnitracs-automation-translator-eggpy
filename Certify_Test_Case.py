@@ -798,11 +798,11 @@ class Certify_Test_Case(object):
         try:
             time_start_found = re.search(time_start_pattern, str(RecordTime))
             if time_start_found != None:
-                hora = int(RecordTime[0:2])
-                minuto = int(RecordTime[3:5])
-                segundo = int(RecordTime[6:7])
+                hour = int(RecordTime[0:2])
+                minute = int(RecordTime[3:5])
+                second = int(RecordTime[6:7])
                 
-                if (hora >= 0 and hora <= 23) and (minuto >= 0 and minuto <= 59) and (segundo >= 0 and segundo <= 59): 
+                if (hour >= 0 and hour <= 23) and (minute >= 0 and minute <= 59) and (second >= 0 and second <= 59): 
                     print("Correct Format " + RecordTime)
                 else:
                     print("Format not correct " + RecordTime)
@@ -810,6 +810,28 @@ class Certify_Test_Case(object):
                 print("Format not correct "  + RecordTime)
         except Exception:
             print("Format not correct "  + RecordTime)
+
+    def DateFormat(self, RecordDate):
+        print ('***Certify_Test_Case.TimeFormat***')
+        date_start_pattern = r"[\d]{1,2}/[\d]{1,2}/[\d]{4}"          
+
+        try:
+            date_start_found = re.search(date_start_pattern, str(RecordDate))
+
+            if date_start_found != None:
+                month = int(RecordDate[0:2])
+                day = int(RecordDate[3:5])
+                year = int(RecordDate[6:])
+                
+                if (month >= 0 and month <= 12) and (day >= 0 and day <= 31) and (year >= 0 and year <= 9999): 
+                    print("Correct Format " + RecordDate)
+                else:
+                    print("Format not correct " + RecordDate)
+            else:
+                print("Format not correct "  + RecordDate)
+        except Exception:
+            print("Format not correct EXCEPTION "  + RecordDate)
+
 
         
   
