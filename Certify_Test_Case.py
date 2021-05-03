@@ -790,4 +790,27 @@ class Certify_Test_Case(object):
             print("Column Origin is a match " + str(record[4]))
         else:
             print("Column Origin is NOT a match ")
+    
+    def TimeFormat(self, RecordTime):
+        print ('***Certify_Test_Case.TimeFormat***')
+        time_start_pattern = r'\d\d:\d\d:\d\d'      
+
+        try:
+            time_start_found = re.search(time_start_pattern, str(RecordTime))
+            if time_start_found != None:
+                hora = int(RecordTime[0:2])
+                minuto = int(RecordTime[3:5])
+                segundo = int(RecordTime[6:7])
+                
+                if (hora >= 0 and hora <= 23) and (minuto >= 0 and minuto <= 59) and (segundo >= 0 and segundo <= 59): 
+                    print("Correct Format " + RecordTime)
+                else:
+                    print("Format not correct " + RecordTime)
+            else:
+                print("Format not correct "  + RecordTime)
+        except Exception:
+            print("Format not correct "  + RecordTime)
+
+        
+  
 

@@ -25,4 +25,4 @@ uva_events = HOS_Unassigned_Driving_Test_Case(gral_access)
 
 print('log "***Script name OHOS2810***"') 
 
-daylog.verify_inspector_daylog('Certified', 1, '')
+certify.TimeFormat('21:30:20')
