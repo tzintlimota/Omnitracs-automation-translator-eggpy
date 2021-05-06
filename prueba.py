@@ -25,4 +25,4 @@ uva_events = HOS_Unassigned_Driving_Test_Case(gral_access)
 
 print('log "***Script name OHOS2810***"') 
 
-certify.DateFormat('11/10/1999')
+certify.ValidateVirtualStatus(True)

@@ -832,6 +832,39 @@ class Certify_Test_Case(object):
         except Exception:
             print("Format not correct EXCEPTION "  + RecordDate)
 
+    def ValidateVirtualStatus(self, certificationStatus):
+        
+        print ('***Certify_Test_Case.ValidateVirtualStatus***')
+        self.img_proc.expect_image('vnc-certifyday-statusspans-pop-up', 'ExpectedScreens', 5)
+
+        f = open("IVG_var.txt", "w")
+        f.write("Certify")
+        f.close()
+        
+        self.img_proc.get_vnc_full_screen("last_screen", "ExpectedScreens")
+    
+        img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/last_screen.png')
+        #img = cv2.imread(self.img_proc.get_project_root_directory() + '/Images/ExpectedScreens/vnc-certifyday-statusspans-pop-up.png')
+        crop_img2 = img[int(305):int(330), int(200):int(500)]
+
+
+        string = pytesseract.image_to_string(crop_img2)
+        print(string)
+        
+        more_thanOne_found = re.search('spans more than one', string)
+
+        if more_thanOne_found != None and True:
+            print("More than ONE")
+            self.img_proc.click_image_by_max_key_points('ELD_Core/CertifyTab/AgreeButton/AgreeButton')
+        elif more_thanOne_found == None and False:
+            print("Not more than one")
+            self.img_proc.click_image_by_max_key_points('ELD_Core/CertifyTab/NotReadyButton/NotReadyButton')
+        
+        f = open("IVG_var.txt", "w")
+        f.write("None")
+        f.close()
+      
+
 
         
   
